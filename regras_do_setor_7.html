@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REGRAS-DO-RPG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<style>
+  /* ajustes só desta página */
+  main{max-width:900px;margin:auto;padding:40px 5%;}
+  h2.rule-title{
+    font-family:var(--hud);letter-spacing:.25em;font-size:1.25rem;margin:50px 0 16px;
+    border-left:4px solid var(--red);padding-left:12px;color:var(--txt);text-transform:uppercase;
+  }
+  h2.rule-title span{color:var(--red);}
+  .rule-card{
+    background:var(--panel);border:1px solid var(--line);padding:22px;
+    line-height:1.9;font-size:.84rem;color:var(--txt);
+    clip-path:var(--chamfer);
+  }
+  .rule-card b{color:var(--yellow);}
+  .rule-card .cy{color:var(--cyan);} .rule-card .pk{color:var(--red);} .rule-card .pu{color:var(--purple);}
+  table{width:100%;border-collapse:collapse;font-size:.78rem;margin:10px 0;}
+  th{color:var(--cyan);letter-spacing:.15em;text-align:left;padding:8px;border-bottom:1px solid var(--cyan);font-size:.68rem;text-transform:uppercase;}
+  td{padding:8px;border-bottom:1px solid var(--line);color:#b8a6c4;}
+  .formula{
+    background:var(--bg);border:1px dashed var(--purple);padding:12px;text-align:center;
+    color:var(--purple);letter-spacing:.1em;margin:12px 0;font-size:.9rem;
+    text-shadow:0 0 8px rgba(139,91,255,.5);
+  }
+  .example{
+    border-left:3px solid var(--yellow);background:rgba(var(--p-rgb),.05);
+    padding:12px 15px;font-size:.76rem;color:#cfc98a;margin-top:12px;
+  }
+
+  /* estados / condições */
+  .cond{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--cc,var(--cyan));padding:16px 18px;margin:14px 0;line-height:1.7;font-size:.82rem;}
+  .cond h3{font-family:var(--hud);letter-spacing:.2em;font-size:.95rem;margin:0 0 8px;color:var(--cc,var(--cyan));text-transform:uppercase;}
+  .cond .ln{display:flex;gap:12px;margin:6px 0;flex-wrap:wrap;}
+  .cond .lb{flex:0 0 120px;color:var(--yellow);font-weight:700;letter-spacing:.08em;font-size:.7rem;text-transform:uppercase;padding-top:2px;}
+  .cond .tx{flex:1 1 260px;min-width:0;}
+  .cond table{margin:6px 0 2px;}
+  .cond .rasc{display:inline-block;font-size:.6rem;letter-spacing:.2em;border:1px dashed var(--purple);color:var(--purple);padding:1px 8px;margin-left:8px;vertical-align:middle;}
+  .cond.vazio{opacity:.75;}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // PROTOCOLO_SETOR_7_v1 // DOCUMENTO CLANDESTINO</div>
+  <h1><span class="mk">PROTOCOLO SETOR 7</span></h1>
+  <p>// SISTEMA SIMPLES DE RPG CYBERPUNK — D20 — <span class="mk-line">VERSÃO 1.0</span> //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 REGRA Nº0: O MESTRE SEMPRE TEM RAZÃO // 🎲 D20 RESOLVE TUDO // ⚡ MANTENHA SEU ÍNDICE BAIXO // 📢 VOLTE PARA A LOJA E GASTE SEUS CRÉDITOS //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+  <a href="venda.html">🎲 VENDA</a>
+  <a href="missoes.html">🎯 MISSÕES</a>
+  <a href="ARMA-ZENADS.html#sobrecarga">⚠ SOBRECARGA</a>
+  <a href="base_de_comando.html">🏚️ BASE</a>
+  <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">⚔️ HACK_AREA</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+  
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+
+<h2 class="rule-title">01 <span>O TESTE (O CÓDIGO-FONTE DO SISTEMA)</span></h2>
+<div class="rule-card">
+  Toda ação arriscada funciona assim:
+  <div class="formula">1D20 + (Bonus_de_Implante) ≥ NÚMERO DE DIFICULDADE</div>
+  Passou = conseguiu. Não passou = falhou. Acabou. Sem tabela gigante.<br><br>
+  <table>
+    <tr><th>Dificuldade</th><th>Número</th><th>Exemplo</th></tr>
+    <tr><td>Fácil</td><td><b>10</b></td><td>pular um muro baixo, lembrar de uma senha</td></tr>
+    <tr><td>Médio</td><td><b>13</b></td><td>convencer um informante, invadir um cofre comum</td></tr>
+    <tr><td>Difícil</td><td><b>16</b></td><td>desarmar uma bomba, vencer um goleiro cyber</td></tr>
+    <tr><td>Quase impossível</td><td><b>19</b></td><td>atirar no fio de um paraquedas em queda</td></tr>
+  </table>
+  <b>20 natural:</b> sucesso crítico (algo a mais de bom acontece).<br>
+  <b>1 natural:</b> falha crítica (a arma trava, você tropeça, alguém te viu).
+</div>
+
+<h2 class="rule-title">02 <span>ATRIBUTOS</span></h2>
+<div class="rule-card">
+  <span class="cy">⚡ VELOCIDADE</span> — iniciativa, esquivas, furtividade, armas de fogo.<br>
+  <span class="pk">💪 FORÇA</span> — socos, armas brancas, quebrar coisas, carregar peso.<br>
+  <span class="pu">🧠 INTELIGÊNCIA</span> — hacking, medicina, investigação, conhecimento.<br>
+  <span style="color:var(--yellow)">🎲 SORTE</span> — eventos aleatórios e pontos de sorte (ver seção 07).<br><br>
+  <b>Carteira inicial:</b> 3.000 créditos (compra tudo no site da ARMA-ZENADS).
+</div>
+
+<h2 class="rule-title">03 <span>IMPLANTES: O BÔNUS E A FALHA</span></h2>
+<div class="rule-card">
+  Todo implante tem <b>3 PONTOS IMPORTANTES</b>:<br><br>
+  <b>✦ BÔNUS:
+  </b> quando o implante ajuda num teste, some o dado dele (<b>+1d6</b>, ou o dado anotado na ficha). Ex.: Cross testa Força com o Punho Graviton → <span class="cy">1d20 + 1d6</span>.<br><br>
+
+  <b>✦ RISCO:</b> toda vez que você ATIVA um implante, role <b>1d4</b> de falha (ou o nivel de carga do implante). pegando o numero do dado, adicionando a sobrecarga do seus implantes<br><br>
+  
+  <b>✦ EXTREMO/HABILIDADE:</b> Usando a habilidade de implantes (com cada um tendo sua específica) você carrega sua sobrecarga, e usa sua habilidade. e os implantes que não tem sua sobrecarga especificada podem ser usados ao extremo, causando o CRITICO do numero referente ao dado.<br>
+  <div class="example">EXEMPLO — Verity usa o NeuroBoost Mk-II num teste de Inteligência: rola 1d20 + 1d4. O d20 deu 14, o implante deu 3 → total 17 contra ND 16 ✓. Mas o 1d4 de falha caiu em 3 → ganhou 3 de Sobrecarga.</div>
+</div>
+
+<h2 class="rule-title">04 <span>SOBRECARGA (O % DOS IMPLANTES)</span></h2>
+<div class="rule-card">
+  Some a <b>% de todos os implantes</b> do personagem (a tabela está no site). Esse é o <b>Índice de Sobrecarga</b>:<br><br>
+  <table>
+    <tr><th>Índice</th><th>Efeito</th></tr>
+    <tr><td class="cy">0–30%</td><td>Normal. Falha do implante só em 1 no 1d4.</td></tr>
+    <tr><td style="color:var(--yellow)">31–60%</td><td>Pequenas falhas: o 1d4 falha em <b>1–2</b>.</td></tr>
+    <tr><td style="color:#ff9a3d">61–85%</td><td>Interferência: falha em <b>1–2</b> E a Sanidade perdida vira <b>1d6</b>.</td></tr>
+    <tr><td class="pk">86–99%</td><td>Sistema instável: falha em <b>1–3</b>. A cada sessão, teste Sorte (ND 13) ou perde 1d6 de Sanidade por paranoia.</td></tr>
+    <tr><td>⚫ 100%</td><td><b>CIBERPSICOSE.</b> O personagem vira NPC até remover implantes ou zerar a carga (manutenção: 500 cr por implante).</td></tr>
+  </table>
+</div>
+
+<h2 class="rule-title">05 <span>VIDA, SOBRECARGA, COMIDA/DESCANSO</span></h2>
+<div class="rule-card">
+  <b>❤ VIDA (100):</b> chegou a 0 = inconsciente. pode ser curado só se algum membro da party estiver vivo.<br>
+  <b>🔋 SOBRECARGA (0%):</b> mana de seus implantes, se sobrecarga a 100% entra no modo <b>[CYBERPSICOSE]</b>. Recupera com itens da aba SOBRECARGA da loja.<br>
+  <b>🍜 COMIDA/DESCANSO (100):</b> uma mecânica de sobrevivência que vai mudando conforme o tempo passa. Chegou a 0? <span class="pk">ESGOTADO</span>: −2 em todos os testes até comer/dormir.
+</div>
+
+<h2 class="rule-title">06 <span>COMBATE (TURNO SIMPLES)</span></h2>
+<div class="rule-card">
+  <b>1.</b> Iniciativa: cada um rola seu valor em velocidade <span class="cy">1d20 + (Bonus_de_Implante)</span>. Do maior pro menor.<br>
+  <b>2.</b> Atacar: <span class="cy">1d20 + (Velocidade)</span> (fogo) ou <span class="pk">+ (Força)</span> (corpo a corpo). Acertou se ≥ <b>passou da iniciativa.</b>(inimigo pode tentar esquivar se tiver implante de velocidade)<br>
+  <b>+.</b> Dano = <b>dados de dano em força</b> fazendo x5 do Resultado calculado do dano<b>modificador de Força</b>.<br>
+  <b>+.</b> Armadura <b>Bonus de Vida/Reduz perda de Vida</b>, dependendo do tipo de armadura .<br>
+  <b>+ Esquiva:</b> (Requer Implante de Velocidade) teste de ataque contra o do inimigo contra.<br>
+  <b>+ Contra_Ataque:</b> (Requer Implante de Velocidade & Força)Teste de Atacar, se o inimigo errar dobra o dano é redirecionado para ele.<br>
+  <b>+ Defesa: </b> reduz em porcentagem(%) o dano recebido girando dado de força.<br>
+  <div class="example">EXEMPLO — Cross atira a Pistola Pulso KE-9 (comum): 1d20+(Vel−10). Deu 15 ≥ 13 ✓. Dano: 1d6 → 4. Colete Kevlar → sofre só 2.<br>
+</div>
+</div>
+
+<h2 class="rule-title">07 <span>SORTE</span></h2>
+<div class="rule-card">
+  Cada personagem tem <b>3 pontos de sorte</b> por sessão. Gaste 1 ponto para <b>rerrolar QUALQUER dado seu</b> (teste, dano, falha de implante — e o mestre pode permitir rerrolar uma NEGOCIAÇÃO no Pregão do Beco, se você contar uma boa história). Recupera tudo na próxima sessão.
+</div>
+
+<h2 class="rule-title">08 <span>ESTADOS (CONDIÇÕES DO PERSONAGEM)</span></h2>
+<div class="rule-card">
+  Estados são condições que grudam no personagem. Cada um mostra <b>COMO ACONTECE</b>, <b>O QUE FAZ</b> e <b>COMO PARAR</b>. Um personagem pode ter vários estados ao mesmo tempo, exceto onde estiver dito o contrário.<br>
+  Os que têm a marca <span class="pu">RASCUNHO</span> ainda estão em teste e podem mudar.
+</div>
+<div class="cond" style="--cc:#ff3355">
+  <h3>🩸 SANGRAMENTO</h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Uma <b>arma cortante</b> acertou e causou dano. Quem atacou rola <b>1d20 de sangramento</b>: se o resultado for <b>menor ou igual ao limiar da arma</b>, o alvo sangra. <b>20 natural</b> no ataque = sangra sem rolar. <b>1 natural</b> no d20 de sangramento = sangra um nível acima.<table><tr><th>Arma</th><th>Limiar</th><th>Chance</th><th>Nível</th></tr><tr><td>Lança Arc</td><td><b>≤ 4</b></td><td>20%</td><td>Leve</td></tr><tr><td>Faca Specter</td><td><b>≤ 5</b></td><td>25%</td><td>Leve</td></tr><tr><td>Katana Neon</td><td><b>≤ 6</b></td><td>30%</td><td>Leve</td></tr><tr><td>Espada Mono-Molecular</td><td><b>≤ 7</b></td><td>35%</td><td>Moderado</td></tr><tr><td>Monolâmina K-7</td><td><b>≤ 8</b></td><td>40%</td><td>Moderado</td></tr><tr><td>Garras Viper</td><td><b>≤ 9</b></td><td>45%</td><td>Moderado</td></tr><tr><td>Machado Ripper</td><td><b>≤ 10</b></td><td>50%</td><td>Grave</td></tr><tr><td>Foice Eclipse</td><td><b>≤ 11</b></td><td>55%</td><td>Grave</td></tr></table>Armas de impacto (Bastão Pulse, Punho Titan, Martelo Grav-3) não fazem sangrar. Armadura reduz o limiar: comum <b>−1</b>, rara <b>−2</b>, experimental/proibida <b>−3</b>. Quem tem <b>Nanite Blood</b> obriga o atacante a rolar 2d20 e ficar com o pior.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx">O alvo perde Vida <b>no começo de cada turno dele</b>: <b>Leve 1d6</b>, <b>Moderado 1d10</b>, <b>Grave 1d12+5</b>. Sangramento do mesmo nível sobe para o nível seguinte, de nível maior substitui, de nível menor é ignorado. Nunca existem dois ao mesmo tempo.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx"><b>Primeiros socorros:</b> uma ação e teste de Inteligência contra ND <b>10</b> (Leve), <b>13</b> (Moderado) ou <b>16</b> (Grave); quem ajuda outra pessoa ganha +2. <b>Qualquer item de CURA</b> da loja estanca na hora. O <b>Leve</b> para sozinho no fim do combate; os outros não.</span></div>
+</div>
+<div class="cond" style="--cc:#8b5bff">
+  <h3>😨 MEDO<span class="rasc">RASCUNHO</span></h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Cada personagem pode ter <b>uma fobia</b>, escolhida na criação e aprovada pelo mestre (ex.: aranhas, altura, fogo, escuro). Quando o gatilho da fobia aparece, teste de <b>Sorte ND 13</b>. Falhou = com medo.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx"><b>−2 em todos os testes</b> enquanto o gatilho estiver à vista, e o personagem não pode se aproximar dele por vontade própria. <b>1 natural</b> no teste = paralisado, perde o turno.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Sair de perto ou da vista do gatilho; um aliado gasta uma ação para acalmar (Inteligência ND 10); ou usar um item da aba SOBRECARGA, como o Calmante Neuro-Z (o personagem fica <span class="pu">CHAPADO</span>, e chapado é imune a medo).</span></div>
+</div>
+<div class="cond" style="--cc:#ff9a3d">
+  <h3>🦿 IMOBILIZADO<span class="rasc">RASCUNHO</span></h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">O personagem <b>perde uma ou as duas pernas</b>. O mestre decide quando isso ocorre: <b>20 natural</b> num ataque mirado nas pernas (−3 no ataque), um golpe que cause <b>30 ou mais de dano de uma vez</b>, ou explosão pesada.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx"><b>Uma perna:</b> anda metade do movimento, não pode esquivar e leva <b>−3</b> em testes de Velocidade.<br><b>Duas pernas:</b> não anda, só rasteja 1 passo por turno, não esquiva e tem desvantagem em Velocidade.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Instalar <b>prótese/implante de perna</b> (Servo-Leg, Vector Legs): cada perna restaurada tira metade do efeito. O <b>Kit Regeneração Celular</b> reconstrói a perna depois de 1 semana de descanso. Itens de CURA comuns <b>não</b> recuperam perna.</span></div>
+</div>
+<div class="cond vazio" style="--cc:#46ff7a">
+  <h3>🧪 ENVENENADO</h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx"><i>(vazio por enquanto — ainda vai ser definido)</i></span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx"><i>(vazio)</i></span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx"><i>(vazio)</i></span></div>
+</div>
+<div class="cond" style="--cc:#9aa0ff">
+  <h3>💤 INCONSCIENTE</h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">A <b>Vida do personagem chega a 0</b>.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx">Não age, não fala e não esquiva. Fica vulnerável a ser <b>finalizado</b> (ver MORTO).</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx"><b>Qualquer item de CURA</b> acorda o personagem com a Vida que o item der. Só funciona se <b>algum membro da party estiver vivo</b> para usar o item; se a party inteira estiver inconsciente, acabou.</span></div>
+</div>
+<div class="cond" style="--cc:#ff3355">
+  <h3>☠️ MORTO</h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Alguém (inimigo, NPC ou até um aliado) gasta uma ação para <b>finalizar</b> um personagem. Só dá para finalizar quem já está <b>INCONSCIENTE</b>: ninguém morre direto com Vida acima de 0. Não precisa de teste de acerto.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx"><b>Fim do personagem.</b> A ficha é arquivada e o jogador cria outro (o mestre decide a carteira inicial).</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Não tem volta. <i>Opcional, decisão do mestre:</i> o <b>Soro Rebirth</b>, que reverte parada cardíaca recente, pode funcionar se usado no mesmo turno da finalização. A melhor defesa é curar o aliado antes que alguém chegue nele.</span></div>
+</div>
+<div class="cond" style="--cc:#ffb300">
+  <h3>💫 TONTO<span class="rasc">RASCUNHO</span></h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Funciona como o sangramento, mas com <b>armas pesadas / de impacto</b>. Depois de um golpe que acertou e causou dano, o atacante rola <b>1d20 de tontura</b>: se for ≤ limiar da arma, o alvo fica tonto. Armadura reduz o limiar igual ao sangramento.<table><tr><th>Arma</th><th>Limiar</th><th>Chance</th></tr><tr><td>Bastão Pulse</td><td><b>≤ 5</b></td><td>25%</td></tr><tr><td>Punho Titan</td><td><b>≤ 7</b></td><td>35%</td></tr><tr><td>Martelo Grav-3</td><td><b>≤ 10</b></td><td>50%</td></tr></table></span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx"><b>−2 em ataques e em Velocidade</b> (inclusive iniciativa). Dura <b>2 turnos</b> (3 com o Martelo Grav-3). Não acumula: um novo golpe só renova a duração.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Passa sozinho; ou o personagem gasta uma ação para se recompor (Força ND 10); ou usa qualquer item de CURA.</span></div>
+</div>
+<div class="cond" style="--cc:#7fd4ff">
+  <h3>🧊 CONGELADO<span class="rasc">RASCUNHO</span></h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Ataque ou habilidade criogênica, ou ambiente extremamente frio. Teste de <b>Força ND 13</b> para resistir.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx">Não pode andar, só faz ações com as mãos, e leva <b>−3 em Velocidade</b>. Dura 2 turnos.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Calor derrete o gelo (fogo ou estado QUEIMADO); o personagem pode gastar uma ação e passar em Força ND 13; ou passa sozinho em 2 turnos.</span></div>
+</div>
+<div class="cond" style="--cc:#ffe62a">
+  <h3>⚡ ELETROCUTADO<span class="rasc">RASCUNHO</span></h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Choque elétrico: Bastão Pulse, Lança Arc, Volt-77 (EMP), fios expostos e armadilhas de energia.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx">Perde <b>1d6 de Vida</b> e leva <b>−2 em todos os testes</b>. Cada implante ativado durante o estado ganha <b>+1d4 de Sobrecarga extra</b> (a EMP fritando o implante). Dura 1 turno.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Passa sozinho no fim do turno. Um item de CURA remove na hora.</span></div>
+</div>
+<div class="cond" style="--cc:#c0c0d8">
+  <h3>🕶️ CEGO<span class="rasc">RASCUNHO</span></h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Flash ou fumaça forte, ácido, <b>20 natural</b> em ataque mirado no rosto, ou <b>implante ocular destruído</b> (ex.: o Visor Quebrado).</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx"><b>−5</b> em ataques e em qualquer teste que dependa de enxergar; não consegue mirar à distância.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Se foi temporário (flash, fumaça), passa em <b>1d4 turnos</b>; um MedSpray lava e remove na hora. Se o olho foi destruído, só <b>instalando outro implante ocular</b> (Eyescan, Ghost-Eye, Kiroshi).</span></div>
+</div>
+<div class="cond" style="--cc:#ff5a2e">
+  <h3>🔥 QUEIMADO<span class="rasc">RASCUNHO</span></h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Fogo, explosão termobárica (Lança-Granadas GL-88), plasma ou ácido.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx">Perde <b>1d8 de Vida no começo de cada turno</b>. Para sozinho depois de <b>3 turnos</b>.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Gastar uma ação para apagar o fogo (Velocidade ND 10) ou se jogar na água; um MedSpray ou qualquer item de CURA também apaga.</span></div>
+</div>
+<div class="cond" style="--cc:#ff2ea6">
+  <h3>🧠 CYBERPSICOSE</h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">A <b>Sobrecarga chega a 100%</b>.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx">O personagem <b>vira NPC</b>: o mestre assume o controle até ele sair desse estado.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Usar itens da aba <b>SOBRECARGA</b> da loja até a Sobrecarga cair abaixo de 100%, ou <b>remover implantes</b> (manutenção: 500 cr por implante). Quem sai usando item fica <span class="pu">CHAPADO</span>.</span></div>
+</div>
+<div class="cond" style="--cc:#d4954d">
+  <h3>🍜 ESGOTADO</h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">A barra de <b>Comida/Descanso chega a 0</b> (muita fome ou falta de sono). Ou seja, o 100/100 zerou.</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx"><b>−2 em todos os testes</b> até comer ou dormir.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx"><b>Comer</b> (qualquer item da aba COMIDA) ou <b>dormir</b>. Assim que a barra passa de 0, o estado some.</span></div>
+</div>
+<div class="cond" style="--cc:#46ff7a">
+  <h3>💊 CHAPADO<span class="rasc">RASCUNHO</span></h3>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Depois de usar <b>qualquer item da aba SOBRECARGA</b> para diminuir a Sobrecarga (Calmante Neuro-Z, Pulseira Biofeedback, Terapia Neural, DreamSafe Chip, Firewall Psíquico, Reset Ego).</span></div>
+  <div class="ln"><span class="lb">O que faz</span><span class="tx">Efeito colateral do remédio: <b>−2 em Velocidade e Inteligência</b>, mas <b>imune a Medo</b> enquanto durar. A duração depende da raridade do item: comum <b>1 turno</b>, raro <b>2</b>, experimental <b>3</b>, proibido <b>4</b>. Tomar outro item renova a duração, não soma.</span></div>
+  <div class="ln"><span class="lb">Como parar</span><span class="tx">Passa sozinho quando a duração acaba. Um Stimpack corta o efeito na hora.</span></div>
+</div>
+
+<footer>
+  PROTOCOLO SETOR 7 © 2088 — <span>MANTENHA SEU ÍNDICE BAIXO E SUA SANIDADE MAIS ALTA AINDA.</span>
+</footer>
+
+<script>
+  document.querySelectorAll('.navbar a').forEach(function(link){
+    link.addEventListener('click', function(e){
+      var href = link.getAttribute('href');
+      if(href.charAt(0) === '#'){ e.preventDefault(); var a = document.querySelector(href); if(a) a.scrollIntoView({behavior:'smooth'}); }
+    });
+  });
+</script>
+<script>
+function toggleNav(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('menuToggle');
+  nav.classList.toggle('menu-open');
+  btn.setAttribute('aria-expanded', nav.classList.contains('menu-open'));
+}
+function toggleShortcuts(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('shortcutsToggle');
+  nav.classList.toggle('shortcuts-collapsed');
+  btn.setAttribute('aria-expanded', !nav.classList.contains('shortcuts-collapsed'));
+}
+</script>
+</body>
+</html>

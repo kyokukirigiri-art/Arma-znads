@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FICHA // BASE DE COMANDO — SETOR 7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<script src="party.js"></script>
+<style>
+  main{max-width:980px;margin:auto;padding:28px 5% 70px;}
+  .back-base{display:inline-flex;align-items:center;gap:10px;padding:9px 16px;margin-bottom:6px;text-decoration:none;
+    font-family:var(--hud);font-weight:700;font-size:.72rem;letter-spacing:.2em;color:var(--cyan);
+    border:1px solid rgba(34,230,210,.5);background:rgba(34,230,210,.05);clip-path:var(--chamfer-sm);transition:.15s;}
+  .back-base small{color:var(--dim);font-weight:400;letter-spacing:.12em;}
+  .back-base:hover{background:var(--cyan);color:#04120f;}
+  .back-base:hover small{color:#04120f;}
+
+  .section-title{
+    font-family:var(--hud);font-weight:700;letter-spacing:.22em;font-size:1rem;
+    margin:44px 0 14px;border-left:4px solid var(--cyan);padding-left:12px;
+    color:var(--txt);text-transform:uppercase;
+  }
+  .section-title small{display:block;color:var(--dim);font-size:.6rem;letter-spacing:.18em;margin-top:4px;font-family:var(--mono);font-weight:400;}
+  .panel{background:var(--panel);border:1px solid var(--line);clip-path:var(--chamfer);padding:22px;}
+
+  /* ---------- barra de personagens ---------- */
+  .char-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;}
+  .char-chip{
+    display:flex;align-items:center;gap:8px;padding:8px 8px 8px 14px;
+    border:1px solid rgba(34,230,210,.4);background:rgba(34,230,210,.04);
+    clip-path:var(--chamfer-sm);cursor:pointer;font-size:.72rem;letter-spacing:.08em;color:var(--dim);
+    transition:.15s;
+  }
+  .char-chip:hover{border-color:var(--cyan);color:var(--txt);}
+  .char-chip.active{background:var(--cyan);color:#04120f;border-color:var(--cyan);font-weight:700;}
+  .char-chip.active .del{color:#04120f;border-color:rgba(4,18,15,.4);}
+  .char-chip .del{
+    background:none;border:1px solid rgba(34,230,210,.5);color:var(--cyan);width:20px;height:20px;
+    font-size:.65rem;cursor:pointer;line-height:1;font-family:inherit;
+  }
+  .char-chip .del:hover{background:var(--red);border-color:var(--red);color:#060308;}
+  .btn-new{
+    font-family:var(--hud);font-weight:700;letter-spacing:.18em;font-size:.68rem;
+    background:none;border:1px dashed var(--cyan);color:var(--cyan);cursor:pointer;
+    padding:9px 16px;clip-path:var(--chamfer-sm);transition:.15s;
+  }
+  .btn-new:hover{background:var(--cyan);color:#04120f;}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--dim);font-size:.78rem;letter-spacing:.1em;}
+
+  #sheet{display:none;}
+  #sheet.on{display:block;}
+
+  /* ---------- identidade / status geral ---------- */
+  .id-row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;}
+  .id-field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px;}
+  .id-field label{font-size:.6rem;letter-spacing:.24em;color:var(--dim);}
+  .id-field input{
+    background:#08040b;border:1px solid var(--line);color:var(--txt);padding:10px 12px;
+    font-family:inherit;font-size:.9rem;outline:none;letter-spacing:.05em;
+  }
+  .id-field input:focus{border-color:var(--cyan);}
+  .id-field.small{flex:0 0 110px;min-width:90px;}
+
+  .status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:18px;}
+  .stat-box{border:1px solid var(--line);background:rgba(0,0,0,.25);padding:12px 14px;clip-path:var(--chamfer-sm);}
+  .stat-box .sb-label{font-size:.58rem;letter-spacing:.2em;color:var(--dim);margin-bottom:6px;}
+  .stat-box .sb-val{font-family:var(--hud);font-weight:700;font-size:1.1rem;color:var(--txt);}
+  .stat-box.comida .sb-val{color:#ffa62b;}
+  .stat-box.sobrecarga .sb-val{color:var(--yellow);}
+  .stat-box.creditos .sb-val{color:var(--cyan);}
+  .stat-box input[type="number"]{
+    width:64px;background:#08040b;border:1px solid var(--line);color:var(--txt);
+    padding:4px 6px;font-family:inherit;font-size:.78rem;outline:none;
+  }
+  .vida-ed{display:flex;align-items:center;gap:6px;}.vida-ed span{color:var(--dim);}.vida-ed input{width:70px !important;font-family:var(--hud);font-weight:700;font-size:1rem !important;}
+  .sb-tier{font-size:.56rem;letter-spacing:.15em;margin-top:4px;color:var(--dim);}
+
+  /* ---------- classe ---------- */
+  .cls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+  .cls-box{--cc:var(--cyan);text-align:left;font-family:inherit;color:var(--txt);cursor:pointer;
+    border:1px solid var(--line);background:rgba(0,0,0,.25);padding:12px 14px;clip-path:var(--chamfer-sm);transition:.15s;}
+  .cls-box:hover{border-color:var(--cc);}
+  .cls-box .cb-top{display:flex;align-items:center;gap:8px;font-family:var(--hud);font-weight:700;letter-spacing:.14em;font-size:.82rem;color:var(--cc);}
+  .cls-box .cb-top i{font-style:normal;font-size:1.15rem;}
+  .cls-box .cb-foco{font-size:.54rem;letter-spacing:.16em;color:var(--dim);margin-top:6px;}
+  .cls-box.on{border-color:var(--cc);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.3));box-shadow:0 0 14px -3px var(--cc),inset 0 0 18px -10px var(--cc);}
+  .cls-desc{--cc:var(--dim);margin-top:16px;padding:12px 16px;border-left:4px solid var(--cc);background:rgba(0,0,0,.22);font-size:.78rem;line-height:1.6;}
+  .cls-desc .cd-n{font-family:var(--hud);font-weight:700;letter-spacing:.18em;color:var(--cc);margin-bottom:4px;}
+  .cls-desc .cd-aff{margin-top:8px;font-size:.58rem;letter-spacing:.14em;color:var(--dim);}
+  .cls-desc .cd-aff b{color:var(--txt);font-weight:700;}
+  .cls-desc.vazio{color:var(--dim);font-size:.7rem;letter-spacing:.1em;}
+
+  /* ---------- atributos ---------- */
+  .attr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+  .attr-box{border:1px solid var(--line);background:rgba(0,0,0,.22);padding:16px;clip-path:var(--chamfer-sm);}
+  .attr-name{font-family:var(--hud);font-weight:700;letter-spacing:.14em;font-size:.82rem;margin-bottom:10px;}
+  .attr-box[data-attr="vel"] .attr-name{color:var(--cyan);}
+  .attr-box[data-attr="forca"] .attr-name{color:var(--red);}
+  .attr-box[data-attr="int"] .attr-name{color:var(--purple);}
+  .attr-box[data-attr="sorte"] .attr-name{color:var(--yellow);}
+  .attr-row{display:flex;gap:8px;margin-bottom:8px;}
+  .attr-row > div{flex:1;display:flex;flex-direction:column;gap:4px;}
+  .attr-row label{font-size:.56rem;letter-spacing:.15em;color:var(--dim);}
+  .attr-row input{
+    background:#08040b;border:1px solid var(--line);color:var(--txt);padding:7px 8px;
+    font-family:inherit;font-size:.8rem;outline:none;
+  }
+  .attr-mod{font-size:.68rem;color:var(--dim);letter-spacing:.08em;margin-bottom:10px;}
+  .attr-mod b{color:var(--txt);}
+  .roll-attr-btn{
+    width:100%;font-family:var(--hud);font-weight:700;letter-spacing:.12em;font-size:.68rem;
+    background:rgba(34,230,210,.08);border:1px solid var(--cyan);color:var(--cyan);
+    padding:9px;cursor:pointer;clip-path:var(--chamfer-sm);transition:.15s;
+  }
+  .roll-attr-btn:hover{background:var(--cyan);color:#04120f;}
+  .attr-result{min-height:20px;margin-top:9px;font-size:.72rem;letter-spacing:.04em;color:var(--txt);word-break:break-word;}
+  .attr-result b{color:var(--cyan);font-size:.9rem;}
+  .attr-result .crit-ok{color:var(--yellow);text-shadow:0 0 8px rgba(var(--p-rgb),.5);}
+  .attr-result .crit-fail{color:var(--red);}
+
+  /* ---------- mapa de vida (corpo) ---------- */
+  .vida-top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:22px;}
+  .vida-top .id-field{max-width:160px;}
+  .btn-redist{
+    font-family:var(--hud);font-weight:700;letter-spacing:.16em;font-size:.66rem;
+    background:none;border:1px solid var(--yellow);color:var(--yellow);cursor:pointer;
+    padding:10px 16px;clip-path:var(--chamfer-sm);transition:.15s;
+  }
+  .btn-redist:hover{background:var(--yellow);color:#060308;}
+  .vida-hint{font-size:.58rem;letter-spacing:.1em;color:var(--dim);flex-basis:100%;}
+
+  /* ---- ESTRUTURA CORPORAL (como a vida é dividida) ---- */
+  .vida-cfg{position:relative;margin:14px 0 18px;padding:12px 0;border-top:1px solid var(--red);border-bottom:1px solid var(--red);background:rgba(0,0,0,.35);}
+  .vida-cfg::before,.vida-cfg::after{content:"";position:absolute;right:0;width:8px;height:1px;background:var(--red);}
+  .vida-cfg::before{top:-5px;} .vida-cfg::after{bottom:-5px;}
+  .vc-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-family:var(--hud);letter-spacing:.3em;font-size:.72rem;color:var(--txt);text-transform:uppercase;}
+  .vc-slash{flex:1;height:12px;background:repeating-linear-gradient(115deg,var(--red) 0 1px,transparent 1px 5px);opacity:.85;}
+  .vc-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;}
+  .vc-opt{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:9px 10px 9px 32px;
+    background:rgba(0,0,0,.55);border:1px solid var(--line);color:var(--dim);cursor:pointer;font-family:inherit;transition:.15s;}
+  .vc-opt span{font-family:var(--hud);letter-spacing:.2em;font-size:.62rem;color:var(--txt);}
+  .vc-opt small{font-size:.54rem;letter-spacing:.1em;}
+  .vc-opt b{position:absolute;left:11px;top:11px;width:11px;height:11px;border:1px solid var(--red);}
+  .vc-opt:hover{border-color:var(--red);}
+  .vc-opt.on{border-color:var(--red);background:rgba(var(--p-rgb),.08);}
+  .vc-opt.on b{background:var(--red);box-shadow:0 0 8px var(--red);}
+  .vc-opt.on span{color:var(--red);}
+  .vc-opt.dis{opacity:.3;pointer-events:none;}
+  .vc-info{margin-top:10px;font-size:.58rem;letter-spacing:.14em;color:var(--dim);}
+  .vc-info b{color:var(--cyan);font-weight:400;}
+
+  /* ---- painel de scan corporal (silhueta + lista de partes) ---- */
+  .scan-frame{position:relative;padding:4px;}
+  .scan-frame .corner{position:absolute;width:16px;height:16px;pointer-events:none;z-index:3;}
+  .scan-frame .cn-tl{top:-1px;left:-1px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+  .scan-frame .cn-tr{top:-1px;right:-1px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+  .scan-frame .cn-bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+  .scan-frame .cn-br{bottom:-1px;right:-1px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+
+  .body-map{display:grid;gap:22px;grid-template-columns:minmax(0,430px) minmax(0,1fr);align-items:start;}
+
+  .silhouette-box{
+    position:relative;min-height:300px;overflow:hidden;
+    border:1px solid rgba(34,230,210,.35);
+    background:
+      radial-gradient(circle at 50% 26%, rgba(34,230,210,.10), transparent 62%),
+      radial-gradient(circle at 50% 88%, rgba(255,51,85,.06), transparent 55%),
+      rgba(0,0,0,.35);
+    padding:12px 8px 12px 8px;
+  }
+
+  /* ---- representantes de vida (só leitura): caixinhas ligadas ao corpo por uma linha.
+        o lado da caixa que "fecha" virado pro boneco é o tubo de vida ---- */
+  #bodySvg .rep{--rep-c:#22e6d2;--rep-glow:rgba(34,230,210,.5);cursor:pointer;transition:filter .2s ease;}
+  #bodySvg .rep text{pointer-events:none;font-family:var(--hud);}
+  #bodySvg .rep-line{fill:none;stroke:var(--rep-c);stroke-width:1.2;stroke-dasharray:3 2;opacity:.7;pointer-events:none;}
+  #bodySvg .rep-dot{fill:var(--rep-c);}
+  #bodySvg .rep-box{fill:rgba(6,3,10,.82);stroke:var(--rep-c);stroke-width:1.4;transition:stroke-width .15s ease;}
+  #bodySvg .rep-tube{fill:rgba(0,0,0,.7);stroke:var(--rep-c);stroke-width:1.6;}
+  #bodySvg .rep-fill{fill:var(--rep-c);filter:drop-shadow(0 0 3px var(--rep-glow));transition:y .25s ease,height .25s ease,fill .2s ease;}
+  #bodySvg .rep-ico{font-size:14px;}
+  #bodySvg .rep-name{font-size:8px;font-weight:700;letter-spacing:.06em;fill:var(--dim);}
+  #bodySvg .rep-hp{font-size:11px;font-weight:700;fill:var(--rep-c);}
+  #bodySvg .rep.prot .rep-box{stroke:#8b5bff;}
+  #bodySvg .rep.is-hover{filter:drop-shadow(0 0 6px var(--rep-glow));}
+  #bodySvg .rep.is-hover .rep-box{stroke-width:2.6;}
+  #bodySvg .rep.is-hover .rep-line{opacity:1;stroke-width:1.8;}
+  .vida-edit{min-width:0;}
+  .silhouette-box::after{
+    content:"";position:absolute;left:0;right:0;top:-30%;height:24%;z-index:2;pointer-events:none;
+    background:linear-gradient(180deg,transparent,rgba(34,230,210,.22),transparent);
+    animation:bodyscan 3.4s linear infinite;
+  }
+  @keyframes bodyscan{0%{top:-30%}100%{top:120%}}
+  .silhouette-tag{position:relative;z-index:3;font-size:.54rem;letter-spacing:.18em;color:var(--dim);margin-bottom:4px;}
+  .silhouette-tag b{color:var(--cyan);}
+  #bodySvg{position:relative;z-index:1;width:100%;height:auto;display:block;filter:drop-shadow(0 0 3px rgba(0,0,0,.6));}
+  #bodySvg .limb{
+    fill:var(--hp-fill,rgba(34,230,210,.16));stroke:var(--hp-stroke,#22e6d2);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round;
+    filter:drop-shadow(0 0 5px var(--hp-glow,rgba(34,230,210,.5)));
+    transition:fill .3s ease, stroke .25s ease, stroke-width .15s ease;cursor:pointer;
+  }
+  #bodySvg .limb.is-hover{stroke-width:4;}
+  #bodySvg .seg{display:none;fill:none;stroke:#d8c8ff;stroke-width:1.3;stroke-linecap:round;opacity:.85;pointer-events:none;}
+  #bodySvg .seg.on{display:inline;}
+  #bodySvg .seg .node{fill:#d8c8ff;stroke:none;}
+  #bodySvg .detail{fill:none;stroke:rgba(34,230,210,.35);stroke-width:1;pointer-events:none;}
+  /* PRÓTESE = roxo */
+  .silhouette-box #bodySvg .limb.prot{fill:rgba(139,91,255,.62);}
+  /* SOBRECARGA = corpo todo em roxo, cada vez mais instável */
+  .silhouette-box::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .4s ease;
+    background:radial-gradient(circle at 50% 45%, rgba(139,91,255,.45), transparent 65%);}
+  .silhouette-box.ov1::before{opacity:.45;}
+  .silhouette-box.ov2::before{opacity:.75;animation:ovPulse 1.8s ease-in-out infinite;}
+  .silhouette-box.ov3::before{opacity:1;animation:ovPulse .7s ease-in-out infinite;}
+  .silhouette-box.ov1 #bodySvg .limb{fill:rgba(139,91,255,.28);}
+  .silhouette-box.ov2 #bodySvg .limb{fill:rgba(139,91,255,.42);animation:ovFlick 2.2s infinite;}
+  .silhouette-box.ov3 #bodySvg .limb{fill:rgba(139,91,255,.6);animation:ovGlitch .6s steps(2) infinite;}
+  .silhouette-box.ov1 #bodySvg .limb.prot,.silhouette-box.ov2 #bodySvg .limb.prot,.silhouette-box.ov3 #bodySvg .limb.prot{fill:rgba(139,91,255,.7);}
+  .silhouette-box.ov1 .silhouette-tag b,.silhouette-box.ov2 .silhouette-tag b,.silhouette-box.ov3 .silhouette-tag b{color:var(--purple);}
+  @keyframes ovPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  @keyframes ovFlick{0%,90%,100%{opacity:1}93%{opacity:.55}96%{opacity:1}98%{opacity:.7}}
+  @keyframes ovGlitch{0%{transform:translateX(0)}50%{transform:translateX(1.5px)}100%{transform:translateX(-1.5px)}}
+  .prot-btn{
+    font-family:inherit;font-size:.54rem;letter-spacing:.12em;cursor:pointer;padding:3px 7px;
+    background:transparent;color:var(--dim);border:1px dashed rgba(139,91,255,.5);
+  }
+  .prot-btn:hover{color:var(--purple);border-color:var(--purple);}
+  .prot-btn.on{background:rgba(139,91,255,.25);color:#d8c8ff;border:1px solid var(--purple);box-shadow:0 0 8px rgba(139,91,255,.5);}
+  .silhouette-legend{position:relative;z-index:3;display:flex;justify-content:center;gap:10px;margin-top:8px;font-size:.52rem;letter-spacing:.1em;color:var(--dim);flex-wrap:wrap;}
+  .silhouette-legend span{display:flex;align-items:center;gap:4px;}
+  .silhouette-legend i{width:7px;height:7px;border-radius:50%;display:inline-block;}
+
+  .vida-list-title{
+    font-family:var(--hud);font-weight:700;letter-spacing:.16em;font-size:.66rem;
+    color:var(--yellow);border-bottom:1px dashed var(--line);padding-bottom:8px;margin-bottom:9px;
+  }
+  .vida-list-title span{color:var(--dim);font-weight:400;letter-spacing:.06em;text-transform:none;font-family:var(--mono);font-size:.6rem;}
+  .vida-part-list{display:flex;flex-direction:column;gap:9px;}
+  .part-box{
+    position:relative;border:1px solid var(--line);background:rgba(0,0,0,.25);
+    padding:10px 14px 10px 15px;clip-path:var(--chamfer-sm);
+    border-left:4px solid var(--part-c,var(--cyan));
+    transition:box-shadow .2s ease,border-color .2s ease;
+  }
+  .part-box.is-hover{box-shadow:0 0 16px var(--part-glow,rgba(34,230,210,.4));}
+  .part-box-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:7px;}
+  .part-label{font-family:var(--hud);font-weight:700;letter-spacing:.12em;font-size:.7rem;color:var(--txt);display:flex;align-items:center;gap:8px;}
+  .part-label .dot{width:9px;height:9px;border-radius:50%;background:var(--part-c,var(--cyan));box-shadow:0 0 8px var(--part-glow,rgba(34,230,210,.6));flex:0 0 auto;}
+  .part-hp{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--dim);margin-bottom:7px;}
+  .part-hp input{
+    width:48px;background:#08040b;border:1px solid var(--line);color:var(--txt);
+    padding:5px 4px;text-align:center;font-family:inherit;font-size:.8rem;outline:none;
+  }
+  .part-hp input.hp-atual{color:var(--part-c,var(--cyan));border-color:var(--part-c,var(--cyan));}
+  .hp-bar{height:8px;background:#08040b;border:1px solid var(--line);overflow:hidden;margin-bottom:9px;}
+  .hp-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--part-c,var(--cyan)),#fff);transition:width .2s,background .2s;}
+  .part-def{border-top:1px dashed var(--line);padding-top:8px;}
+  .def-list{display:flex;flex-direction:column;gap:5px;margin-bottom:6px;}
+  .def-chip{display:flex;align-items:center;gap:5px;font-size:.62rem;color:var(--dim);}
+  .def-chip input[type="text"]{
+    flex:1;min-width:0;background:#08040b;border:1px solid var(--line);color:var(--txt);
+    padding:4px 5px;font-family:inherit;font-size:.62rem;outline:none;
+  }
+  .def-chip input[type="number"]{
+    width:38px;background:#08040b;border:1px solid var(--line);color:#4d6bff;
+    padding:4px 3px;text-align:center;font-family:inherit;font-size:.62rem;outline:none;
+  }
+  .def-chip .rm{background:none;border:1px solid rgba(255,90,90,.4);color:#ff5a5a;width:17px;height:17px;font-size:.55rem;cursor:pointer;line-height:1;}
+  .add-def{
+    width:100%;font-size:.6rem;letter-spacing:.1em;background:none;border:1px dashed rgba(77,107,255,.5);
+    color:#4d6bff;padding:5px;cursor:pointer;font-family:inherit;
+  }
+  .add-def:hover{background:rgba(77,107,255,.1);}
+  .def-total{font-size:.6rem;color:#4d6bff;text-align:center;margin-top:4px;letter-spacing:.08em;}
+
+  /* ---------- implantes ---------- */
+  .impl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line);}
+  .impl-row input[type="text"]{flex:2;min-width:120px;}
+  .impl-row input[type="number"]{flex:0 0 70px;}
+  .impl-row input{background:#08040b;border:1px solid var(--line);color:var(--txt);padding:7px 8px;font-family:inherit;font-size:.74rem;outline:none;}
+  .impl-row .rm{background:none;border:1px solid rgba(255,90,90,.4);color:#ff5a5a;width:26px;height:26px;cursor:pointer;font-family:inherit;}
+  .impl-empty{color:var(--dim);font-size:.7rem;padding:10px 0;letter-spacing:.06em;}
+
+  /* ---------- rolador de dados (estilo Google) ---------- */
+  .dice-stage{
+    min-height:150px;border:1px solid var(--line);background:rgba(0,0,0,.28);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:22px 16px;margin-bottom:18px;position:relative;gap:14px;clip-path:var(--chamfer-sm);
+  }
+  .dice-stage-empty{color:var(--dim);font-size:.68rem;letter-spacing:.14em;}
+  .dice-results{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+  .dice-total-row{align-self:flex-end;font-family:var(--hud);font-size:.8rem;letter-spacing:.14em;color:var(--dim);display:none;align-items:baseline;gap:8px;}
+  .dice-total-row b{font-size:1.9rem;color:var(--yellow);text-shadow:0 0 10px rgba(var(--p-rgb),.55);}
+
+  .dresult{
+    width:70px;height:70px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--hud);font-weight:700;font-size:1.5rem;color:#07040a;
+    animation:dicepop .45s ease;
+    cursor:pointer;transition:transform .12s ease,filter .12s ease;
+  }
+  .dresult:hover{transform:translateY(-3px) scale(1.05);filter:brightness(1.15) drop-shadow(0 0 6px rgba(255,255,255,.35));}
+  .dresult:active{transform:scale(.9);}
+  .dresult.dresult-out{animation:diceOut .22s ease forwards;pointer-events:none;}
+  @keyframes diceOut{
+    from{opacity:1;transform:scale(1) rotate(0deg);}
+    to{opacity:0;transform:scale(.35) rotate(35deg);}
+  }
+  .dresult.dresult-crit{
+    box-shadow:0 0 0 3px var(--yellow), 0 0 18px rgba(var(--p-rgb),.85);
+    animation:dicepop .45s ease, critBlink 1s ease-in-out infinite;
+    z-index:1;
+  }
+  .dresult.dresult-fail{
+    box-shadow:0 0 0 3px var(--red), 0 0 18px rgba(255,51,85,.85);
+    animation:dicepop .45s ease, critBlink 1s ease-in-out infinite;
+    z-index:1;
+  }
+  @keyframes critBlink{
+    0%,100%{filter:brightness(1);}
+    50%{filter:brightness(1.5);}
+  }
+  .dice-picker{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;justify-content:center;}
+  .dpicker-btn{
+    position:relative;width:54px;height:54px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--hud);font-weight:700;font-size:.78rem;color:#07040a;cursor:pointer;border:none;
+    transition:transform .12s ease,filter .15s ease;user-select:none;
+  }
+  .dpicker-btn:hover{transform:translateY(-3px);filter:brightness(1.15);}
+  .dpicker-btn:active{transform:scale(.94);}
+  .dpicker-btn .badge{
+    position:absolute;top:-7px;right:-7px;background:var(--txt);color:#060308;
+    border-radius:50%;min-width:18px;height:18px;padding:0 3px;font-size:.6rem;
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;
+    border:1px solid #060308;
+  }
+  /* formatos e cores por tipo — igual ao rolador do Google */
+  .dshape-4{clip-path:polygon(50% 4%,4% 96%,96% 96%);background:var(--green);}
+  .dshape-6{clip-path:polygon(14% 0,86% 0,100% 14%,100% 86%,86% 100%,14% 100%,0 86%,0 14%);background:var(--cyan);}
+  .dshape-8{clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);background:var(--purple);}
+  .dshape-10{clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%);background:#ff2ea6;}
+  .dshape-12{clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);background:#ff5a5a;}
+  .dshape-20{clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%);background:var(--amber);}
+  .dshape-100{clip-path:circle(50%);background:#e3dbe6;}
+
+  .dice-actions{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+  .roll-dice-btn{
+    font-family:var(--hud);font-weight:700;letter-spacing:.2em;font-size:.85rem;
+    background:var(--purple);color:#0d0716;border:none;cursor:pointer;
+    padding:13px 30px;clip-path:var(--chamfer);box-shadow:0 0 18px rgba(139,91,255,.35);
+    transition:transform .12s ease;
+  }
+  .roll-dice-btn:hover{transform:translateY(-2px);}
+  .roll-dice-btn:active{transform:scale(.97);}
+  .btn-clear-dice{
+    font-family:var(--hud);font-weight:700;letter-spacing:.16em;font-size:.7rem;
+    background:none;color:var(--dim);border:1px solid var(--line);cursor:pointer;
+    padding:12px 18px;clip-path:var(--chamfer-sm);transition:.15s;
+  }
+  .btn-clear-dice:hover{color:var(--txt);border-color:var(--txt);}
+  .mod-toggle-btn{
+    width:38px;height:38px;border-radius:50%;border:1px solid var(--purple);background:rgba(139,91,255,.08);
+    color:var(--purple);font-size:1rem;font-weight:700;cursor:pointer;font-family:var(--hud);
+  }
+  .mod-toggle-btn:hover{background:var(--purple);color:#0d0716;}
+  .mod-field{display:flex;align-items:center;gap:6px;font-size:.6rem;letter-spacing:.14em;color:var(--dim);}
+  .mod-field input{
+    width:60px;background:#08040b;border:1px solid var(--line);color:var(--txt);
+    padding:7px 8px;font-family:inherit;font-size:.8rem;outline:none;
+  }
+  .dice-hint{text-align:center;font-size:.56rem;letter-spacing:.1em;color:var(--dim);margin-bottom:6px;}
+  .dice-history{margin-top:12px;font-size:.68rem;color:var(--dim);letter-spacing:.04em;line-height:1.9;}
+  .dice-history div{border-bottom:1px dashed var(--line);padding:3px 0;}
+
+  @media(max-width:700px){
+    .body-map{grid-template-columns:1fr;}
+    .silhouette-box{max-width:440px;margin:0 auto;}
+  }
+  @media(max-width:560px){
+    .dresult{width:58px;height:58px;font-size:1.2rem;}
+    .dpicker-btn{width:46px;height:46px;font-size:.68rem;}
+  }
+
+  /* ---------- CALCULADORA (mesmo estilo do carrinho da loja) ---------- */
+  .calc-mini{color:var(--amber);font-size:.7rem;letter-spacing:.1em;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .calc-screen{background:#08040b;border:1px solid var(--line);padding:12px 14px;margin-bottom:12px;text-align:right;clip-path:var(--chamfer-sm);}
+  .calc-expr{min-height:1.1em;font-size:.66rem;letter-spacing:.14em;color:var(--dim);word-break:break-all;}
+  .calc-disp{font-family:var(--hud);font-weight:700;font-size:2rem;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .calc-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:20px;}
+  .calc-keys button{font-family:var(--hud);font-weight:700;font-size:1.05rem;padding:14px 0;cursor:pointer;background:#08040b;color:var(--txt);border:1px solid var(--line);transition:.12s;}
+  .calc-keys button:hover{border-color:var(--red);}
+  .calc-keys button:active{transform:scale(.94);}
+  .calc-keys .op{color:var(--red);} .calc-keys .fn{color:var(--cyan);}
+  .calc-keys .wide{grid-column:span 2;}
+  .calc-keys .eq{background:var(--red);color:#060308;border-color:var(--red);}
+  .pc-in{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .pc-in input{font-size:.95rem !important;padding:8px !important;}
+  .pc-in span{display:block;font-size:.54rem;letter-spacing:.2em;color:var(--dim);margin-bottom:4px;}
+  .pc-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:.68rem;color:#8f7b9c;letter-spacing:.06em;}
+  .pc-row b{color:var(--amber);font-family:var(--hud);font-size:.85rem;margin-left:auto;}
+  .pc-row button{background:none;border:1px solid var(--red);color:var(--red);font-family:var(--hud);font-size:.55rem;letter-spacing:.14em;padding:4px 7px;cursor:pointer;}
+  .pc-row button:hover{background:var(--red);color:#060308;}
+
+  /* ---------- retrato / descrição / estados ---------- */
+  .ex-grid{display:grid;grid-template-columns:230px 1fr;gap:22px;align-items:start;}
+  .ex-right{display:flex;flex-direction:column;gap:14px;min-width:0;}
+  .id-field textarea{background:#08040b;border:1px solid var(--line);color:var(--txt);padding:10px 12px;font-family:inherit;font-size:.85rem;outline:none;resize:vertical;min-height:110px;line-height:1.6;}
+  .id-field textarea:focus{border-color:var(--cyan);}
+  .ex-lab{font-size:.6rem;letter-spacing:.24em;color:var(--dim);margin-bottom:6px;}
+  .est-grid{display:flex;flex-wrap:wrap;gap:7px;}
+  .est-btn{background:transparent;border:1px solid var(--line);color:var(--dim);padding:6px 10px;font-family:inherit;font-size:.66rem;letter-spacing:.1em;cursor:pointer;opacity:.75;}
+  .est-btn:hover{opacity:1;border-color:var(--ec);}
+  .est-btn.on{opacity:1;color:var(--ec);border-color:var(--ec);background:rgba(255,255,255,.06);box-shadow:0 0 10px -2px var(--ec);}
+  .est-warn{font-size:.62rem;color:#ff9a3d;letter-spacing:.06em;}
+  .party-btn{align-self:flex-start;}
+  @media(max-width:640px){.ex-grid{grid-template-columns:1fr;}.ex-left{max-width:260px;}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // BASE_DE_COMANDO &gt; TERMINAL_DE_OPERATIVO_v1 // ACESSO RESTRITO</div>
+  <h1><span class="mk mk-cyan">FICHA</span></h1>
+  <p>// TERMINAL DE OPERATIVO — <span class="mk-line">SETOR 7</span> //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 TODO OPERATIVO PRECISA DE UM DOSSIÊ // 🎲 ROLE SEUS DADOS AQUI MESMO // ⚡ DISTRIBUA SUA VIDA COM SABEDORIA — UM MEMBRO PERDIDO NÃO VOLTA // 📢 SALVE VÁRIAS FICHAS, A CIDADE É CRUEL COM OPERATIVOS SEM BACKUP //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="base_de_comando.html">🏚️ BASE</a>
+  <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+  <a href="venda.html">🎲 VENDA</a>
+  <a href="missoes.html">🎯 MISSÕES</a>
+  <a href="regras_do_setor_7.html">📜 REGRAS</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+
+  <a class="back-base" href="base_de_comando.html">◂ VOLTAR PARA A BASE DE COMANDO <small>// BASE &gt; FICHA</small></a>
+
+  <div class="section-title">📋 OPERATIVOS SALVOS<small>escolha, crie ou apague uma ficha — tudo fica salvo neste navegador</small></div>
+  <div class="panel">
+    <div class="char-bar" id="charBar"></div>
+    <button class="btn-new" id="newCharBtn">+ NOVO OPERATIVO</button>
+    <button class="btn-new" id="pasteCodeBtn" type="button" style="margin-left:8px">📥 COLAR CÓDIGO</button>
+    <button class="btn-new" id="copyCodeBtn" type="button" style="margin-left:8px">📤 COPIAR CÓDIGO DA FICHA</button>
+  </div>
+
+  <div class="empty-state" id="emptyState">// NENHUMA FICHA ENCONTRADA — CRIE UM NOVO OPERATIVO ACIMA //</div>
+
+  <div id="sheet">
+
+    <div class="section-title">🪪 IDENTIFICAÇÃO</div>
+    <div class="panel">
+      <div class="id-row">
+        <div class="id-field"><label>NOME DO OPERATIVO</label><input type="text" id="fNome" placeholder="Cross Suborn"></div>
+        <div class="id-field small"><label>SORTE / SESSÃO</label><input type="number" id="fSorteSessao" min="0" max="10"></div>
+      </div>
+      <div class="status-grid">
+        <div class="stat-box"><div class="sb-label">❤ VIDA</div><div class="vida-ed"><input type="number" id="fVidaAtual" min="0" title="Vida atual (total)"><span>/</span><input type="number" id="fVidaMax" min="1" title="Vida máxima (total)"></div><div class="sb-tier">atual / máxima — reparte pelas partes do corpo</div></div>
+        <div class="stat-box comida"><div class="sb-label">🍜 COMIDA/DESCANSO</div><input type="number" id="fComida" min="0" max="100"><span style="color:var(--dim);font-size:.7rem;">/ 100</span></div>
+        <div class="stat-box creditos"><div class="sb-label">💳 CRÉDITOS</div><input type="number" id="fCreditos" min="0"></div>
+        <div class="stat-box sobrecarga"><div class="sb-label">⚠ SOBRECARGA <small>(IMPLANTES)</small></div><div class="vida-ed"><input type="number" id="fSobreTotal" min="0" max="999" title="Sobrecarga total (%)"><span>%</span></div><div class="sb-tier" id="sSobreDet"></div><div class="sb-tier" id="sTier">normal</div></div>
+      </div>
+    </div>
+
+    <div class="section-title">🧬 CLASSE<small>escolha a especialidade do operativo — vai junto no código da ficha e define a afinidade com os implantes da loja</small></div>
+    <div class="panel">
+      <div class="cls-grid" id="clsGrid"></div>
+      <div class="cls-desc vazio" id="clsDesc"></div>
+    </div>
+
+    <div class="section-title">🖼️ RETRATO, DESCRIÇÃO & ESTADOS<small>aparecem na PARTY da Base de Comando — envie a imagem, arraste e use a escala para enquadrar</small></div>
+    <div class="panel">
+      <div class="ex-grid">
+        <div class="ex-left" id="ptBox"></div>
+        <div class="ex-right">
+          <div class="id-field"><label>TÍTULO / FOBIA (aparece embaixo do nome na party)</label><input type="text" id="fTitulo" placeholder="Ex.: Ciberfobia"></div>
+          <div class="id-field"><label>DESCRIÇÃO</label><textarea id="fDesc" placeholder="Aparência, história, personalidade, anotações..."></textarea></div>
+          <div>
+            <div class="ex-lab">ESTADOS (clique para ligar/desligar)</div>
+            <div class="est-grid" id="estGrid"></div>
+            <div class="est-warn" id="estWarn"></div>
+          </div>
+          <button class="btn-new party-btn" id="partyBtn" type="button"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">🎲 ATRIBUTOS<small>base D20 + modificador + dados extras de implante</small></div>
+    <div class="panel">
+      <div class="attr-grid" id="attrGrid"></div>
+    </div>
+
+    <div class="section-title">🫀 DISTRIBUIÇÃO DE VIDA<small>a vida total é repartida entre as partes do corpo — edite à vontade e adicione camadas de defesa</small></div>
+    <div class="panel">
+      <div class="vida-top">
+        <div class="id-field"><label>VIDA TOTAL</label><input type="number" id="fVidaTotal" min="1"></div>
+        <button class="btn-redist" id="redistBtn">⟳ REDISTRIBUIR</button>
+        <div class="vida-hint" id="vidaHint">// CABEÇA 15% · TORSO 30% · BRAÇOS 12,5% CADA · PERNAS 15% CADA — AS CAIXINHAS DO SCAN SÃO SÓ REPRESENTANTES (TUBO = VIDA DA PARTE) — PRA EDITAR USE O PAINEL DISTRIBUIR VIDA //</div>
+      </div>
+      <div class="vida-cfg" id="vidaCfg">
+        <div class="vc-head"><span>ESTRUTURA CORPORAL</span><i class="vc-slash"></i></div>
+        <div class="vc-opts">
+          <button type="button" class="vc-opt" data-vc="bracos"><b></b><span>UNIR BRAÇOS</span><small>esquerdo + direito = mesma vida</small></button>
+          <button type="button" class="vc-opt" data-vc="pernas"><b></b><span>UNIR PERNAS</span><small>esquerda + direita = mesma vida</small></button>
+          <button type="button" class="vc-opt" data-vc="cabtorso"><b></b><span>UNIR CABEÇA + TRONCO</span><small>uma vida só para os dois</small></button>
+          <button type="button" class="vc-opt" data-vc="unico"><b></b><span>VIDA ÚNICA</span><small>sem partes — só 100/100</small></button>
+        </div>
+        <div class="vc-info" id="vcInfo"></div>
+      </div>
+      <div class="scan-frame">
+        <span class="corner cn-tl"></span><span class="corner cn-tr"></span><span class="corner cn-bl"></span><span class="corner cn-br"></span>
+        <div class="body-map">
+          <div class="silhouette-box">
+            <div class="silhouette-tag">SCAN <b>ATIVO</b></div>
+            <svg id="bodySvg" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(90 0)">
+              <path class="limb" data-part="pernaE" d="M84 226 C76 232 71 250 70 272 C69 310 73 346 75 376 C76 398 75 416 73 430 C71 442 76 450 86 450 C95 450 99 443 98 432 C97 414 98 398 100 376 C103 344 106 306 107 272 C107 254 106 238 106 226 Z"/>
+              <path class="limb" data-part="pernaD" d="M84 226 C76 232 71 250 70 272 C69 310 73 346 75 376 C76 398 75 416 73 430 C71 442 76 450 86 450 C95 450 99 443 98 432 C97 414 98 398 100 376 C103 344 106 306 107 272 C107 254 106 238 106 226 Z" transform="translate(220,0) scale(-1,1)"/>
+              <path class="limb" data-part="bracoE" d="M62 100 C50 102 42 112 40 126 C36 154 32 182 27 208 C25 218 26 228 32 233 C38 237 46 233 48 225 C52 202 57 176 61 152 C64 134 66 114 66 102 Z"/>
+              <path class="limb" data-part="bracoD" d="M62 100 C50 102 42 112 40 126 C36 154 32 182 27 208 C25 218 26 228 32 233 C38 237 46 233 48 225 C52 202 57 176 61 152 C64 134 66 114 66 102 Z" transform="translate(220,0) scale(-1,1)"/>
+              <path class="limb" data-part="torso" d="M98 84 C84 86 70 90 66 104 C63 130 69 158 76 182 C79 197 81 210 84 226 C96 230 124 230 136 226 C139 210 141 197 144 182 C151 158 157 130 154 104 C150 90 136 86 122 84 Z"/>
+              <path class="limb" data-part="torso" d="M100 66 L120 66 L122 88 C116 92 104 92 98 88 Z"/>
+              <path class="limb" data-part="cabeca" d="M110 10 C127 10 136 24 135 42 C134 56 127 66 119 72 C115 75 105 75 101 72 C93 66 86 56 85 42 C84 24 93 10 110 10 Z"/>
+              <!-- detalhes anatômicos (só decoração) -->
+              <g class="detail">
+                <path d="M110 92 L110 224"/>
+                <path d="M82 118 C96 128 124 128 138 118"/>
+                <path d="M86 150 C98 158 122 158 134 150"/>
+                <path d="M92 190 C102 196 118 196 128 190"/>
+                <path d="M96 40 C102 44 118 44 124 40"/>
+              </g>
+              <!-- segmentos de prótese (aparecem quando a parte tem prótese) -->
+              <g class="seg" data-seg="pernaE"><path d="M71 322 L104 322 M74 398 L100 398"/><circle class="node" cx="88" cy="322" r="2.6"/><circle class="node" cx="86" cy="398" r="2.2"/></g>
+              <g class="seg" data-seg="pernaD" transform="translate(220,0) scale(-1,1)"><path d="M71 322 L104 322 M74 398 L100 398"/><circle class="node" cx="88" cy="322" r="2.6"/><circle class="node" cx="86" cy="398" r="2.2"/></g>
+              <g class="seg" data-seg="bracoE"><path d="M38 132 L64 140 M31 190 L52 196"/><circle class="node" cx="41" cy="160" r="2.4"/><circle class="node" cx="34" cy="212" r="2"/></g>
+              <g class="seg" data-seg="bracoD" transform="translate(220,0) scale(-1,1)"><path d="M38 132 L64 140 M31 190 L52 196"/><circle class="node" cx="41" cy="160" r="2.4"/><circle class="node" cx="34" cy="212" r="2"/></g>
+              <g class="seg" data-seg="torso"><path d="M82 112 L138 112 M86 170 L134 170 M110 92 L110 222"/><circle class="node" cx="110" cy="141" r="3.4"/><circle class="node" cx="110" cy="196" r="2.6"/></g>
+              <g class="seg" data-seg="cabeca"><path d="M90 36 L130 36 M96 56 L124 56"/><circle class="node" cx="118" cy="36" r="2.6"/></g>
+              </g>
+              <!-- representantes de vida (preenchido pelo JS) -->
+              <g id="vidaEdge"></g>
+            </svg>
+            <div class="silhouette-legend">
+              <span><i style="background:#22e6d2"></i>saudável</span>
+              <span><i style="background:#e8f500"></i>ferido</span>
+              <span><i style="background:#ff3355"></i>crítico</span>
+              <span><i style="background:#8b5bff"></i>prótese</span>
+              <span><i style="background:#8b5bff;box-shadow:0 0 6px #8b5bff"></i>sobrecarga</span>
+            </div>
+          </div>
+          <div class="vida-edit">
+            <div class="vida-list-title">✎ DISTRIBUIR VIDA <span>— aqui você mexe de verdade; as caixinhas do scan só representam</span></div>
+            <div class="vida-part-list" id="bodyMap"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">🦾 IMPLANTES</div>
+    <div class="panel">
+      <div class="impl-list" id="implList"></div>
+      <button class="btn-new" id="addImplBtn" style="margin-top:10px;">+ IMPLANTE</button>
+    </div>
+
+  </div>
+
+  <div class="section-title">🎲 ROLADOR DE DADOS<small>clique num dado pra jogar ele na hora — clique em ROLAR pra jogar tudo de novo</small></div>
+  <div class="panel">
+    <div class="dice-stage" id="diceStage">
+      <div class="dice-stage-empty" id="diceEmpty">// CLIQUE EM UM DADO PRA ROLAR //</div>
+      <div class="dice-results" id="diceResults"></div>
+      <div class="dice-total-row" id="diceTotalRow">Total <b id="diceTotalVal">0</b></div>
+    </div>
+    <div class="dice-picker" id="diceTypes"></div>
+    <div class="dice-actions">
+      <button class="roll-dice-btn" id="rollDiceBtn">ROLAR DE NOVO</button>
+      <button class="btn-clear-dice" id="clearDiceBtn">LIMPAR</button>
+      <button class="mod-toggle-btn" id="modToggleBtn" type="button" title="Modificador">±</button>
+      <div class="mod-field" id="modField" style="display:none;"><label>MOD</label><input type="number" id="diceMod" value="0"></div>
+    </div>
+    <div class="dice-hint">// D4 VERDE · D6 CIANO · D8 ROXO · D10 ROSA · D12 VERMELHO · D20 ÂMBAR · D100 BRANCO — BOTÃO DIREITO NUM DADO PRA TIRAR //</div>
+    <div class="dice-history" id="diceHistory"></div>
+  </div>
+
+</main>
+
+<div class="cart-float" id="calcFloat" onclick="toggleCalc()" role="button" tabindex="0" aria-label="Abrir calculadora">
+  <div>🧮 CALCULADORA</div>
+  <div class="calc-mini" id="calcMini">= 0</div>
+</div>
+<div class="cart-panel" id="calcPanel">
+  <button class="close-cart" onclick="toggleCalc()" aria-label="Fechar">✕</button>
+  <h2>CALCULADORA</h2>
+  <p class="proto">CALC_PROTOCOL // MODULO-7</p>
+
+  <div class="calc-screen"><div class="calc-expr" id="cExpr"></div><div class="calc-disp" id="cDisp">0</div></div>
+  <div class="calc-keys" id="cKeys">
+    <button class="fn wide" data-k="(">(</button><button class="fn wide" data-k=")">)</button>
+    <button class="fn" data-k="ac">AC</button><button class="fn" data-k="bk">⌫</button><button class="fn" data-k="pct">%</button><button class="op" data-k="/">÷</button>
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button class="op" data-k="*">×</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button class="op" data-k="-">−</button>
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button class="op" data-k="+">+</button>
+    <button class="fn" data-k="neg">±</button><button data-k="0">0</button><button data-k=".">,</button><button class="eq" data-k="=">=</button>
+  </div>
+
+  <div class="wallet">
+    <label>// PORCENTAGEM RÁPIDA //</label>
+    <div class="pc-in">
+      <div><span>NÚMERO</span><input id="pcN" type="text" inputmode="decimal" placeholder="200" autocomplete="off"></div>
+      <div><span>PORCENTAGEM %</span><input id="pcP" type="text" inputmode="decimal" placeholder="15" autocomplete="off"></div>
+    </div>
+    <div class="pc-row"><span>% DO NÚMERO</span><b id="pcR1">—</b><button type="button" data-use="1">USAR</button></div>
+    <div class="pc-row"><span>NÚMERO + %</span><b id="pcR2">—</b><button type="button" data-use="2">USAR</button></div>
+    <div class="pc-row"><span>NÚMERO − %</span><b id="pcR3">—</b><button type="button" data-use="3">USAR</button></div>
+  </div>
+</div>
+
+<footer>
+  TERMINAL DE OPERATIVO © 2088 — <span>SEUS DADOS FICAM SALVOS NESTE NAVEGADOR. FAÇA BACKUP SE TROCAR DE MÁQUINA.</span>
+</footer>
+
+<script>
+/* ============ DADOS BASE ============ */
+var PARTS = [
+  ['cabeca','CABEÇA',15,'CB'],
+  ['torso','TORSO',30,'TR'],
+  ['bracoE','BRAÇO E',12.5,'BE'],
+  ['bracoD','BRAÇO D',12.5,'BD'],
+  ['pernaE','PERNA E',15,'PE'],
+  ['pernaD','PERNA D',15,'PD']
+];
+/* ---- estrutura corporal: quais partes existem de verdade (f.vidaCfg) ---- */
+var KIDS = {
+  cabtorso:['cabeca','torso'], bracos:['bracoE','bracoD'], pernas:['pernaE','pernaD'],
+  corpo:['cabeca','torso','bracoE','bracoD','pernaE','pernaD']
+};
+function kidsOf(key){ return KIDS[key] || [key]; }
+function vcfg(f){
+  var c = f.vidaCfg;
+  if(!c || typeof c!=='object') c = f.vidaCfg = {};
+  ['bracos','pernas','cabtorso','unico'].forEach(function(k){ c[k] = !!c[k]; });
+  return c;
+}
+function getParts(f){
+  var c = vcfg(f);
+  if(c.unico) return [['corpo','CORPO',100,'CP']];
+  var out = [];
+  if(c.cabtorso) out.push(['cabtorso','CABEÇA + TRONCO',45,'CT']); else out.push(PARTS[0],PARTS[1]);
+  if(c.bracos)   out.push(['bracos','BRAÇOS',25,'BR']);            else out.push(PARTS[2],PARTS[3]);
+  if(c.pernas)   out.push(['pernas','PERNAS',30,'PN']);            else out.push(PARTS[4],PARTS[5]);
+  return out;
+}
+function groupOf(f, base){
+  var ps = getParts(f);
+  for(var i=0;i<ps.length;i++) if(kidsOf(ps[i][0]).indexOf(base)>=0) return ps[i][0];
+  return base;
+}
+function ensureVida(f){
+  if(!f.partes || typeof f.partes!=='object') f.partes = {};
+  getParts(f).forEach(function(p){
+    var pt = f.partes[p[0]];
+    if(!pt){ pt = f.partes[p[0]] = {max:0,atual:0,def:[]}; }
+    if(!Array.isArray(pt.def)) pt.def = [];
+  });
+}
+/* troca a estrutura preservando a vida total: une somando, divide proporcional aos % padrão */
+function aplicarVidaCfg(f, nc){
+  ensureVida(f);
+  var oldParts = getParts(f), old = f.partes, total0 = 0;
+  oldParts.forEach(function(p){ total0 += Number(old[p[0]].max)||0; });
+  f.vidaCfg = nc;
+  var np = getParts(f), novo = {}, oldKeys = oldParts.map(function(p){ return p[0]; });
+  function w(b){ return PARTS.filter(function(p){ return p[0]===b; })[0][2]; }
+  function oldOf(b){ return oldParts.filter(function(p){ return kidsOf(p[0]).indexOf(b)>=0; })[0][0]; }
+  var changed = [];
+  np.forEach(function(p){
+    var k = p[0];
+    if(oldKeys.indexOf(k)>=0){ novo[k] = old[k]; return; }
+    var mx=0, at=0, pr=false;
+    kidsOf(k).forEach(function(b){
+      var ok = oldOf(b), op = old[ok], sum = 0;
+      kidsOf(ok).forEach(function(c){ sum += w(c); });
+      var sh = w(b)/sum;
+      mx += (Number(op.max)||0)*sh; at += (Number(op.atual)||0)*sh;
+      if(op.protese) pr = true;
+    });
+    novo[k] = {max:Math.round(mx), atual:Math.round(at), def:[], protese:pr};
+    changed.push(k);
+  });
+  /* defesas das partes que sumiram vão para a primeira parte nova que cobre o mesmo lugar */
+  oldKeys.forEach(function(ok){
+    if(novo[ok] && np.some(function(p){ return p[0]===ok; })) return;
+    var kids = kidsOf(ok);
+    for(var i=0;i<np.length;i++){
+      if(kidsOf(np[i][0]).some(function(b){ return kids.indexOf(b)>=0; })){
+        novo[np[i][0]].def = (novo[np[i][0]].def||[]).concat(old[ok].def||[]); break;
+      }
+    }
+  });
+  /* arredondamento: fecha a soma no total antigo */
+  if(changed.length){
+    var soma = 0; np.forEach(function(p){ soma += novo[p[0]].max; });
+    var diff = total0 - soma, t = novo[changed[changed.length-1]];
+    if(diff){ var cheio = t.atual===t.max; t.max = Math.max(0,t.max+diff); if(cheio) t.atual = t.max; }
+    changed.forEach(function(k){ novo[k].atual = Math.max(0, Math.min(novo[k].atual, novo[k].max)); });
+  }
+  f.partes = novo;
+}
+var ATTRS = [
+  ['vel','⚡ VELOCIDADE'],
+  ['forca','💪 FORÇA'],
+  ['sorte','🎲 SORTE'],
+  ['int','🧠 INTELIGÊNCIA']
+];
+var DICE_DEFS = [
+  {n:4,  cls:'dshape-4'},
+  {n:6,  cls:'dshape-6'},
+  {n:8,  cls:'dshape-8'},
+  {n:10, cls:'dshape-10'},
+  {n:12, cls:'dshape-12'},
+  {n:20, cls:'dshape-20'},
+  {n:100,cls:'dshape-100'}
+];
+var diceHand = {};
+DICE_DEFS.forEach(function(d){ diceHand[d.n] = 0; });
+var diceHistoryLog = [];
+
+var fichas = [];
+var currentId = null;
+try{ fichas = JSON.parse(localStorage.getItem('s7_fichas')||'[]'); }catch(e){ fichas=[]; }
+currentId = localStorage.getItem('s7_currentFicha') || (fichas[0] ? fichas[0].id : null);
+/* migração: o antigo campo manual "Sobrecarga" era a SANIDADE (foi renomeado por engano) */
+if(fichas.length){
+  fichas.forEach(function(x){
+    delete x.Sobrecarga;
+  });
+  try{ localStorage.setItem('s7_fichas', JSON.stringify(fichas)); }catch(e){}
+}
+
+/* ============ HELPERS ============ */
+function esc(s){
+  return (s===undefined||s===null?'':String(s)).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function uid(){ return 'f_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function saveFichas(){ localStorage.setItem('s7_fichas', JSON.stringify(fichas)); }
+function getCurrent(){ return fichas.find(function(f){ return f.id===currentId; }); }
+
+function distribuir(total, parts){
+  parts = parts || PARTS;
+  total = Math.max(1, Math.round(total));
+  var obj = {}; var soma = 0;
+  parts.forEach(function(p, i){
+    var key = p[0], pct = p[2], val;
+    if(i === parts.length-1){ val = total - soma; }
+    else { val = Math.round(total*pct/100); soma += val; }
+    obj[key] = { max: val, atual: val, def: [] };
+  });
+  return obj;
+}
+
+function rollDie(sides){ return 1 + Math.floor(Math.random()*sides); }
+
+/* ============ SOM DO DADO (sintetizado, sem arquivo externo) ============ */
+var _actx = null;
+function getAudioCtx(){
+  if(!_actx){
+    try{ _actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ _actx = null; }
+  }
+  return _actx;
+}
+function playDiceSound(){
+  var ctx = getAudioCtx();
+  if(!ctx) return;
+  if(ctx.state === 'suspended'){ ctx.resume(); }
+  var now = ctx.currentTime;
+  var knocks = 4 + Math.floor(Math.random()*3); // 4 a 6 "batidas" de dado caindo
+  for(var i=0;i<knocks;i++){
+    var t = now + i*0.05 + Math.random()*0.02;
+    var dur = 0.05;
+    var bufferSize = Math.max(1, Math.floor(ctx.sampleRate*dur));
+    var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for(var j=0;j<bufferSize;j++){
+      data[j] = (Math.random()*2-1) * Math.pow(1 - j/bufferSize, 2);
+    }
+    var noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    var bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 900 + Math.random()*2200;
+    bp.Q.value = 1.1;
+    var gain = ctx.createGain();
+    var vol = 0.22 - i*0.025;
+    gain.gain.setValueAtTime(Math.max(vol,0.02), t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t+dur);
+    noise.connect(bp); bp.connect(gain); gain.connect(ctx.destination);
+    noise.start(t);
+    noise.stop(t+dur);
+  }
+}
+
+/* som seco e curto ao remover um único dado — diferente do som de rolagem cheia */
+function playDiceRemoveSound(){
+  var ctx = getAudioCtx();
+  if(!ctx) return;
+  if(ctx.state === 'suspended'){ ctx.resume(); }
+  var now = ctx.currentTime;
+  var dur = 0.03;
+  var bufferSize = Math.max(1, Math.floor(ctx.sampleRate*dur));
+  var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  var data = buffer.getChannelData(0);
+  for(var j=0;j<bufferSize;j++){
+    data[j] = (Math.random()*2-1) * Math.pow(1 - j/bufferSize, 3);
+  }
+  var noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  var hp = ctx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 2600;
+  var gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.16, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now+dur);
+  noise.connect(hp); hp.connect(gain); gain.connect(ctx.destination);
+  noise.start(now);
+  noise.stop(now+dur);
+}
+
+function rollExpr(str){
+  if(!str || !str.trim()) return { total: 0, detail: '' };
+  var tokens = str.split('+').map(function(s){ return s.trim(); }).filter(Boolean);
+  var total = 0, details = [];
+  tokens.forEach(function(tok){
+    var m = tok.match(/^(\d*)d(\d+)$/i);
+    if(m){
+      var n = parseInt(m[1]||'1',10), d = parseInt(m[2],10);
+      var vals = [], sum = 0;
+      for(var i=0;i<n;i++){ var v = rollDie(d); vals.push(v); sum += v; }
+      total += sum;
+      details.push(n+'d'+d+'('+vals.join(',')+')');
+    } else {
+      var num = parseInt(tok,10);
+      if(!isNaN(num)){ total += num; details.push((num>=0?'+':'')+num); }
+    }
+  });
+  return { total: total, detail: details.length ? '+ '+details.join(' + ') : '' };
+}
+
+function novaFichaObj(nome){
+  return {
+    id: uid(),
+    nome: nome || 'Novo Operativo',
+    atributos: { vel:10, forca:10, sorte:11, int:10 },
+    extra: { vel:'', forca:'1d6', sorte:'', int:'' },
+    vidaTotal: 100,
+    partes: distribuir(100),
+    comida: 100,
+    sorteSessao: 3,
+    creditos: 3000,
+    implantes: []
+  };
+}
+
+/* ============ RENDER: BARRA DE PERSONAGENS ============ */
+function renderCharBar(){
+  var wrap = document.getElementById('charBar');
+  wrap.innerHTML = '';
+  fichas.forEach(function(f){
+    var chip = document.createElement('div');
+    chip.className = 'char-chip' + (f.id===currentId ? ' active' : '');
+    chip.innerHTML = '<span class="cn">'+esc(f.nome||'SEM NOME')+'</span><button class="del" data-id="'+f.id+'" title="Apagar ficha">✕</button>';
+    chip.addEventListener('click', function(e){
+      if(e.target.classList.contains('del')) return;
+      currentId = f.id;
+      localStorage.setItem('s7_currentFicha', currentId);
+      renderAll();
+    });
+    chip.querySelector('.del').addEventListener('click', function(e){
+      e.stopPropagation();
+      if(!confirm('Apagar a ficha de "'+(f.nome||'SEM NOME')+'"? Não tem volta.')) return;
+      fichas = fichas.filter(function(x){ return x.id!==f.id; });
+      if(currentId===f.id){ currentId = fichas[0] ? fichas[0].id : null; }
+      saveFichas();
+      localStorage.setItem('s7_currentFicha', currentId||'');
+      renderAll();
+    });
+    wrap.appendChild(chip);
+  });
+}
+
+/* ============ RENDER: FICHA ATUAL ============ */
+function renderAll(){
+  renderCharBar();
+  var f = getCurrent();
+  var sheet = document.getElementById('sheet');
+  var empty = document.getElementById('emptyState');
+  if(!f){ sheet.classList.remove('on'); empty.style.display='block'; return; }
+  sheet.classList.add('on'); empty.style.display='none';
+
+  document.getElementById('fNome').value = f.nome || '';
+  document.getElementById('fSorteSessao').value = f.sorteSessao;
+  document.getElementById('fComida').value = f.comida;
+  document.getElementById('fCreditos').value = f.creditos;
+  document.getElementById('fVidaTotal').value = f.vidaTotal;
+
+  renderVidaResumo(f);
+  renderSobrecarga(f);
+  renderAtributos(f);
+  renderBodyMap(f);
+  renderImplantes(f);
+  renderExtras(f);
+}
+
+function renderVidaResumo(f){
+  var atual=0, max=0;
+  ensureVida(f);
+  getParts(f).forEach(function(p){ var pt=f.partes[p[0]]; atual+=Number(pt.atual)||0; max+=Number(pt.max)||0; });
+  setVal('fVidaAtual', atual); setVal('fVidaMax', max);
+}
+function setVal(id,v){ var el=document.getElementById(id); if(el && document.activeElement!==el) el.value = v; }
+
+function renderSobrecarga(f){
+  var base = 0;
+  f.implantes.forEach(function(im){ base += Number(im.pct)||0; });
+  var aj = Number(f.sobreAjuste)||0;
+  var soma = Math.max(0, Math.min(base + aj, 999));
+  setVal('fSobreTotal', soma);
+  document.getElementById('sSobreDet').textContent = 'implantes '+base+'%' + (aj ? ' '+(aj>0?'+':'−')+Math.abs(aj)+'% ajuste' : '');
+  var tier = document.getElementById('sTier');
+  var texto, cor;
+  if(soma>=100){ texto='⚫ CIBERPSICOSE'; cor='var(--red)'; }
+  else if(soma>=86){ texto='sistema instável — falha em 1-3'; cor='var(--red)'; }
+  else if(soma>=61){ texto='interferência — falha em 1-2'; cor='#ff9a3d'; }
+  else if(soma>=31){ texto='pequenas falhas — falha em 1-2'; cor='var(--yellow)'; }
+  else { texto='normal — falha só em 1'; cor='var(--cyan)'; }
+  tier.textContent = texto;
+  tier.style.color = cor;
+  /* boneco roxo quando sobrecarregado: 31%+ (1), 61%+ (2), 86%+ (3) */
+  var box = document.querySelector('.silhouette-box');
+  if(box){
+    box.classList.remove('ov1','ov2','ov3');
+    var lvl = soma>=86 ? 3 : soma>=61 ? 2 : soma>=31 ? 1 : 0;
+    if(lvl) box.classList.add('ov'+lvl);
+    var tg = box.querySelector('.silhouette-tag b');
+    if(tg) tg.textContent = lvl ? 'SOBRECARGA' : 'ATIVO';
+  }
+}
+
+/* ---------- atributos ---------- */
+function renderAtributos(f){
+  var grid = document.getElementById('attrGrid');
+  grid.innerHTML = '';
+  ATTRS.forEach(function(a){
+    var key = a[0], label = a[1];
+    var mod = (f.atributos[key]||10) - 10;
+    var box = document.createElement('div');
+    box.className = 'attr-box';
+    box.setAttribute('data-attr', key);
+    box.innerHTML =
+      '<div class="attr-name">'+label+'</div>'+
+      '<div class="attr-row">'+
+        '<div><label>BASE</label><input type="number" class="a-base" value="'+(f.atributos[key]||10)+'"></div>'+
+        '<div><label>DADOS EXTRA (ex: 1d6+1d4)</label><input type="text" class="a-extra" value="'+esc(f.extra[key]||'')+'"></div>'+
+      '</div>'+
+      '<div class="attr-mod">Modificador atual: <b>'+(mod>=0?'+':'')+mod+'</b></div>'+
+      '<button class="roll-attr-btn">🎲 ROLAR 1D20</button>'+
+      '<div class="attr-result"></div>';
+    grid.appendChild(box);
+  });
+}
+
+document.getElementById('attrGrid').addEventListener('input', function(e){
+  var f = getCurrent(); if(!f) return;
+  var box = e.target.closest('.attr-box'); if(!box) return;
+  var key = box.getAttribute('data-attr');
+  if(e.target.classList.contains('a-base')){
+    f.atributos[key] = parseInt(e.target.value,10) || 0;
+    var mod = f.atributos[key]-10;
+    box.querySelector('.attr-mod b').textContent = (mod>=0?'+':'')+mod;
+  } else if(e.target.classList.contains('a-extra')){
+    f.extra[key] = e.target.value;
+  }
+  saveFichas();
+});
+
+document.getElementById('attrGrid').addEventListener('click', function(e){
+  if(!e.target.classList.contains('roll-attr-btn')) return;
+  var f = getCurrent(); if(!f) return;
+  var box = e.target.closest('.attr-box');
+  var key = box.getAttribute('data-attr');
+  var base = f.atributos[key]||10, mod = base-10;
+  playDiceSound();
+  var d20 = rollDie(20);
+  var extra = rollExpr(f.extra[key]);
+  var total = d20 + mod + extra.total;
+  var parts = ['1d20('+d20+')'];
+  if(mod!==0) parts.push((mod>=0?'+':'')+mod);
+  if(extra.detail) parts.push(extra.detail);
+  var tag = '';
+  if(d20===20) tag = ' <span class="crit-ok">— SUCESSO CRÍTICO!</span>';
+  if(d20===1) tag = ' <span class="crit-fail">— FALHA CRÍTICA!</span>';
+  box.querySelector('.attr-result').innerHTML = parts.join(' ')+' = <b>'+total+'</b>'+tag;
+});
+
+/* ---------- mapa de vida ---------- */
+function hpTint(pct){
+  if(pct<=0)  return { c:'#ff3355', glow:'rgba(255,51,85,.65)', fill:'rgba(255,51,85,.22)' };
+  if(pct<30)  return { c:'#ff3355', glow:'rgba(255,51,85,.55)', fill:'rgba(255,51,85,.22)' };
+  if(pct<60)  return { c:'#e8f500', glow:'rgba(232,245,0,.5)',  fill:'rgba(232,245,0,.16)' };
+  return        { c:'#22e6d2', glow:'rgba(34,230,210,.55)', fill:'rgba(34,230,210,.16)' };
+}
+
+function tintSvgPart(key, pct, prot){
+  var t = hpTint(pct);
+  kidsOf(key).forEach(function(b){
+    document.querySelectorAll('#bodySvg .limb[data-part="'+b+'"]').forEach(function(el){
+      el.style.setProperty('--hp-stroke', t.c);
+      el.style.setProperty('--hp-glow', prot ? 'rgba(139,91,255,.7)' : t.glow);
+      el.style.setProperty('--hp-fill', t.fill);
+      el.classList.toggle('prot', !!prot);
+    });
+    document.querySelectorAll('#bodySvg .seg[data-seg="'+b+'"]').forEach(function(el){ el.classList.toggle('on', !!prot); });
+  });
+  document.querySelectorAll('#vidaEdge .rep[data-part="'+key+'"]').forEach(function(el){ el.classList.toggle('prot', !!prot); });
+}
+
+/* representantes de vida — só leitura: caixinha por parte, ligada ao corpo, com tubo de vida no lado que fecha */
+var REP_LAYOUT = {
+  torso:   [{side:'L', y:92,  ax:166, ico:'🫀'}],
+  bracoE:  [{side:'L', y:160, ax:125, ico:'💪'}],
+  pernaE:  [{side:'L', y:300, ax:159, ico:'🦵'}],
+  cabeca:  [{side:'R', y:42,  ax:225, ico:'🧠'}],
+  bracoD:  [{side:'R', y:160, ax:275, ico:'💪'}],
+  pernaD:  [{side:'R', y:300, ax:241, ico:'🦵'}],
+  /* estruturas unidas: a mesma vida aparece dos dois lados */
+  bracos:  [{side:'L', y:160, ax:125, ico:'💪'},{side:'R', y:160, ax:275, ico:'💪'}],
+  pernas:  [{side:'L', y:300, ax:159, ico:'🦵'},{side:'R', y:300, ax:241, ico:'🦵'}],
+  cabtorso:[{side:'L', y:92,  ax:166, ico:'🫀'},{side:'R', y:42,  ax:225, ico:'🧠'}],
+  corpo:   [{side:'R', y:150, ax:232, ico:'❤️'}]
+};
+var REP_NAME = {cabtorso:'CAB+TRONCO'};
+function renderVidaEdge(f){
+  var g = document.getElementById('vidaEdge');
+  if(!g) return;
+  var W=92, H=54, TH=42, html='';
+  getParts(f).forEach(function(p){
+    var key=p[0], slots=REP_LAYOUT[key]; if(!slots) return;
+    var pt = f.partes[key] || {max:0,atual:0};
+    var pct = pt.max ? Math.max(0, Math.min(100, (pt.atual/pt.max)*100)) : 0;
+    var tint = hpTint(pct), nome = REP_NAME[key] || p[1];
+    slots.forEach(function(L){
+      var left = L.side==='L';
+      var bx = left ? 4 : 304, by = L.y - H/2;
+      var ex = left ? bx+W : bx;
+      var tx = left ? bx+W-16 : bx+6;
+      var ix = left ? bx+6 : bx+22, nx = left ? bx+27 : bx+41;
+      var fh = Math.round(TH*pct/100);
+      html += '<g class="rep'+(pt.protese?' prot':'')+'" data-part="'+key+'" style="--rep-c:'+tint.c+';--rep-glow:'+tint.glow+'">'+
+        '<title>'+p[1]+' — '+pt.atual+'/'+pt.max+'</title>'+
+        '<path class="rep-line" d="M'+L.ax+' '+L.y+' H'+ex+'"/>'+
+        '<circle class="rep-dot" cx="'+L.ax+'" cy="'+L.y+'" r="2.4"/>'+
+        '<rect class="rep-box" x="'+bx+'" y="'+by+'" width="'+W+'" height="'+H+'"/>'+
+        '<rect class="rep-tube" x="'+tx+'" y="'+(by+6)+'" width="10" height="'+TH+'"/>'+
+        '<rect class="rep-fill" x="'+tx+'" y="'+(by+6+TH-fh)+'" width="10" height="'+fh+'"/>'+
+        '<text class="rep-ico" x="'+ix+'" y="'+(by+24)+'">'+L.ico+'</text>'+
+        '<text class="rep-name" x="'+nx+'" y="'+(by+21)+'">'+nome+'</text>'+
+        '<text class="rep-hp" x="'+nx+'" y="'+(by+41)+'">'+pt.atual+'/'+pt.max+'</text>'+
+      '</g>';
+    });
+  });
+  g.innerHTML = html;
+}
+
+function updateVidaEdgeSeg(key, pct, pt){
+  var tint = hpTint(pct);
+  document.querySelectorAll('#vidaEdge .rep[data-part="'+key+'"]').forEach(function(g){
+    g.style.setProperty('--rep-c', tint.c);
+    g.style.setProperty('--rep-glow', tint.glow);
+    var tube = g.querySelector('.rep-tube'), fill = g.querySelector('.rep-fill');
+    var y0 = +tube.getAttribute('y'), th = +tube.getAttribute('height');
+    var fh = Math.round(th*pct/100);
+    fill.setAttribute('y', y0+th-fh); fill.setAttribute('height', fh);
+    if(pt) g.querySelector('.rep-hp').textContent = pt.atual+'/'+pt.max;
+  });
+}
+
+/* painel ESTRUTURA CORPORAL */
+function renderVidaCfg(f){
+  var c = vcfg(f), ps = getParts(f);
+  document.querySelectorAll('#vidaCfg .vc-opt').forEach(function(btn){
+    var k = btn.getAttribute('data-vc');
+    btn.classList.toggle('on', !!c[k]);
+    btn.classList.toggle('dis', c.unico && k!=='unico');
+  });
+  PARTS.forEach(function(b){
+    var g = groupOf(f, b[0]);
+    document.querySelectorAll('#bodySvg .limb[data-part="'+b[0]+'"]').forEach(function(el){ el.setAttribute('data-grp', g); });
+  });
+  var info = document.getElementById('vcInfo');
+  if(info) info.innerHTML = '// <b>'+(c.unico ? 'VIDA ÚNICA' : ps.length+' PARTES')+'</b> — '+ps.map(function(p){ return p[1]; }).join(' · ')+' //';
+  var hint = document.getElementById('vidaHint');
+  if(hint) hint.textContent = c.unico
+    ? '// CORPO INTEIRO = UMA VIDA SÓ — AS CAIXINHAS DO SCAN SÃO SÓ REPRESENTANTES — PRA EDITAR USE O PAINEL DISTRIBUIR VIDA //'
+    : '// '+ps.map(function(p){ return p[1]+' '+String(p[2]).replace('.',',')+'%'; }).join(' · ')+' — AS CAIXINHAS DO SCAN SÃO SÓ REPRESENTANTES (TUBO = VIDA DA PARTE) — PRA EDITAR USE O PAINEL DISTRIBUIR VIDA //';
+}
+document.getElementById('vidaCfg').addEventListener('click', function(e){
+  var btn = e.target.closest('.vc-opt'); if(!btn) return;
+  var f = getCurrent(); if(!f) return;
+  var k = btn.getAttribute('data-vc'), nc = JSON.parse(JSON.stringify(vcfg(f)));
+  if(nc.unico && k!=='unico') return;
+  nc[k] = !nc[k];
+  aplicarVidaCfg(f, nc);
+  saveFichas(); renderVidaResumo(f); renderBodyMap(f);
+});
+
+function renderBodyMap(f){
+  var wrap = document.getElementById('bodyMap');
+  wrap.innerHTML = '';
+  ensureVida(f);
+  renderVidaCfg(f);
+  renderVidaEdge(f);
+  getParts(f).forEach(function(p){
+    var key = p[0], label = p[1];
+    var pt = f.partes[key] || {max:0,atual:0,def:[]};
+    var pct = pt.max ? Math.max(0, Math.min(100, (pt.atual/pt.max)*100)) : 0;
+    var tint = hpTint(pct);
+    var defTotal = (pt.def||[]).reduce(function(s,d){ return s+(Number(d.valor)||0); },0);
+    var box = document.createElement('div');
+    box.className = 'part-box';
+    box.setAttribute('data-part', key);
+    box.style.setProperty('--part-c', tint.c);
+    box.style.setProperty('--part-glow', tint.glow);
+    var defHtml = (pt.def||[]).map(function(d, i){
+      return '<span class="def-chip">'+
+        '<input type="text" class="def-nome" data-i="'+i+'" value="'+esc(d.nome)+'" placeholder="Colete">'+
+        '<input type="number" class="def-val" data-i="'+i+'" value="'+(d.valor||0)+'">'+
+        '<button class="rm" data-i="'+i+'">✕</button>'+
+      '</span>';
+    }).join('');
+    box.innerHTML =
+      '<div class="part-box-head">'+
+        '<div class="part-label"><span class="dot"></span>'+label+'</div>'+
+        '<button type="button" class="prot-btn'+(pt.protese?' on':'')+'" title="Marcar esta parte como prótese (roxo no boneco)">🦾 PRÓTESE'+(pt.protese?' ✓':'')+'</button>'+
+        '<div class="part-hp"><input type="number" class="hp-atual" value="'+pt.atual+'"> / <input type="number" class="hp-max" value="'+pt.max+'"></div>'+
+      '</div>'+
+      '<div class="hp-bar"><i style="width:'+pct+'%"></i></div>'+
+      '<div class="part-def">'+
+        '<div class="def-list">'+defHtml+'</div>'+
+        '<button class="add-def">+ DEFESA</button>'+
+        (defTotal ? '<div class="def-total">🛡 +'+defTotal+' defesa total</div>' : '')+
+      '</div>';
+    wrap.appendChild(box);
+    tintSvgPart(key, pct, pt.protese);
+  });
+}
+
+/* liga o hover: lista de edição <-> partes do boneco <-> caixinhas representantes */
+(function(){
+  var list = document.getElementById('bodyMap');
+  var svg = document.getElementById('bodySvg');
+  function hov(key,on){
+    document.querySelectorAll('#bodySvg [data-grp="'+key+'"], #bodySvg .rep[data-part="'+key+'"]').forEach(function(el){ el.classList.toggle('is-hover',on); });
+    var box = list.querySelector('.part-box[data-part="'+key+'"]');
+    if(box) box.classList.toggle('is-hover',on);
+  }
+  list.addEventListener('mouseover', function(e){ var b=e.target.closest('.part-box'); if(b) hov(b.getAttribute('data-part'),true); });
+  list.addEventListener('mouseout',  function(e){ var b=e.target.closest('.part-box'); if(b) hov(b.getAttribute('data-part'),false); });
+  svg.addEventListener('mouseover', function(e){ var el=e.target.closest('[data-part]'); if(el) hov(el.getAttribute('data-grp')||el.getAttribute('data-part'),true); });
+  svg.addEventListener('mouseout',  function(e){ var el=e.target.closest('[data-part]'); if(el) hov(el.getAttribute('data-grp')||el.getAttribute('data-part'),false); });
+})();
+
+document.getElementById('bodyMap').addEventListener('input', function(e){
+  var f = getCurrent(); if(!f) return;
+  var box = e.target.closest('.part-box'); if(!box) return;
+  var key = box.getAttribute('data-part');
+  var pt = f.partes[key];
+  if(e.target.classList.contains('hp-atual') || e.target.classList.contains('hp-max')){
+    if(e.target.classList.contains('hp-atual')) pt.atual = parseInt(e.target.value,10) || 0;
+    else pt.max = parseInt(e.target.value,10) || 0;
+    saveFichas(); renderVidaResumo(f);
+    var pct = pt.max ? Math.max(0,Math.min(100,(pt.atual/pt.max)*100)) : 0;
+    var tint = hpTint(pct);
+    box.querySelector('.hp-bar i').style.width = pct+'%';
+    box.style.setProperty('--part-c', tint.c);
+    box.style.setProperty('--part-glow', tint.glow);
+    tintSvgPart(key, pct, pt.protese);
+    updateVidaEdgeSeg(key, pct, pt);
+  } else if(e.target.classList.contains('def-nome')){
+    pt.def[parseInt(e.target.getAttribute('data-i'),10)].nome = e.target.value;
+    saveFichas();
+  } else if(e.target.classList.contains('def-val')){
+    pt.def[parseInt(e.target.getAttribute('data-i'),10)].valor = parseInt(e.target.value,10) || 0;
+    saveFichas();
+  }
+});
+
+document.getElementById('bodyMap').addEventListener('click', function(e){
+  var f = getCurrent(); if(!f) return;
+  var box = e.target.closest('.part-box'); if(!box) return;
+  var key = box.getAttribute('data-part');
+  var pt = f.partes[key];
+  if(e.target.closest('.prot-btn')){
+    pt.protese = !pt.protese;
+    saveFichas(); renderBodyMap(f);
+  } else if(e.target.classList.contains('add-def')){
+    pt.def.push({ nome:'Defesa', valor:0 });
+    saveFichas(); renderBodyMap(f);
+  } else if(e.target.classList.contains('rm')){
+    pt.def.splice(parseInt(e.target.getAttribute('data-i'),10),1);
+    saveFichas(); renderBodyMap(f);
+  }
+});
+
+document.getElementById('redistBtn').addEventListener('click', function(){
+  var f = getCurrent(); if(!f) return;
+  var total = parseInt(document.getElementById('fVidaTotal').value,10) || 100;
+  f.vidaTotal = total;
+  var novo = distribuir(total, getParts(f));
+  getParts(f).forEach(function(p){ novo[p[0]].def = (f.partes[p[0]] && f.partes[p[0]].def) || []; novo[p[0]].protese = !!(f.partes[p[0]] && f.partes[p[0]].protese); });
+  f.partes = novo;
+  saveFichas();
+  renderVidaResumo(f);
+  renderBodyMap(f);
+});
+
+/* ---------- vida total editável (atual / máxima) ---------- */
+['fVidaAtual','fVidaMax'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', function(e){
+    var f = getCurrent(); if(!f) return;
+    var v = parseInt(e.target.value,10); if(isNaN(v) || v<0) return;
+    ensureVida(f);
+    var PS = getParts(f), mx = 0, last = PS.length-1;
+    PS.forEach(function(p){ mx += Number(f.partes[p[0]].max)||0; });
+    if(!mx) return;
+    var accM = 0, accA = 0;
+    if(id==='fVidaMax'){
+      v = Math.max(1, v); var k = v/mx;
+      PS.forEach(function(p,i){
+        var pt = f.partes[p[0]], nm;
+        if(i===last) nm = Math.max(0, v-accM); else { nm = Math.round((Number(pt.max)||0)*k); accM += nm; }
+        pt.atual = Math.min(nm, Math.round((Number(pt.atual)||0)*k)); pt.max = nm;
+      });
+      f.vidaTotal = v; setVal('fVidaTotal', v);
+    } else {
+      v = Math.min(v, mx); var r = v/mx;
+      PS.forEach(function(p,i){
+        var pt = f.partes[p[0]], na;
+        if(i===last) na = Math.max(0, Math.min(pt.max, v-accA)); else { na = Math.round(pt.max*r); accA += na; }
+        pt.atual = na;
+      });
+    }
+    saveFichas(); renderBodyMap(f); renderVidaResumo(f);
+  });
+});
+
+/* ---------- sobrecarga total editável (guarda o ajuste sobre a soma dos implantes) ---------- */
+document.getElementById('fSobreTotal').addEventListener('input', function(e){
+  var f = getCurrent(); if(!f) return;
+  var v = parseInt(e.target.value,10); if(isNaN(v)) return;
+  v = Math.max(0, Math.min(999, v));
+  var s = 0; f.implantes.forEach(function(im){ s += Number(im.pct)||0; });
+  f.sobreAjuste = v - s;
+  saveFichas(); renderSobrecarga(f);
+});
+
+/* ---------- implantes ---------- */
+function renderImplantes(f){
+  var wrap = document.getElementById('implList');
+  wrap.innerHTML = '';
+  if(!f.implantes.length){
+    wrap.innerHTML = '<div class="impl-empty">// NENHUM IMPLANTE INSTALADO //</div>';
+    return;
+  }
+  f.implantes.forEach(function(im, i){
+    var row = document.createElement('div');
+    row.className = 'impl-row';
+    row.innerHTML =
+      '<input type="text" class="im-nome" data-i="'+i+'" placeholder="Nome do implante" value="'+esc(im.nome)+'">'+
+      '<input type="number" class="im-pct" data-i="'+i+'" placeholder="% sobrecarga" value="'+(im.pct||0)+'">'+
+      '<input type="text" class="im-bonus" data-i="'+i+'" placeholder="bônus (ex: +1d6 Força)" value="'+esc(im.bonus)+'">'+
+      '<button class="rm" data-i="'+i+'">✕</button>';
+    wrap.appendChild(row);
+  });
+}
+
+document.getElementById('implList').addEventListener('input', function(e){
+  var f = getCurrent(); if(!f) return;
+  var i = parseInt(e.target.getAttribute('data-i'),10);
+  if(isNaN(i)) return;
+  if(e.target.classList.contains('im-nome')) f.implantes[i].nome = e.target.value;
+  else if(e.target.classList.contains('im-pct')){ f.implantes[i].pct = parseInt(e.target.value,10)||0; renderSobrecarga(f); }
+  else if(e.target.classList.contains('im-bonus')) f.implantes[i].bonus = e.target.value;
+  saveFichas();
+});
+document.getElementById('implList').addEventListener('click', function(e){
+  if(!e.target.classList.contains('rm')) return;
+  var f = getCurrent(); if(!f) return;
+  var i = parseInt(e.target.getAttribute('data-i'),10);
+  f.implantes.splice(i,1);
+  saveFichas(); renderImplantes(f); renderSobrecarga(f);
+});
+document.getElementById('addImplBtn').addEventListener('click', function(){
+  var f = getCurrent(); if(!f) return;
+  f.implantes.push({ nome:'', pct:0, bonus:'' });
+  saveFichas(); renderImplantes(f); renderSobrecarga(f);
+});
+
+/* ---------- campos gerais ---------- */
+['fNome','fSorteSessao','fComida','fCreditos'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', function(e){
+    var f = getCurrent(); if(!f) return;
+    var map = { fNome:'nome', fSorteSessao:'sorteSessao', fComida:'comida', fCreditos:'creditos' };
+    var prop = map[id];
+    f[prop] = (id==='fNome') ? e.target.value : (parseInt(e.target.value,10)||0);
+    saveFichas();
+    if(id==='fNome') renderCharBar();
+  });
+});
+
+
+document.getElementById('copyCodeBtn').addEventListener('click', function(){
+  var f = getCurrent(); if(!f){ alert('Selecione uma ficha primeiro.'); return; }
+  S7P.copyFichaCode(f);
+});
+document.getElementById('pasteCodeBtn').addEventListener('click', async function(){
+  var f = await S7P.pasteFichaCode(); if(!f) return;
+  fichas = S7P.fichas(); currentId = f.id; renderAll();
+});
+
+/* ---------- novo / apagar personagem ---------- */
+document.getElementById('newCharBtn').addEventListener('click', function(){
+  var nome = prompt('Nome do novo operativo:', 'Novo Operativo');
+  if(nome===null) return;
+  var f = novaFichaObj(nome);
+  fichas.push(f);
+  currentId = f.id;
+  saveFichas();
+  localStorage.setItem('s7_currentFicha', currentId);
+  renderAll();
+});
+
+/* ============ ROLADOR DE DADOS GERAL (estilo Google) ============ */
+function renderDiceTypes(){
+  var wrap = document.getElementById('diceTypes');
+  wrap.innerHTML = '';
+  DICE_DEFS.forEach(function(d){
+    var btn = document.createElement('button');
+    btn.className = 'dpicker-btn '+d.cls;
+    btn.type = 'button';
+    btn.setAttribute('data-d', d.n);
+    btn.title = 'Clique pra adicionar e rolar D'+d.n+' · botão direito pra tirar um';
+    btn.innerHTML = 'D'+d.n + (diceHand[d.n] ? '<span class="badge">'+diceHand[d.n]+'</span>' : '');
+    btn.addEventListener('click', function(){
+      addDie(d.n, d.cls);
+    });
+    btn.addEventListener('contextmenu', function(e){
+      e.preventDefault();
+      removeOneOfType(d.n);
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function addDiceHistory(txt){
+  diceHistoryLog.unshift(txt);
+  diceHistoryLog = diceHistoryLog.slice(0,8);
+  document.getElementById('diceHistory').innerHTML = diceHistoryLog.map(function(t){ return '<div>'+t+'</div>'; }).join('');
+}
+
+function clearDiceStage(){
+  document.getElementById('diceResults').innerHTML = '';
+  document.getElementById('diceEmpty').style.display = 'block';
+  document.getElementById('diceTotalRow').style.display = 'none';
+}
+
+document.getElementById('clearDiceBtn').addEventListener('click', function(){
+  DICE_DEFS.forEach(function(d){ diceHand[d.n] = 0; });
+  renderDiceTypes();
+  clearDiceStage();
+});
+
+document.getElementById('modToggleBtn').addEventListener('click', function(){
+  var field = document.getElementById('modField');
+  field.style.display = (field.style.display === 'none' || !field.style.display) ? 'flex' : 'none';
+  recalcDiceTotal();
+});
+
+/* lê o que está no palco agora e monta total + rótulo, sem mexer em nenhum dado */
+function stageInfo(){
+  var resultsWrap = document.getElementById('diceResults');
+  var chips = Array.prototype.slice.call(resultsWrap.querySelectorAll('.dresult'));
+  var mod = parseInt(document.getElementById('diceMod').value,10) || 0;
+  var groups = {}, order = [];
+  chips.forEach(function(c){
+    var s = c.getAttribute('data-sides');
+    if(!groups[s]){ groups[s] = []; order.push(s); }
+    groups[s].push(parseInt(c.textContent,10) || 0);
+  });
+  var total = mod, parts = [];
+  order.forEach(function(s){
+    var vals = groups[s];
+    vals.forEach(function(v){ total += v; });
+    parts.push(vals.length+'D'+s+'('+vals.join(',')+')');
+  });
+  return {
+    total: total,
+    label: parts.join(' + ') + (mod ? ' '+(mod>0?'+':'')+mod : '') + ' = ' + total,
+    hasChips: chips.length > 0
+  };
+}
+
+function recalcDiceTotal(logHistory){
+  var info = stageInfo();
+  if(!info.hasChips){
+    document.getElementById('diceEmpty').style.display = 'block';
+    document.getElementById('diceTotalRow').style.display = 'none';
+    return;
+  }
+  document.getElementById('diceEmpty').style.display = 'none';
+  document.getElementById('diceTotalRow').style.display = 'flex';
+  document.getElementById('diceTotalVal').textContent = info.total;
+  if(logHistory) addDiceHistory(info.label);
+}
+
+/* destaca em dourado (crítico) ou vermelho (falha) um D20 SOZINHO na mesa que saiu 20 ou 1 */
+function updateD20CritStyles(){
+  var chips = document.querySelectorAll('.dresult[data-sides="20"]');
+  var lone = chips.length === 1;
+  chips.forEach(function(c){
+    c.classList.remove('dresult-crit','dresult-fail');
+    if(!lone) return;
+    var v = parseInt(c.textContent,10);
+    if(v===20) c.classList.add('dresult-crit');
+    else if(v===1) c.classList.add('dresult-fail');
+  });
+}
+
+function makeDieChip(sides, cls, value){
+  var chip = document.createElement('div');
+  chip.className = 'dresult '+cls;
+  chip.setAttribute('data-sides', sides);
+  chip.textContent = value;
+  chip.title = 'Clique pra tirar só este dado';
+  chip.addEventListener('click', function(){ removeDiceResult(chip, sides); });
+  return chip;
+}
+
+/* adiciona e rola UM dado novo, sem mexer nos que já estão na mesa */
+function addDie(sides, cls){
+  diceHand[sides] = (diceHand[sides]||0) + 1;
+  renderDiceTypes();
+  playDiceSound();
+  var v = rollDie(sides);
+  document.getElementById('diceResults').appendChild(makeDieChip(sides, cls, v));
+  updateD20CritStyles();
+  recalcDiceTotal(true);
+}
+
+/* tira o dado mais recente daquele tipo — clicável/botão-direito várias vezes seguidas, sem travar */
+function removeOneOfType(sides){
+  var chips = document.querySelectorAll('.dresult[data-sides="'+sides+'"]');
+  if(chips.length){
+    removeDiceResult(chips[chips.length-1], sides);
+  } else if(diceHand[sides] > 0){
+    diceHand[sides]--;
+    renderDiceTypes();
+  }
+}
+
+/* remove um chip específico do palco (clique direto no resultado ou botão direito no seletor) */
+function removeDiceResult(chip, sides){
+  if(diceHand[sides] > 0) diceHand[sides]--;
+  renderDiceTypes();
+  playDiceRemoveSound();
+  /* remove na hora, sem animação de saída, pra os outros dados reajustarem sem esperar */
+  if(chip.parentNode) chip.parentNode.removeChild(chip);
+  updateD20CritStyles();
+  recalcDiceTotal(true);
+}
+
+/* "ROLAR DE NOVO" — rerola do zero tudo que está na mão */
+function rollAll(){
+  var any = DICE_DEFS.some(function(d){ return diceHand[d.n] > 0; });
+  if(!any){ diceHand[20] = 1; renderDiceTypes(); }
+
+  playDiceSound();
+
+  var resultsWrap = document.getElementById('diceResults');
+  resultsWrap.innerHTML = '';
+
+  DICE_DEFS.forEach(function(d){
+    var count = diceHand[d.n];
+    for(var i=0;i<count;i++){
+      resultsWrap.appendChild(makeDieChip(d.n, d.cls, rollDie(d.n)));
+    }
+  });
+
+  updateD20CritStyles();
+  recalcDiceTotal(true);
+}
+
+document.getElementById('rollDiceBtn').addEventListener('click', rollAll);
+
+
+/* ============ RETRATO / DESCRIÇÃO / ESTADOS / PARTY ============ */
+var ptEd = null;
+function safeSave(){
+  try{ localStorage.setItem('s7_fichas', JSON.stringify(fichas)); return true; }
+  catch(e){ alert('Sem espaço no navegador para salvar a imagem. Use uma imagem menor.'); return false; }
+}
+function renderEstados(f){
+  var g = document.getElementById('estGrid'); g.innerHTML = '';
+  S7P.ESTADOS.forEach(function(e){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'est-btn' + (f.estados.indexOf(e.k)>=0 ? ' on' : '');
+    b.style.setProperty('--ec', e.c); b.textContent = e.i + ' ' + e.n;
+    b.addEventListener('click', function(){
+      var i = f.estados.indexOf(e.k);
+      if(i>=0) f.estados.splice(i,1); else f.estados.push(e.k);
+      safeSave(); renderEstados(f);
+    });
+    g.appendChild(b);
+  });
+  var soma = S7P.stats(f).sobre;
+  document.getElementById('estWarn').textContent =
+    (soma>=100 && f.estados.indexOf('ciberpsicose')<0) ? '⚠ Sobrecarga em '+soma+'% — considere marcar CIBERPSICOSE.' : '';
+}
+function renderPartyBtn(f){
+  var b = document.getElementById('partyBtn');
+  b.textContent = S7P.inParty(f.id) ? '✕ SAIR DA PARTY' : '⭐ ENTRAR NA PARTY';
+}
+function renderExtras(f){
+  S7P.ensure(f);
+  if(!ptEd) ptEd = S7P.mountEditor(document.getElementById('ptBox'),
+    function(){ return S7P.ensure(getCurrent()).retrato; }, safeSave);
+  ptEd.paint();
+  document.getElementById('fTitulo').value = f.titulo;
+  document.getElementById('fDesc').value = f.desc;
+  renderEstados(f); renderPartyBtn(f); renderClasse(f);
+}
+[['fTitulo','titulo'],['fDesc','desc']].forEach(function(p){
+  document.getElementById(p[0]).addEventListener('input', function(e){
+    var f = getCurrent(); if(!f) return; f[p[1]] = e.target.value; safeSave();
+  });
+});
+document.getElementById('partyBtn').addEventListener('click', function(){
+  var f = getCurrent(); if(!f) return;
+  if(S7P.inParty(f.id)) S7P.removeFromParty(f.id);
+  else if(!S7P.addToParty(f.id)) alert('Party cheia (máx. 6). Libere um slot na Base de Comando.');
+  renderPartyBtn(f);
+});
+
+/* ============ CLASSE ============ */
+function renderClasse(f){
+  var g = document.getElementById('clsGrid'), d = document.getElementById('clsDesc');
+  g.innerHTML = '';
+  S7P.CLASSES.forEach(function(c){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'cls-box' + (f.classe===c.k ? ' on' : '');
+    b.style.setProperty('--cc', c.c);
+    b.innerHTML = '<div class="cb-top"><i>'+c.i+'</i>'+c.n+'</div><div class="cb-foco">'+c.foco+'</div>';
+    b.addEventListener('click', function(){
+      f.classe = (f.classe===c.k) ? '' : c.k;      /* clicar de novo desmarca */
+      safeSave(); renderClasse(f);
+    });
+    g.appendChild(b);
+  });
+  var cur = S7P.CLASSES.filter(function(c){ return c.k===f.classe; })[0];
+  if(!cur){ d.className = 'cls-desc vazio'; d.style.removeProperty('--cc'); d.textContent = '// NENHUMA CLASSE ESCOLHIDA //'; return; }
+  d.className = 'cls-desc'; d.style.setProperty('--cc', cur.c);
+  d.innerHTML = '<div class="cd-n">'+cur.i+' '+cur.n+'</div>'+cur.d+
+    '<div class="cd-aff">IMPLANTES: NATIVO <b>'+cur.nat+'</b> · COMPATÍVEL <b>'+cur.comp.join(', ')+'</b></div>';
+}
+
+/* ============ NAV (menu / atalhos retráteis) ============ */
+function toggleNav(){
+  var nav=document.getElementById('navShell');
+  var btn=document.getElementById('menuToggle');
+  nav.classList.toggle('menu-open');
+  btn.setAttribute('aria-expanded', nav.classList.contains('menu-open'));
+}
+function toggleShortcuts(){
+  var nav=document.getElementById('navShell');
+  var btn=document.getElementById('shortcutsToggle');
+  nav.classList.toggle('shortcuts-collapsed');
+  btn.setAttribute('aria-expanded', !nav.classList.contains('shortcuts-collapsed'));
+}
+
+/* ============ BOOT ============ */
+renderDiceTypes();
+renderAll();
+</script>
+<script>
+/* ============ CALCULADORA (com parênteses e precedência) ============ */
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var toks = [], cur = null, fresh = false, msg = '';
+  var SYM = {'+':'+','-':'−','*':'×','/':'÷'}, OPS = '+-*/';
+  function n(s){ return parseFloat(String(s).replace(',','.')); }
+  function rd(x){ return Math.round(x*1e10)/1e10; }
+  function isOp(t){ return t!==undefined && t.length===1 && OPS.indexOf(t)>=0; }
+  function isNum(t){ return t!==undefined && t!=='(' && t!==')' && !isOp(t); }
+  function fmtStr(s){
+    var neg = s.charAt(0)==='-'; if(neg) s = s.slice(1);
+    var p = s.split('.'); p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+    return (neg?'-':'') + p.join(',');
+  }
+  function fmtExpr(a){ return a.map(function(t){ return isOp(t)?SYM[t] : (t==='('||t===')')?t : fmtStr(t); }).join(' '); }
+  function last(){ return toks[toks.length-1]; }
+  function depth(a){ var d=0; a.forEach(function(t){ if(t==='(')d++; else if(t===')')d--; }); return d; }
+  function full(){ return cur!==null ? toks.concat([cur]) : toks.slice(); }
+  function closeUp(a){
+    a = a.slice();
+    while(a.length && (isOp(a[a.length-1]) || a[a.length-1]==='(')) a.pop();
+    for(var d=depth(a); d>0; d--) a.push(')');
+    return a;
+  }
+  /* avaliador: + − (baixa) < × ÷ < sinal unário < parênteses */
+  function evalToks(a){
+    var i=0;
+    function pk(){ return a[i]; }
+    function ex(){ var v=term(); while(pk()==='+'||pk()==='-'){ var o=a[i++], r=term(); v = o==='+'?v+r:v-r; } return v; }
+    function term(){ var v=un(); while(pk()==='*'||pk()==='/'){ var o=a[i++], r=un(); if(o==='/'){ if(r===0) throw 'zero'; v/=r; } else v*=r; } return v; }
+    function un(){ if(pk()==='-'){ i++; return -un(); } if(pk()==='+'){ i++; return un(); } return pr(); }
+    function pr(){
+      var t=a[i++];
+      if(t==='('){ var v=ex(); if(a[i]!==')') throw 'err'; i++; return v; }
+      if(t===undefined || isOp(t) || t===')') throw 'err';
+      return n(t);
+    }
+    var v=ex(); if(i<a.length) throw 'err'; return rd(v);
+  }
+  function render(){
+    var disp;
+    if(cur!==null) disp = cur;
+    else { try{ disp = toks.length ? String(evalToks(closeUp(toks))) : '0'; }catch(e){ disp='0'; } }
+    $('cDisp').textContent = fmtStr(disp);
+    $('cExpr').textContent = msg || fmtExpr(full());
+    $('calcMini').textContent = '= ' + fmtStr(disp);
+  }
+  function reset(){ toks=[]; cur=null; fresh=false; msg=''; }
+  function newIfFresh(){ if(fresh){ toks=[]; cur=null; fresh=false; msg=''; } }
+  function digit(d){
+    newIfFresh();
+    if(cur===null){ if(last()===')') toks.push('*'); cur=d; }
+    else if(cur==='0') cur=d; else if(cur==='-0') cur='-'+d;
+    else if(cur.replace(/[-.]/g,'').length<15) cur+=d;
+  }
+  function dot(){
+    newIfFresh();
+    if(cur===null){ if(last()===')') toks.push('*'); cur='0.'; }
+    else if(cur.indexOf('.')<0) cur+='.';
+  }
+  function setOp(o){
+    msg=''; fresh=false;
+    if(cur!==null){ toks.push(cur); cur=null; toks.push(o); return; }
+    var l=last();
+    if(l===undefined){ if(o==='-') toks.push('-'); else { toks.push('0'); toks.push(o); } }
+    else if(l==='('){ if(o==='-'||o==='+') toks.push(o); }
+    else if(isOp(l)){
+      if(o==='-' && (l==='*'||l==='/')) toks.push('-');
+      else { while(isOp(last())) toks.pop(); if(last()!==undefined && last()!=='(') toks.push(o); }
+    }
+    else toks.push(o);
+  }
+  function open(){
+    newIfFresh();
+    if(cur!==null){ toks.push(cur); cur=null; toks.push('*'); }
+    else if(last()===')' || isNum(last())) toks.push('*');
+    toks.push('(');
+  }
+  function close(){
+    if(fresh || depth(toks)<=0) return;
+    if(cur!==null){ toks.push(cur); cur=null; }
+    else { var l=last(); if(l===undefined || isOp(l) || l==='(') return; }
+    toks.push(')');
+  }
+  function equals(){
+    if(fresh) return;
+    var a=closeUp(full()); if(!a.length) return;
+    var shown=fmtExpr(a), r;
+    try{ r=evalToks(a); }
+    catch(e){ msg = e==='zero' ? 'não dá pra dividir por zero' : 'expressão inválida'; toks=[]; cur='0'; fresh=true; return; }
+    toks=[]; cur=String(r); fresh=true; msg=shown+' =';
+  }
+  function pct(){
+    if(cur===null) return;
+    var b=n(cur);
+    if(fresh){ cur=String(rd(b/100)); return; }
+    var l=last();
+    if(isOp(l) && toks.length>=2 && depth(toks.slice(0,-1))===0){
+      try{ var base=evalToks(toks.slice(0,-1)); b = (l==='+'||l==='-') ? base*b/100 : b/100; }catch(e){ b=b/100; }
+    } else b=b/100;
+    cur=String(rd(b));
+  }
+  function key(k){
+    if(/^[0-9]$/.test(k)) digit(k);
+    else if(k==='.') dot();
+    else if(k==='+'||k==='-'||k==='*'||k==='/') setOp(k);
+    else if(k==='(') open();
+    else if(k===')') close();
+    else if(k==='=') equals();
+    else if(k==='ac') reset();
+    else if(k==='bk'){
+      if(!fresh){
+        if(cur!==null) cur = (cur.length<=1 || (cur.length===2 && cur.charAt(0)==='-')) ? null : cur.slice(0,-1);
+        else toks.pop();
+      }
+    }
+    else if(k==='neg'){ if(cur!==null && cur!=='0') cur = cur.charAt(0)==='-' ? cur.slice(1) : '-'+cur; }
+    else if(k==='pct') pct();
+    render();
+  }
+  $('cKeys').addEventListener('click', function(e){ var b = e.target.closest('button'); if(b) key(b.dataset.k); });
+
+  /* teclado (com o painel aberto e fora dos campos de texto) */
+  document.addEventListener('keydown', function(e){
+    var p = $('calcPanel'); if(!p.classList.contains('open')) return;
+    if(e.key==='Escape'){ toggleCalc(); return; }
+    var t = (e.target.tagName||'').toLowerCase(); if(t==='input'||t==='textarea'||t==='select') return;
+    var k = e.key;
+    if(k===','||k==='.') k='.';
+    else if(k==='Enter'||k==='=') k='=';
+    else if(k==='Backspace') k='bk';
+    else if(k==='Delete'||k==='c'||k==='C') k='ac';
+    else if(k==='%') k='pct';
+    else if(!/^[0-9+\-*\/()]$/.test(k)) return;
+    e.preventDefault(); key(k);
+  });
+
+  /* porcentagem rápida */
+  var pcOut = [null,null,null];
+  function pcCalc(){
+    var N = n($('pcN').value), P = n($('pcP').value);
+    var ok = isFinite(N) && isFinite(P);
+    pcOut = ok ? [N*P/100, N+N*P/100, N-N*P/100].map(rd) : [null,null,null];
+    for(var i=0;i<3;i++) $('pcR'+(i+1)).textContent = ok ? fmtStr(String(pcOut[i])) : '—';
+  }
+  $('pcN').addEventListener('input', pcCalc); $('pcP').addEventListener('input', pcCalc);
+  document.querySelector('#calcPanel .wallet').addEventListener('click', function(e){
+    var b = e.target.closest('[data-use]'); if(!b) return;
+    var v = pcOut[+b.dataset.use-1]; if(v===null) return;
+    toks = []; cur = String(v); fresh = true; msg = 'da porcentagem'; render();
+  });
+
+  $('calcFloat').addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleCalc(); } });
+  window.toggleCalc = function(){ $('calcPanel').classList.toggle('open'); };
+  render();
+})();
+</script>
+</body>
+</html>

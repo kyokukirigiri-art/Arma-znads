@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARMA-ZENADS // MILITECH SURPLUS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<style>
+  .wpn-dmg{margin-top:12px;font-size:.72rem;letter-spacing:.2em;color:var(--yellow);}
+  .wpn-dmg b{background:var(--yellow);color:#060308;padding:0 6px;margin-right:6px;}
+  .grp-sub{font-family:var(--hud);font-weight:700;text-transform:uppercase;letter-spacing:.22em;font-size:1rem;color:var(--txt);margin:34px 0 16px;border-left:4px solid var(--red);padding-left:12px;grid-column:1/-1;}
+  .grp-sub span{color:var(--red);}
+
+  /* ===== BARRA DE FILTRO / ORDENAÇÃO DAS SEÇÕES ===== */
+  .sortbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px;margin:0 0 18px;padding:10px 14px;
+    border:1px solid var(--line);border-left:4px solid var(--cyan);background:rgba(34,230,210,.04);}
+  .sortbar label{display:flex;flex-direction:column;gap:4px;font-family:var(--hud);font-weight:600;font-size:.55rem;letter-spacing:.24em;color:var(--dim);text-transform:uppercase;}
+  .sortbar select{font-family:var(--hud);font-size:.75rem;letter-spacing:.08em;color:var(--txt);background:var(--bg,#07040a);
+    border:1px solid var(--cyan);padding:7px 10px;min-width:170px;cursor:pointer;border-radius:0;}
+  .sortbar select:focus{outline:none;box-shadow:0 0 10px var(--cyan-glow,rgba(34,230,210,.45));}
+  .sortbar .sb-reset{font-family:var(--hud);font-weight:700;font-size:.62rem;letter-spacing:.2em;color:var(--cyan);background:transparent;
+    border:1px dashed var(--cyan);padding:9px 12px;cursor:pointer;}
+  .sortbar .sb-reset:hover{background:var(--cyan);color:#04120f;}
+  .sortbar .sb-count{margin-left:auto;font-size:.62rem;letter-spacing:.2em;color:var(--dim);align-self:center;}
+  .sortbar .sb-count b{color:var(--cyan);}
+  .f-hide{display:none !important;}
+
+  /* ===== CRÍTICO / SOBRECARGA dos implantes ===== */
+  .imp-crit{margin-top:8px;font-size:.56rem;line-height:1.6;letter-spacing:.08em;color:var(--dim);}
+  .imp-crit b{color:var(--cyan);font-weight:700;}
+  .imp-crit .ic-cost b{color:#ff9a3d;}
+  .imp-crit span{display:block;}
+  .imp-meta{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.58rem;letter-spacing:.14em;color:var(--dim);}
+  .imp-meta b{color:var(--txt);font-weight:700;}
+  .imp-meta .novo{color:var(--yellow);}
+</style>
+<style>
+/* ==================================================================
+   LOJA v6 — layout lateral (trilho de abas + vitrine)
+   Camada por cima do style.css: usa SÓ variáveis do tema (--red, --cyan,
+   --purple, --panel, --k-*...), então segue a paleta escolhida na CONFIG.
+   ================================================================== */
+header{padding:26px 5% 2px;}
+header .hud-tag{margin-bottom:8px;}
+header h1{font-size:clamp(1.9rem,5.2vw,3.2rem);}
+header p{margin-top:8px;}
+#shortcutsNav,#shortcutsToggle{display:none !important;}
+
+#shop{display:grid;grid-template-columns:262px minmax(0,1fr);gap:30px;max-width:1500px;margin:0 auto;padding:22px 3% 40px;align-items:start;}
+
+/* ---------- TRILHO ---------- */
+#shop .rail{position:sticky;top:58px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 66px);overflow-y:auto;scrollbar-width:none;padding-bottom:6px;}
+#shop .rail::-webkit-scrollbar{display:none;}
+#shop .zr-brand{padding:2px 2px 12px;border-bottom:1px dashed var(--line);}
+#shop .zr-brand b{display:block;font:700 1.45rem/1 var(--hud);letter-spacing:.14em;color:var(--txt);}
+#shop .zr-brand b i{font-style:normal;color:var(--red);}
+#shop .zr-brand small{display:block;margin-top:7px;font-size:.58rem;letter-spacing:.22em;color:var(--dim);}
+#shop .zr-id{display:flex;justify-content:space-between;gap:10px;font-size:.62rem;letter-spacing:.08em;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:8px 15px;background:rgba(0,0,0,.25);}
+#shop .zr-id b{color:var(--cyan);font-weight:700;}
+#shop .zr-tabs{display:flex;flex-direction:column;gap:6px;}
+#shop .zr-g{display:flex;align-items:center;gap:8px;margin:12px 0 2px;font:600 .56rem var(--hud);letter-spacing:.3em;color:var(--dim);}
+#shop .zr-g::after{content:"";flex:1;height:1px;background:var(--line);}
+#shop .zr-tab{--clip:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  appearance:none;border:0;cursor:pointer;text-align:left;width:100%;position:relative;
+  display:flex;align-items:center;gap:11px;padding:11px 14px;
+  font:600 .74rem var(--hud);letter-spacing:.16em;text-transform:uppercase;color:var(--kc);
+  background:color-mix(in srgb,var(--kc) 8%,var(--panel));box-shadow:inset 3px 0 0 var(--kc);
+  clip-path:var(--clip);transition:margin .16s,width .16s,background .16s,color .16s;}
+#shop .zr-tab:hover{background:color-mix(in srgb,var(--kc) 20%,var(--panel));}
+#shop .zr-tab:focus-visible{outline:2px solid var(--kc);outline-offset:2px;}
+#shop .zr-tab svg{width:1.05rem;height:1.05rem;flex:none;}
+#shop .zr-tab .n{margin-left:auto;font:.6rem var(--mono);letter-spacing:.05em;opacity:.7;}
+#shop .zr-tab.on{background:var(--kc);color:#0a0610;margin-left:16px;width:calc(100% - 16px);box-shadow:none;}
+
+#shop .zr-ord{background:var(--panel);border:1px solid color-mix(in srgb,var(--red) 55%,transparent);border-radius:14px;padding:13px 15px;}
+#shop .zr-ord .k{font:600 .56rem var(--hud);letter-spacing:.28em;color:var(--dim);}
+#shop .zr-tot{font:700 2rem/1.15 var(--hud);color:var(--red);letter-spacing:.02em;}
+#shop .zr-tot small{font-size:.7rem;margin-left:6px;letter-spacing:.2em;color:var(--dim);}
+#shop .zr-row{display:flex;justify-content:space-between;font-size:.64rem;color:var(--dim);margin-top:6px;letter-spacing:.06em;}
+#shop .zr-row b{color:var(--txt);font-weight:600;}
+#shop .zr-row b.neg{color:var(--red);}
+#shop .zr-ov{height:5px;background:var(--bg);border:1px solid var(--line);margin-top:10px;}
+#shop .zr-ov i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--amber),var(--red));transition:width .3s;}
+#shop .zr-pill{appearance:none;display:block;width:100%;margin-top:9px;padding:9px 10px;cursor:pointer;text-align:center;
+  font:600 .64rem var(--hud);letter-spacing:.3em;text-transform:uppercase;color:var(--txt);background:none;border:1px solid var(--txt);border-radius:999px;transition:.15s;}
+#shop .zr-pill:hover{background:var(--txt);color:var(--bg);}
+#shop .zr-pill.main{border-color:var(--red);color:var(--red);}
+#shop .zr-pill.main:hover{background:var(--red);color:#0a0610;}
+#shop .zr-pill:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
+
+/* ---------- VITRINE ---------- */
+#shop .pane{display:none;}
+#shop .pane.on{display:block;animation:zin .22s ease-out;}
+@keyframes zin{from{opacity:0;transform:translateX(10px);}to{opacity:1;transform:none;}}
+#shop .pane section{padding:0;max-width:none;margin:0;}
+#shop .pane .sec-title{display:flex;align-items:center;gap:14px;font-size:1.6rem;margin-bottom:8px;color:var(--txt);}
+#shop .pane .sec-title::before{content:"";flex:none;width:7px;height:1.5em;background:var(--kc);clip-path:polygon(0 0,100% 12%,100% 88%,0 100%);}
+#shop .pane .sec-title span{background:none;color:var(--txt);transform:none;padding:0;}
+#shop .pane .sec-sub{margin-bottom:20px;line-height:1.7;}
+#shop .pane .items{grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:18px;}
+#shop .pane .grp-sub{border-left-color:var(--kc);margin:26px 0 4px;}
+#shop .pane .grp-sub span{color:var(--kc);}
+#shop .pane .impl-sub{border-left-color:var(--kc);}
+#shop .pane .impl-nav a{border-radius:999px;clip-path:none;}
+#shop .pane .sortbar{border-left-color:var(--kc);background:color-mix(in srgb,var(--kc) 5%,transparent);}
+#shop .pane .sortbar select{border-color:var(--kc);}
+#shop .pane .sortbar .sb-count b{color:var(--kc);}
+#shop .ad-banner{max-width:none;padding:0;margin:26px 0 0;}
+
+/* ---------- CARDS ---------- */
+#shop .pane .card{--rc:var(--txt);--rcx:var(--rc);--ink:var(--txt);--mut:#9886a5;--ac:var(--kc);--ic:var(--kc);
+  --bd:color-mix(in srgb,var(--rc) 55%,var(--line));
+  padding:1px;border:0;overflow:visible;background:var(--bd);
+  clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%);
+  transition:transform .18s;}
+#shop .pane .card.r-raro{--rc:var(--cyan);}
+#shop .pane .card.r-experimental{--rc:var(--purple);}
+#shop .pane .card.r-proibido{--rc:var(--red);}
+/* o momento memorável: o card selecionado vira a cor da categoria (mouse: hover; toque: foco) */
+#shop .pane .card:focus-within{transform:translateY(-3px);background:var(--kc);box-shadow:none;
+  --bd:var(--kc);--rcx:#0a0610;--ink:#0a0610;--mut:rgba(10,6,16,.74);--ac:#0a0610;--ic:#0a0610;}
+@media(hover:hover){
+  #shop .pane .card:hover{transform:translateY(-3px);background:var(--kc);box-shadow:none;
+    --bd:var(--kc);--rcx:#0a0610;--ink:#0a0610;--mut:rgba(10,6,16,.74);--ac:#0a0610;--ic:#0a0610;}
+}
+#shop .c-in{position:relative;display:flex;flex-direction:column;gap:10px;height:100%;padding:14px;background:var(--panel);color:var(--ink);overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 21px) 0,100% 21px,100% 100%,0 100%);transition:background .18s;}
+#shop .pane .card:focus-within .c-in{background:var(--kc);}
+@media(hover:hover){#shop .pane .card:hover .c-in{background:var(--kc);}}
+#shop .c-head{order:1;}
+#shop .c-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px;padding-right:18px;}
+#shop .pane .card .tag{margin:0;padding:2px 9px;border-radius:99px;font-size:.54rem;letter-spacing:.18em;background:none;animation:none;
+  color:var(--mut);border:1px solid color-mix(in srgb,var(--ink) 38%,transparent);}
+#shop .pane .card .tag.zr-rar{color:var(--rcx);border-color:var(--rcx);}
+#shop .pane .card .tag.zr-rar::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:1px;}
+#shop .pane .card h3{display:block;background:none;color:var(--ink);padding:0;margin:0;font-size:1.02rem;letter-spacing:.07em;line-height:1.2;}
+#shop .c-bar{order:2;display:flex;height:11px;opacity:.5;color:var(--ink);}
+#shop .c-bar i{flex:none;background:currentColor;}
+#shop .c-ico{order:3;position:relative;flex:none;display:block;height:96px;color:var(--ic);font-size:2.5rem;
+  background:radial-gradient(circle,color-mix(in srgb,var(--ic) 30%,transparent) 1px,transparent 1.6px) 0 0/10px 10px;}
+#shop .k-w .c-ico{height:128px;}
+#shop .c-img{position:absolute;inset:0;display:grid;place-items:center;
+  filter:drop-shadow(var(--zs,2px) var(--zs,2px) 0 rgba(0,0,0,.55));}   /* mini sombra dura, sem blur/gradiente */
+#shop .c-ico svg{width:2.9rem;height:2.9rem;stroke-width:1.4;}
+#shop .k-w .c-ico svg{width:3.6rem;height:3.6rem;}
+#shop .c-img .emo{position:absolute;inset:6px;display:block;width:calc(100% - 12px);height:calc(100% - 12px);max-width:none;max-height:none;
+  object-fit:contain;object-position:center;margin:0;vertical-align:baseline;}
+#shop .c-size{margin-left:auto;align-self:center;font:.54rem var(--mono);letter-spacing:.1em;color:var(--mut);white-space:nowrap;}
+#shop .pane .card .wpn-dmg{order:4;margin:0;display:flex;align-items:baseline;gap:10px;padding:6px 10px;border-left:3px solid var(--ac);
+  background:color-mix(in srgb,var(--ink) 9%,transparent);font:700 1.1rem var(--hud);letter-spacing:.04em;color:var(--ac);}
+#shop .pane .card .wpn-dmg b{background:none;padding:0;margin:0;font:600 .56rem var(--hud);letter-spacing:.24em;color:var(--mut);}
+#shop .pane .card .imp-meta{order:5;margin:0;gap:3px 12px;font-size:.56rem;color:var(--mut);}
+#shop .pane .card .imp-meta b{color:var(--ink);}
+#shop .pane .card p{order:6;margin:0;min-height:0;font-size:.74rem;line-height:1.5;color:var(--mut);
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden;}
+#shop .k-w.pane .card p,#shop .pane .k-w p{-webkit-line-clamp:3;}
+#shop .pane .card p b{color:var(--ink);}
+#shop .pane .card .imp-crit{order:7;margin:0;color:var(--mut);}
+#shop .pane .card .imp-crit b{color:var(--ac);}
+#shop .pane .card .imp-crit .ic-cost b{color:#ff9a3d;}
+#shop .pane .card:focus-within .imp-crit .ic-cost b{color:#0a0610;}
+@media(hover:hover){#shop .pane .card:hover .imp-crit .ic-cost b{color:#0a0610;}}
+#shop .c-note{order:8;font-size:.58rem;letter-spacing:.06em;color:var(--mut);}
+#shop .c-in>.price{display:none;}
+#shop .c-foot{order:9;margin-top:auto;display:flex;align-items:center;gap:10px;}
+#shop .c-pbig b{display:block;font:700 1.15rem/1 var(--hud);color:var(--ink);}
+#shop .c-pbig i{display:block;margin-top:3px;font-style:normal;font-size:.52rem;letter-spacing:.2em;color:var(--mut);}
+/* arma: preço vira um selo redondo no rodapé, ao lado do botão */
+#shop .k-w .c-pbig{flex:none;width:62px;height:62px;border-radius:50%;display:grid;place-content:center;text-align:center;
+  background:var(--bg);border:2px solid var(--kc);}
+#shop .k-w .c-pbig b{font-size:.78rem;color:var(--kc);}
+#shop .k-w .c-pbig i{color:var(--kc);opacity:.8;}
+#shop .pane .k-w:focus-within .c-pbig{background:#0a0610;border-color:#0a0610;}
+@media(hover:hover){#shop .pane .k-w:hover .c-pbig{background:#0a0610;border-color:#0a0610;}}
+#shop .pane .card .btn{margin:0;flex:1;padding:9px 10px;border-radius:999px;clip-path:none;background:none;color:var(--ink);border:1px solid var(--ink);font-size:.62rem;letter-spacing:.28em;}
+#shop .pane .card .btn::before,#shop .pane .card .btn::after{content:none;}
+@media(hover:hover){#shop .pane .card .btn:hover{background:#0a0610;border-color:#0a0610;color:var(--kc);}}
+#shop .pane .card .btn.added{background:#0a0610;border-color:#0a0610;color:var(--cyan);}
+#shop .pane .card .btn:focus-visible{outline:2px solid #0a0610;outline-offset:2px;}
+
+/* ---------- RESPONSIVO ---------- */
+@media(min-width:901px) and (min-height:521px){.cart-float{display:none;}}
+@media(max-height:820px) and (min-width:901px){
+  #shop .zr-brand{display:none;}
+  #shop .zr-g{margin:7px 0 0;}
+  #shop .zr-tab{padding:8px 13px;}
+  #shop .zr-tabs{gap:4px;}
+}
+
+/* ===== CARDS COMPACTOS: celular em pé, celular deitado ===== */
+@media(max-width:900px),(max-height:520px) and (orientation:landscape){
+  #shop .pane .items{grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;}
+  #shop .pane .grp-sub{font-size:.78rem;letter-spacing:.14em;margin:16px 0 0;}
+  #shop .c-in{padding:9px;gap:6px;}
+  #shop .c-bar{display:none;}
+  #shop .c-tags{margin-bottom:4px;gap:4px;padding-right:12px;}
+  #shop .pane .card .tag{font-size:.46rem;padding:1px 6px;letter-spacing:.1em;}
+  #shop .pane .card h3{font-size:.8rem;letter-spacing:.04em;}
+  #shop .c-ico{height:60px;}
+  #shop .k-w .c-ico{height:84px;}
+  #shop{--zs:1.5px;}
+  #shop .c-ico svg{width:2rem;height:2rem;}
+  #shop .k-w .c-ico svg{width:2.6rem;height:2.6rem;}
+  #shop .c-ico{font-size:1.9rem;}
+  #shop .c-size{font-size:.46rem;letter-spacing:.06em;}
+  #shop .pane .card .wpn-dmg{padding:4px 7px;font-size:.88rem;gap:6px;}
+  #shop .pane .card .wpn-dmg b{font-size:.46rem;letter-spacing:.14em;}
+  #shop .pane .card .imp-meta{font-size:.5rem;gap:2px 8px;}
+  #shop .pane .card p{font-size:.64rem;line-height:1.45;-webkit-line-clamp:3;}
+  #shop .pane .card .imp-crit{font-size:.5rem;line-height:1.45;}
+  #shop .c-note{font-size:.5rem;}
+  #shop .c-foot{flex-direction:column;align-items:stretch;gap:6px;}
+  #shop .c-pbig b{display:inline;font-size:1rem;}
+  #shop .c-pbig i{display:inline;margin:0 0 0 5px;font-size:.5rem;}
+  #shop .pane .card .btn{flex:none;padding:8px 6px;font-size:.58rem;letter-spacing:.2em;}
+  #shop .pane .k-w .c-pbig{width:auto;height:auto;border:0 !important;border-radius:0;display:block;text-align:left;background:none !important;}
+  #shop .pane .k-w .c-pbig b{display:inline;font-size:1rem;color:var(--ink);}
+  #shop .pane .k-w .c-pbig i{display:inline;margin:0 0 0 5px;font-size:.5rem;color:var(--mut);opacity:1;}
+  #shop .pane .sortbar{padding:7px 9px;gap:8px;margin-bottom:12px;}
+  #shop .pane .sortbar label{flex:1 1 120px;font-size:.5rem;}
+  #shop .pane .sortbar select{min-width:0;width:100%;padding:6px 8px;font-size:.7rem;}
+  #shop .pane .sortbar .sb-reset{padding:7px 10px;font-size:.55rem;}
+  #shop .pane .sortbar .sb-count{font-size:.55rem;}
+  #shop .pane .impl-nav{position:static;margin-bottom:14px;padding:8px 0;}
+  #shop .pane .impl-nav a{padding:7px 14px;font-size:.6rem;}
+  #shop .pane .impl-sub{font-size:.85rem;margin:22px 0 12px;scroll-margin-top:110px;}
+  #shop .ad-banner{margin-top:16px;}
+  #shop .ad-banner .ad-frame{padding:14px 16px;gap:10px;}
+  #shop .ad-banner h4{font-size:.9rem;}
+}
+
+/* ===== CELULAR EM PÉ (e tablet pequeno): abas viram uma faixa no topo ===== */
+@media(max-width:900px) and (min-height:521px){
+  header{padding:10px 4% 0;}
+  header .hud-tag,header p{display:none;}
+  header h1{font-size:1.45rem;}
+  .ad-marquee{font-size:.55rem;padding:5px 0;}
+  #shop{grid-template-columns:1fr;gap:10px;padding:0 3% 96px;}
+  #shop .rail{top:48px;z-index:280;max-height:none;flex-direction:row;overflow-x:auto;margin:0 -3.4%;padding:7px 3.4%;gap:6px;
+    background:rgba(7,4,10,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px);scrollbar-width:none;}
+  #shop .zr-brand,#shop .zr-id,#shop .zr-g,#shop .zr-ord{display:none;}
+  #shop .zr-tabs{flex-direction:row;gap:6px;}
+  #shop .zr-tab,#shop .zr-tab.on{flex:none;width:auto;margin:0;min-width:74px;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;
+    font-size:.54rem;letter-spacing:.1em;white-space:nowrap;box-shadow:inset 0 -3px 0 var(--kc);}
+  #shop .zr-tab.on{box-shadow:none;}
+  #shop .zr-tab svg{width:1.15rem;height:1.15rem;}
+  #shop .zr-tab .n{display:none;}
+  #shop .pane .sec-title{font-size:1.05rem;letter-spacing:.1em;margin-bottom:4px;gap:10px;}
+  #shop .pane .sec-sub{font-size:.58rem;letter-spacing:.06em;margin-bottom:12px;padding-bottom:9px;line-height:1.55;}
+  #shop .pane section{scroll-margin-top:126px;}
+  #shop .pane .sortbar select{font-size:.62rem;letter-spacing:0;}
+}
+
+/* ===== CELULAR DEITADO: mesmo layout do PC (trilho na esquerda), só mais compacto ===== */
+@media(max-height:520px) and (orientation:landscape){
+  header,.ad-marquee{display:none;}
+  .nav-buttons{height:34px;}
+  .menu-toggle{height:30px;padding:8px 12px;}
+  .cart-float{display:none;}
+  #shop{grid-template-columns:172px minmax(0,1fr);gap:12px;padding:6px max(2%,env(safe-area-inset-right)) 18px max(2%,env(safe-area-inset-left));}
+  #shop .rail{top:40px;max-height:calc(100vh - 46px);gap:8px;}
+  #shop .zr-brand{padding:0 0 6px;}
+  #shop .zr-brand b{font-size:1rem;}
+  #shop .zr-brand small,#shop .zr-id,#shop .zr-g{display:none;}
+  #shop .zr-tabs{gap:4px;}
+  #shop .zr-tab{padding:6px 10px;font-size:.58rem;letter-spacing:.1em;gap:8px;}
+  #shop .zr-tab.on{margin-left:8px;width:calc(100% - 8px);}
+  #shop .zr-tab svg{width:.9rem;height:.9rem;}
+  #shop .zr-ord{padding:8px 10px;border-radius:10px;}
+  #shop .zr-tot{font-size:1.25rem;}
+  #shop .zr-row{margin-top:3px;font-size:.58rem;}
+  #shop .zr-pill{padding:6px;font-size:.54rem;margin-top:6px;}
+  #shop .pane .sec-title{font-size:1rem;letter-spacing:.1em;margin-bottom:6px;}
+  #shop .pane .sec-sub{display:none;}
+}
+@media(prefers-reduced-motion:reduce){#shop .pane.on{animation:none;}#shop .pane .card,#shop .c-in{transition:none;}.card .scanline{display:none;}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // MILITECH_SURPLUS_v5 // CONEXÃO SEGURA</div>
+  <h1><span class="mk">ARMA-ZENADS</span></h1>
+  <p>// BLACKMARKET CIBERNÉTICA — <span class="mk-line">SETOR 7</span> //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 NEONCOLA — A FOME DO FUTURO JÁ CHEGOU // 🛒 FRETE GRÁTIS PARA O SUBSOLO 3 // ⚡ PROMOÇÃO RELÂMPAGO: 2 MEDSPRAYS PELO PREÇO DE 1,5 // 📢 SINTWHISKY TARJA PRETA — PROIBIDO EM 4 DISTRITOS, VENDIDO AQUI //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="#armas">⚔ ARMAS</a>
+  <a href="#cura">✚ CURA</a>
+  <a href="#sanidade">🔋 REDUZIR SOBRECARGA</a>
+  <a href="#armadura">🛡 ARMADURA</a>
+  <a href="#hacker">⌁ HACKER</a>
+  <a href="#proteses">🦾 PRÓTESES</a>
+  <a href="#implantes">🧠 IMPLANTES</a>
+  <a href="#comida">🍜 COMIDA</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+  
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<!-- ARMAS -->
+<section id="armas">
+  <h2 class="sec-title">⚔ <span>ARSENAL DE COMBATE</span></h2>
+  <p class="sec-sub">// Não vendemos para agentes da Rede. Não perguntamos sua identidade. //</p>
+  <div class="items">
+    <div class="grp-sub">▸ <span>RIFLES // SNIPERS // ENERGIA</span></div>
+<div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Pistola Pulso KE-9</h3><p>Arma de coil magnética. Silenciosa, sem estojo, atravessa kevlar leve.</p><div class="wpn-dmg"><b>DANO</b>1d6</div><div class="price">1.200 créditos</div><button class="btn" onclick="addToCart('Pistola Pulso KE-9',1200,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>SMG Viper X2</h3><p>Cadência absurda, recuo mínimo. A favorita dos coletores de dívidas.</p><div class="wpn-dmg"><b>DANO</b>1d6+5</div><div class="price">2.400 créditos</div><button class="btn" onclick="addToCart('SMG Viper X2',2400,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Viper-9</h3><p>Pistola de precisão compacta. Leve, fria e sem cerimônia.</p><div class="wpn-dmg"><b>DANO</b>1d12</div><div class="price">2.800 créditos</div><button class="btn" onclick="addToCart('Viper-9',2800,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Raptor-X</h3><p>SMG de ciclo rápido. Feita para quem resolve no volume de fogo.</p><div class="wpn-dmg"><b>DANO</b>1d12+5</div><div class="price">6.000 créditos</div><button class="btn" onclick="addToCart('Raptor-X',6000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Neon-AR</h3><p>Fuzil de energia com fricção zero. O cano brilha antes do estrondo.</p><div class="wpn-dmg"><b>DANO</b>1d20</div><div class="price">6.500 créditos</div><button class="btn" onclick="addToCart('Neon-AR',6500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Volt-77</h3><p>Dano moderado + pulso EMP. Frita implantes junto com o alvo.</p><div class="wpn-dmg"><b>DANO</b>1d20+5</div><div class="price">7.500 créditos</div><button class="btn" onclick="addToCart('Volt-77',7500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Specter</h3><p>Silenciosa demais para o seu próprio bem. Ninguém ouve o erro.</p><div class="wpn-dmg"><b>DANO</b>1d20+10</div><div class="price">8.000 créditos</div><button class="btn" onclick="addToCart('Specter',8000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Lança-Granadas GL-88</h3><p>Explosivos termobáricos compactos. Legalmente, isso não existe.</p><div class="wpn-dmg"><b>DANO</b>1d20+15</div><div class="price">9.000 créditos<small>+ registro apagado</small></div><button class="btn" onclick="addToCart('Lança-Granadas GL-88',9000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Titan-12</h3><p>Shotgun de alto calibre. Resolve discussões e derruba portas.</p><div class="wpn-dmg"><b>DANO</b>1d20+20</div><div class="price">9.500 créditos</div><button class="btn" onclick="addToCart('Titan-12',9500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Ghostline</h3><p>Fuzil de fase com assinatura térmica mínima. O tiro chega antes do som.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20</div><div class="price">11.000 créditos</div><button class="btn" onclick="addToCart('Ghostline',11000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Railgun Mantis</h3><p>Acelera projéteis por indução. Remove veículos blindados da equação.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20+5</div><div class="price">12.000 créditos<small>+ licença militar falsificada</small></div><button class="btn" onclick="addToCart('Railgun Mantis',12000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>M-3057</h3><p>Design militech vazado. Cadência estável, recuo previsível, culpa opcional.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20+10</div><div class="price">13.500 créditos</div><button class="btn" onclick="addToCart('M-3057',13500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Hawk-Eye</h3><p>Railgun de reconhecimento orbital. Um tiro, um aviso, nenhuma testemunha.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20+15</div><div class="price">15.000 créditos</div><button class="btn" onclick="addToCart('Hawk-Eye',15000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Smartgun Oracle</h3><p>Mira preditiva via IA balística. Você aponta, ela decide o futuro.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20+20</div><div class="price">15.000 créditos<small>+ link neural obrigatório</small></div><button class="btn" onclick="addToCart('Smartgun Oracle',15000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Aegis Rail</h3><p>O maior dano à distância do catálogo. Perfura blindagem como papel molhado.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20+25</div><div class="price">24.000 créditos</div><button class="btn" onclick="addToCart('Aegis Rail',24000,this)">ADQUIRIR</button></div>
+    <div class="grp-sub">▸ <span>LÂMINAS // IMPACTO // EMP</span></div>
+<div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Faca Specter</h3><p>Lâmina de cerâmica indetectável. Pequena, educada, definitiva.</p><div class="wpn-dmg"><b>DANO</b>1d6+5</div><div class="price">3.500 créditos</div><button class="btn" onclick="addToCart('Faca Specter',3500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Espada Mono-Molecular</h3><p>Lâmina de fio único corta metal como tecido. Uma vez. Faça contar.</p><div class="wpn-dmg"><b>DANO</b>1d12+7</div><div class="price">5.500 créditos</div><button class="btn" onclick="addToCart('Espada Mono-Molecular',5500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Bastão Pulse</h3><p>Choque de impacto + EMP. A autoridade em formato tubular.</p><div class="wpn-dmg"><b>DANO</b>1d12+9</div><div class="price">6.500 créditos</div><button class="btn" onclick="addToCart('Bastão Pulse',6500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Punho Titan</h3><p>Manopla de impacto hidráulico. Aperto de mão nunca mais será o mesmo.</p><div class="wpn-dmg"><b>DANO</b>1d20+6</div><div class="price">7.000 créditos</div><button class="btn" onclick="addToCart('Punho Titan',7000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Monolâmina K-7</h3><p>Fio de lâmina molecular. Corta, corta e ainda pede desculpas.</p><div class="wpn-dmg"><b>DANO</b>1d20+10</div><div class="price">8.500 créditos</div><button class="btn" onclick="addToCart('Monolâmina K-7',8500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Garras Viper</h3><p>Par de lâminas retráteis. Corte duplo, sem intervalo.</p><div class="wpn-dmg"><b>DANO</b>1d20+12</div><div class="price">9.000 créditos</div><button class="btn" onclick="addToCart('Garras Viper',9000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Lança Arc</h3><p>Impacto + choque elétrico. Mantém distância e respeito.</p><div class="wpn-dmg"><b>DANO</b>1d20+15</div><div class="price">10.500 créditos</div><button class="btn" onclick="addToCart('Lança Arc',10500,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Machado Ripper</h3><p>Motor embutido na lâmina. Cada golpe é uma decisão arquitetônica.</p><div class="wpn-dmg"><b>DANO</b>1d20+18</div><div class="price">11.000 créditos</div><button class="btn" onclick="addToCart('Machado Ripper',11000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Katana Neon</h3><p>Lâmina plasmática de cerimônia. Corte limpo, brilho dramático.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20+10</div><div class="price">16.000 créditos</div><button class="btn" onclick="addToCart('Katana Neon',16000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Martelo Grav-3</h3><p>Campo gravitacional na cabeça. O chão sente antes do alvo.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20+20</div><div class="price">20.000 créditos</div><button class="btn" onclick="addToCart('Martelo Grav-3',20000,this)">ADQUIRIR</button></div>
+<div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Foice Eclipse</h3><p>A mais rara e cara do arsenal. Dizem que ceifa mais que grama.</p><div class="wpn-dmg"><b>DANO</b>1d20+1d20+30</div><div class="price">32.000 créditos</div><button class="btn" onclick="addToCart('Foice Eclipse',32000,this)">ADQUIRIR</button></div>
+  </div>
+</section>
+
+
+
+<!-- CURA -->
+<section id="cura">
+  <h2 class="sec-title">✚ <span>TECNOLOGIA MÉDICA</span></h2>
+  <p class="sec-sub">// Morte é apenas um defeito de hardware mal gerenciado. //</p>
+  <div class="items">
+    <div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>MedSpray Trauma</h3><p>Analgésico + nanogel coagulante. Fecha cortes em 30 segundos.</p><div class="wpn-dmg"><b>CURA</b>+25</div><div class="price">350 créditos</div><button class="btn" onclick="addToCart('MedSpray Trauma',350,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Stimpack Adrenal</h3><p>Injetor de adrenalina sintética. Ignora dor por 10 minutos. Depois, paga a conta.</p><div class="wpn-dmg"><b>CURA</b>+15 [Todos]</div><div class="price">500 créditos</div><button class="btn" onclick="addToCart('Stimpack Adrenal',500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Trauma Kit Militar</h3><p>Desfibrilador portátil, sutura automática e plasma sintético. Revive quase qualquer um.</p><div class="wpn-dmg"><b>CURA</b>+55 </div><div class="price">2.800 créditos</div><button class="btn" onclick="addToCart('Trauma Kit Militar',2800,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>AutoDoc Subcutâneo</h3><p>Implante que administra medicamentos e monitora sinais vitais em tempo real.</p><div class="wpn-dmg"><b>CURA</b>+30 [Todos]</div><div class="price">6.500 créditos</div><button class="btn" onclick="addToCart('AutoDoc Subcutâneo',6500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Kit Regeneração Celular</h3><p>Nanomáquinas reconstroem tecido danificado. Dedo cortado? Volta em uma semana.</p><div class="wpn-dmg"><b>CURA</b>%100</div><div class="price">11.000 créditos<small>+ acompanhamento médico clandestino</small></div><button class="btn" onclick="addToCart('Kit Regeneração Celular',11000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Soro Rebirth</h3><p>Reverte parada cardíaca recente. A Rede classificou como "ética questionável".</p><div class="wpn-dmg"><b>CURA</b>%85 [Todos]</div><div class="price">14.000 créditos<small>+ sigilo absoluto</small></div><button class="btn" onclick="addToCart('Soro Rebirth',14000,this)">ADQUIRIR</button></div>
+  </div>
+</section>
+
+<!-- ANÚNCIO 1 -->
+<div class="ad-banner"><div class="ad-frame">
+  <span class="ad-tag">PROPAGANDA</span>
+  <div><h4>SintWhisky Tarja Preta</h4><p>// Envelhecido em barril de reator. 18+ cromado. Beba e esqueça o Setor 7. //</p></div>
+  <span class="ad-price">340 cr</span>
+</div></div>
+
+<!-- SANIDADE -->
+<section id="sanidade">
+  <h2 class="sec-title">🔋 <span>REDUÇÃO DE SOBRECARGA</span></h2>
+  <p class="sec-sub">// O hardware sobe de temperatura. Nós vendemos o resfriamento. //</p>
+  <div class="items">
+    <div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Calmante Neuro-Z</h3><p>Comprimido que reduz ansiedade e flashbacks ciberpsicóticos leves.</p><div class="wpn-dmg"><b>RECARREGAR</b>+15</div><div class="price">200 créditos</div><button class="btn" onclick="addToCart('Calmante Neuro-Z',200,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Pulseira Biofeedback</h3><p>Monitora estresse neural e vibra antes da crise chegar.</p><div class="wpn-dmg"><b>RECARREGAR</b>+25</div><div class="price">450 créditos</div><button class="btn" onclick="addToCart('Pulseira Biofeedback',450,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Terapia Neural Remota</h3><p>Sessão com psi-tech via conexão DataJack. Limpa memórias traumáticas recentes.</p><div class="wpn-dmg"><b>RECARREGAR</b>+40</div><div class="price">3.000 créditos<small>+ 1 sessão de 2 horas</small></div><button class="btn" onclick="addToCart('Terapia Neural Remota',3000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>DreamSafe Chip</h3><p>Filtra pesadelos e memórias corrompidas durante o sono. Acorde funcionando.</p><div class="wpn-dmg"><b>RECARREGAR</b>+55</div><div class="price">5.200 créditos</div><button class="btn" onclick="addToCart('DreamSafe Chip',5200,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Firewall Psíquico</h3><p>Blindagem mental contra invasão neural e manipulação emocional por IA.</p><div class="wpn-dmg"><b>RECARREGAR</b>%50</div><div class="price">9.500 créditos<small>+ risco de apagamento afetivo</small></div><button class="btn" onclick="addToCart('Firewall Psíquico',9500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Reset Ego</h3><p>Reinicia parâmetros de personalidade para estado de fábrica. Esqueça quem você era.</p><div class="wpn-dmg"><b>RECARREGAR</b>%100</div><div class="price">20.000 créditos<small>+ termo de responsabilidade neural</small></div><button class="btn" onclick="addToCart('Reset Ego',20000,this)">ADQUIRIR</button></div>
+  </div>
+</section>
+
+<!-- ARMADURA -->
+<section id="armadura">
+  <h2 class="sec-title">🛡 <span>PROTEÇÃO BALÍSTICA</span></h2>
+  <p class="sec-sub">// O melhor implante é aquele que você nunca precisa usar. //</p>
+  <div class="items">
+    <div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Colete Kevlar Flex</h3><p>Leve, discreto, para de pistola comum. Não de colete, de sorte.</p><div class="wpn-dmg"><b>DEFESA</b>+20</div><div class="price">800 créditos</div><button class="btn" onclick="addToCart('Colete Kevlar Flex',800,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Jaqueta Placa-A</h3><p>Placas cerâmicas integradas em estilo urbano. Resiste a fuzil.</p><div class="wpn-dmg"><b>DEFESA</b>+25</div><div class="price">2.200 créditos</div><button class="btn" onclick="addToCart('Jaqueta Placa-A',2200,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Exo-Rig Guardian</h3><p>Esqueleto reforçado externo. Reduz dano de impacto em 70% e aumenta carga.</p><div class="wpn-dmg"><b>DEFESA</b>+50</div><div class="price">7.000 créditos<small>+ bateria de 8h</small></div><button class="btn" onclick="addToCart('Exo-Rig Guardian',7000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Escudo Energético Pulse</h3><p>Campo defletor de pulso curto. Absorve uma rajada inteira. Uma.</p><div class="wpn-dmg"><b>DEFESA</b>+80</div><div class="price">10.000 créditos<small>+ recarga 5 min</small></div><button class="btn" onclick="addToCart('Escudo Energético Pulse',10000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Carapaça Nano-Weave</h3><p>Tecido nanoativo que endurece no impacto. Invisível sob roupas normais.</p><div class="wpn-dmg"><b>DEFESA</b>+100</div><div class="price">16.000 créditos<small>+ manutenção mensal</small></div><button class="btn" onclick="addToCart('Carapaça Nano-Weave',16000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Blindagem Dermal Titan</h3><p>Substitui camadas de pele por lâminas compostas. Você vira o tanque.</p><div class="wpn-dmg"><b>DEFESA</b>+150</div><div class="price">25.000 créditos<small>+ cirurgia 12h + sobrecarga +20%</small></div><button class="btn" onclick="addToCart('Blindagem Dermal Titan',25000,this)">ADQUIRIR</button></div>
+  </div>
+</section>
+
+<!-- ANÚNCIO 2 -->
+<div class="ad-banner"><div class="ad-frame">
+  <span class="ad-tag">PROPAGANDA</span>
+  <div><h4>NeonCola Gamma</h4><p>// O único refrigerante que brilha no escuro e na sua urina. Sabor: circuito de morango. //</p></div>
+  <span class="ad-price">15 cr</span>
+</div></div>
+
+<!-- HACKER -->
+<section id="hacker">
+  <h2 class="sec-title">⌁ <span>FERRAMENTAS DE INVASÃO</span></h2>
+  <p class="sec-sub">// Toda porta trancada é apenas um convite mal formulado. //</p>
+  <div class="items">
+    <div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Deck Cipher One</h3><p>Cyberdeck básico com spoofers de ICE nível 1–3. Para iniciantes ambiciosos.</p><div class="price">1.800 créditos</div><button class="btn" onclick="addToCart('Deck Cipher One',1800,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">COMUM</span><h3>Sniffer Ghost</h3><p>Intercepta e clona sinais sem fio em 50m. Cofres digitais odeiam isso.</p><div class="price">2.600 créditos</div><button class="btn" onclick="addToCart('Sniffer Ghost',2600,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Vírus Kraken</h3><p>Malware adaptativo que devora firewalls corporativos em segundos.</p><div class="price">6.000 créditos<small>+ uso único</small></div><button class="btn" onclick="addToCart('Vírus Kraken',6000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Proxy Lag Zero</h3><p>Roteamento fantasma através de 40 satélites mortos. Rastreie isso, corporação.</p><div class="price">8.500 créditos<small>+ assinatura anual</small></div><button class="btn" onclick="addToCart('Proxy Lag Zero',8500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>ICE-Breaker Blackbird</h3><p>IA especializada em desmontar contramedidas eletrônicas em tempo real.</p><div class="price">18.000 créditos<small>+ personalidade instável incluída</small></div><button class="btn" onclick="addToCart('ICE-Breaker Blackbird',18000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Backdoor Raiz</h3><p>Acesso nível administrativo na Rede municipal. A corporação não sabe que vendemos.</p><div class="price">50.000 créditos<small>+ depois disso, você nos conheceu</small></div><button class="btn" onclick="addToCart('Backdoor Raiz',50000,this)">ADQUIRIR</button></div>
+  </div>
+</section>
+
+<!-- IMPLANTES -->
+<section id="proteses">
+  <h2 class="sec-title">🦾 <span>PRÓTESES CIBERNÉTICAS</span></h2>
+  <p class="sec-sub">// Hardware que substitui o corpo: você fica MAIS forte, rápido ou resistente. Bônus passivo, sempre ligado. 1 prótese por slot (braços, pernas, esqueleto, coração, olhos). Cada linha tem 3 estágios: Mk-I, Mk-II e Mk-III. //</p>
+  <div class="items">
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Titan-04</h3><p>Servomotores nos dois braços. Socos, arremessos e levantar peso ficam muito mais fortes.</p><div class="imp-meta"><span>SLOT <b>BRAÇOS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d6</div><div class="price">2.400 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>8</b> · gasta <b>4</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Titan-04',2400,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Titan-04 Mk-II</h3><p>Servomotores nos dois braços. Socos, arremessos e levantar peso ficam muito mais fortes. — versão militar refinada, rendimento dobrado.</p><div class="imp-meta"><span>SLOT <b>BRAÇOS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d12</div><div class="price">5.600 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>15</b> · gasta <b>10</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Titan-04 Mk-II',5600,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Titan-04 Mk-III</h3><p>Servomotores nos dois braços. Socos, arremessos e levantar peso ficam muito mais fortes. — protótipo de fronteira, eficiência máxima.</p><div class="imp-meta"><span>SLOT <b>BRAÇOS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d20</div><div class="price">9.600 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>25</b> · gasta <b>16</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Titan-04 Mk-III',9600,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Cyber Arm</h3><p>Braço modular com <b>1 compartimento</b> interno: guarda 1 ferramenta ou arma pequena e saca como ação livre.</p><div class="imp-meta"><span>SLOT <b>BRAÇOS</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d12+5</div><div class="price">6.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>21</b> · gasta <b>13</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Cyber Arm',6000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Cyber Arm Mk-II</h3><p>Braço modular com <b>2 compartimentos</b> internos: guardam ferramentas ou armas pequenas, sacadas como ação livre.</p><div class="imp-meta"><span>SLOT <b>BRAÇOS</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d20+5</div><div class="price">14.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>31</b> · gasta <b>19</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Cyber Arm Mk-II',14000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Cyber Arm Mk-III</h3><p>Braço modular com <b>3 compartimentos</b> internos: guardam ferramentas ou armas pequenas, sacadas como ação livre.</p><div class="imp-meta"><span>SLOT <b>BRAÇOS</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d20+15</div><div class="price">24.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>44</b> · gasta <b>25</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Cyber Arm Mk-III',24000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Servo-Leg</h3><p>Pernas com atuadores de força. Saltos mais altos, chutes pesados e mais capacidade de carga.</p><div class="imp-meta"><span>SLOT <b>PERNAS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d6+5</div><div class="price">3.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>14</b> · gasta <b>7</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Servo-Leg',3000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Servo-Leg Mk-II</h3><p>Pernas com atuadores de força. Saltos mais altos, chutes pesados e mais capacidade de carga. — versão militar refinada, rendimento dobrado.</p><div class="imp-meta"><span>SLOT <b>PERNAS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d12+5</div><div class="price">7.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>21</b> · gasta <b>13</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Servo-Leg Mk-II',7000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">FORÇA</span><span class="tag comum">COMUM</span><h3>Servo-Leg Mk-III</h3><p>Pernas com atuadores de força. Saltos mais altos, chutes pesados e mais capacidade de carga. — protótipo de fronteira, eficiência máxima.</p><div class="imp-meta"><span>SLOT <b>PERNAS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA</b>1d20+5</div><div class="price">12.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>31</b> · gasta <b>19</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Servo-Leg Mk-III',12000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">VELOCIDADE</span><span class="tag raro">RARO</span><h3>Vector Legs</h3><p>Pernas mecânicas de corrida. Mais deslocamento e esquiva, ótimas para fuga e flanco.</p><div class="imp-meta"><span>SLOT <b>PERNAS</b></span><span>AFINIDADE <b>VELOZ</b></span></div><div class="wpn-dmg"><b>BÔNUS VELOCIDADE</b>1d12+5</div><div class="price">6.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>21</b> · gasta <b>13</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d6</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Vector Legs',6000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">VELOCIDADE</span><span class="tag raro">RARO</span><h3>Vector Legs Mk-II</h3><p>Pernas mecânicas de corrida. Mais deslocamento e esquiva, ótimas para fuga e flanco. — versão militar refinada, rendimento dobrado.</p><div class="imp-meta"><span>SLOT <b>PERNAS</b></span><span>AFINIDADE <b>VELOZ</b></span></div><div class="wpn-dmg"><b>BÔNUS VELOCIDADE</b>1d20+5</div><div class="price">14.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>31</b> · gasta <b>19</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d6</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Vector Legs Mk-II',14000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">VELOCIDADE</span><span class="tag raro">RARO</span><h3>Vector Legs Mk-III</h3><p>Pernas mecânicas de corrida. Mais deslocamento e esquiva, ótimas para fuga e flanco. — protótipo de fronteira, eficiência máxima.</p><div class="imp-meta"><span>SLOT <b>PERNAS</b></span><span>AFINIDADE <b>VELOZ</b></span></div><div class="wpn-dmg"><b>BÔNUS VELOCIDADE</b>1d20+15</div><div class="price">24.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>44</b> · gasta <b>25</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d6</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Vector Legs Mk-III',24000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">RESISTÊNCIA</span><span class="tag comum">COMUM</span><h3>Ossatura-X</h3><p>Esqueleto reforçado com liga militar. Reduz dano de impacto e de queda e evita fraturas.</p><div class="imp-meta"><span>SLOT <b>ESQUELETO</b></span><span>AFINIDADE <b>TANQUE</b></span></div><div class="wpn-dmg"><b>BÔNUS RESIST.</b>1d6+5</div><div class="price">3.600 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>14</b> · gasta <b>7</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Ossatura-X',3600,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">RESISTÊNCIA</span><span class="tag comum">COMUM</span><h3>Ossatura-X Mk-II</h3><p>Esqueleto reforçado com liga militar. Reduz dano de impacto e de queda e evita fraturas. — versão militar refinada, rendimento dobrado.</p><div class="imp-meta"><span>SLOT <b>ESQUELETO</b></span><span>AFINIDADE <b>TANQUE</b></span></div><div class="wpn-dmg"><b>BÔNUS RESIST.</b>1d20</div><div class="price">8.400 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>25</b> · gasta <b>16</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Ossatura-X Mk-II',8400,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">RESISTÊNCIA</span><span class="tag comum">COMUM</span><h3>Ossatura-X Mk-III</h3><p>Esqueleto reforçado com liga militar. Reduz dano de impacto e de queda e evita fraturas. — protótipo de fronteira, eficiência máxima.</p><div class="imp-meta"><span>SLOT <b>ESQUELETO</b></span><span>AFINIDADE <b>TANQUE</b></span></div><div class="wpn-dmg"><b>BÔNUS RESIST.</b>1d20+5</div><div class="price">14.400 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>31</b> · gasta <b>19</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Ossatura-X Mk-III',14400,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">PERCEPÇÃO</span><span class="tag comum">COMUM</span><h3>Neon Eyes</h3><p>Olhos artificiais sempre ligados: visão noturna, zoom e identificação de objetos.</p><div class="imp-meta"><span>SLOT <b>OLHOS</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="wpn-dmg"><b>BÔNUS PERCEPÇÃO</b>1d12</div><div class="price">4.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>15</b> · gasta <b>10</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Neon Eyes',4500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">PERCEPÇÃO</span><span class="tag comum">COMUM</span><h3>Neon Eyes Mk-II</h3><p>Olhos artificiais sempre ligados: visão noturna, zoom e identificação de objetos. — versão militar refinada, rendimento dobrado.</p><div class="imp-meta"><span>SLOT <b>OLHOS</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="wpn-dmg"><b>BÔNUS PERCEPÇÃO</b>1d20</div><div class="price">10.500 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>25</b> · gasta <b>16</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Neon Eyes Mk-II',10500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">PERCEPÇÃO</span><span class="tag comum">COMUM</span><h3>Neon Eyes Mk-III</h3><p>Olhos artificiais sempre ligados: visão noturna, zoom e identificação de objetos. — protótipo de fronteira, eficiência máxima.</p><div class="imp-meta"><span>SLOT <b>OLHOS</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="wpn-dmg"><b>BÔNUS PERCEPÇÃO</b>1d20+10</div><div class="price">18.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>38</b> · gasta <b>22</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d4</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Neon Eyes Mk-III',18000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">ENERGIA</span><span class="tag raro">RARO</span><h3>Reactor Heart</h3><p>Coração artificial com reator compacto. Reduz em <b>15%</b> o gasto de sobrecarga de todos os seus implantes.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>QUALQUER</b></span></div><div class="wpn-dmg"><b>EFEITO</b>-15% SOBRECARGA</div><div class="price">18.000 créditos<small>+ núcleo energético + estágio 1</small></div><button class="btn" onclick="addToCart('Reactor Heart',18000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">ENERGIA</span><span class="tag raro">RARO</span><h3>Reactor Heart Mk-II</h3><p>Coração artificial com reator compacto. Reduz em <b>25%</b> o gasto de sobrecarga de todos os seus implantes.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>QUALQUER</b></span></div><div class="wpn-dmg"><b>EFEITO</b>-25% SOBRECARGA</div><div class="price">42.000 créditos<small>+ núcleo energético + estágio 2</small></div><button class="btn" onclick="addToCart('Reactor Heart Mk-II',42000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">ENERGIA</span><span class="tag raro">RARO</span><h3>Reactor Heart Mk-III</h3><p>Coração artificial com reator compacto. Reduz em <b>35%</b> o gasto de sobrecarga de todos os seus implantes.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>QUALQUER</b></span></div><div class="wpn-dmg"><b>EFEITO</b>-35% SOBRECARGA</div><div class="price">72.000 créditos<small>+ núcleo energético + estágio 3</small></div><button class="btn" onclick="addToCart('Reactor Heart Mk-III',72000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag proibido">RESISTÊNCIA</span><span class="tag proibido">PROIBIDO</span><h3>ARES FRAME</h3><p>Exoesqueleto interno de uso militar proibido. Melhora força, estabilidade e resistência ao mesmo tempo.</p><div class="imp-meta"><span>SLOT <b>ESQUELETO</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="wpn-dmg"><b>BÔNUS FORÇA+RESIST.</b>1d12+5</div><div class="price">7.500 créditos<small>desvantagem: pesado demais para correr</small></div><div class="imp-crit"><span class="ic-cost">⚡ CRÍTICO: bônus <b>21</b> · gasta <b>13</b> de sobrecarga</span><span>USO NORMAL: gasta <b>1d10</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('ARES FRAME',7500,this)">ADQUIRIR</button></div>
+  </div>
+</section>
+
+<section id="implantes">
+  <h2 class="sec-title">🧠 <span>IMPLANTES NEURAIS</span></h2>
+  <p class="sec-sub">// Software e biologia que dão um PODER: cada implante tem uma habilidade ativa, com custo de sobrecarga e recarga. Organizados por especialidade. 1 implante por slot — quem tem afinidade com a especialidade rende o máximo. //</p>
+  <div class="items">
+    <div class="card"><div class="scanline"></div><span class="tag raro">VELOZ</span><span class="tag raro">RARO</span><h3>Sandevistan</h3><p>Implante neural que acelera a percepção e os reflexos. <b>Habilidade — Time Burst:</b> ganha +1 turno de ação imediatamente e +25% de velocidade durante o turno.</p><div class="imp-meta"><span>SLOT <b>SISTEMA NERVOSO</b></span><span>AFINIDADE <b>VELOZ</b></span></div><div class="price">12.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>DESVANTAGEM: -15% velocidade por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('Sandevistan',12000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">VELOZ</span><span class="tag experimental">EXPERIMENTAL</span><h3>Sandevistan Mk-II</h3><p>Versão militar com processamento neural muito mais rápido. <b>Habilidade — Time Burst II:</b> ganha +1 turno de ação e pode fazer uma ação de movimento adicional.</p><div class="imp-meta"><span>SLOT <b>SISTEMA NERVOSO</b></span><span>AFINIDADE <b>VELOZ</b></span></div><div class="price">28.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>30</b> de sobrecarga · RECARGA: <b>3 turnos</b></span></div><button class="btn" onclick="addToCart('Sandevistan Mk-II',28000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag proibido">VELOZ</span><span class="tag proibido">PROIBIDO</span><h3>Sandevistan Mk-III</h3><p>Protótipo que força o cérebro além do limite humano. <b>Habilidade — Time Break:</b> ganha +1 turno completo, +40% de velocidade e não sofre ataques de oportunidade durante o efeito.</p><div class="imp-meta"><span>SLOT <b>SISTEMA NERVOSO</b></span><span>AFINIDADE <b>VELOZ</b></span></div><div class="price">48.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>40</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>DESVANTAGEM: 10% de chance de Atordoamento após o efeito</span></div><button class="btn" onclick="addToCart('Sandevistan Mk-III',48000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">VELOZ</span><span class="tag comum">COMUM</span><h3>Neuro Accelerator</h3><p>Acelera a comunicação entre cérebro e sistema nervoso. <b>Habilidade — Reflexo Instantâneo:</b> uma vez por rodada, reage a um ataque antes que ele aconteça, com +30% de chance de esquiva.</p><div class="imp-meta"><span>SLOT <b>SISTEMA NERVOSO</b></span><span>AFINIDADE <b>VELOZ</b></span></div><div class="price">6.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>8</b> de sobrecarga · RECARGA: <b>1x por rodada</b></span></div><button class="btn" onclick="addToCart('Neuro Accelerator',6500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">VELOZ</span><span class="tag raro">RARO</span><h3>Ghost Step</h3><p>Microatuadores que permitem movimento rápido e silencioso. <b>Habilidade — Phantom Dash:</b> move-se instantaneamente uma curta distância e ignora ataques de oportunidade.</p><div class="imp-meta"><span>SLOT <b>MÚSCULOS</b></span><span>AFINIDADE <b>VELOZ</b></span></div><div class="price">13.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>15</b> de sobrecarga · RECARGA: <b>2 turnos</b></span></div><button class="btn" onclick="addToCart('Ghost Step',13500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">BRUTO</span><span class="tag comum">COMUM</span><h3>Titan Grip</h3><p>Servomotores implantados nos braços. <b>Habilidade — Impacto Brutal:</b> o próximo ataque corpo a corpo causa +50% de dano e empurra o inimigo.</p><div class="imp-meta"><span>SLOT <b>MÚSCULOS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="price">5.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>10</b> de sobrecarga · RECARGA: <b>2 turnos</b></span></div><button class="btn" onclick="addToCart('Titan Grip',5500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">BRUTO</span><span class="tag raro">RARO</span><h3>Graviton Fist</h3><p>Punhos com geradores de impacto cinético. <b>Habilidade — Golpe Gravitacional:</b> causa +100% de dano e aplica Atordoamento por 1 turno se o alvo for atingido.</p><div class="imp-meta"><span>SLOT <b>MÚSCULOS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="price">13.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga · RECARGA: <b>4 turnos</b></span></div><button class="btn" onclick="addToCart('Graviton Fist',13000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">BRUTO</span><span class="tag raro">RARO</span><h3>Hydra Muscle</h3><p>Músculo sintético que multiplica a força por pouco tempo. <b>Habilidade — Overmuscle:</b> +40% de dano físico e +30% de resistência durante 3 turnos.</p><div class="imp-meta"><span>SLOT <b>MÚSCULOS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="price">7.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>25</b> de sobrecarga · RECARGA: <b>5 turnos</b></span><span>DESVANTAGEM: -20% velocidade por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('Hydra Muscle',7500,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">BRUTO</span><span class="tag experimental">EXPERIMENTAL</span><h3>ADRENAL BOOSTER</h3><p>Glândula artificial que libera adrenalina quando o corpo entra em perigo. <b>Habilidade — Adrenaline Rush:</b> +25% de dano, +25% de velocidade e +15% de esquiva durante 3 turnos.</p><div class="imp-meta"><span>SLOT <b>SANGUE E ÓRGÃOS</b></span><span>AFINIDADE <b>BRUTO</b></span></div><div class="price">3.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga</span><span>DESVANTAGEM: -15% velocidade por 2 turnos após o efeito</span></div><button class="btn" onclick="addToCart('ADRENAL BOOSTER',3000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">TANQUE</span><span class="tag raro">RARO</span><h3>Pain Editor</h3><p>Edita os sinais de dor no sistema neural. <b>Habilidade — Ignore Pain:</b> por 2 turnos, não sofre penalidades por estar com pouca vida.</p><div class="imp-meta"><span>SLOT <b>SISTEMA NERVOSO</b></span><span>AFINIDADE <b>TANQUE</b></span></div><div class="price">10.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>15</b> de sobrecarga · RECARGA: <b>5 turnos</b></span></div><button class="btn" onclick="addToCart('Pain Editor',10000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">TANQUE</span><span class="tag experimental">EXPERIMENTAL</span><h3>Nanite Blood</h3><p>Nanomáquinas no sangue que reparam o corpo e os implantes. <b>Habilidade — Regeneração:</b> recupera 10% da vida máxima por turno durante 3 turnos.</p><div class="imp-meta"><span>SLOT <b>SANGUE E ÓRGÃOS</b></span><span>AFINIDADE <b>TANQUE</b></span></div><div class="price">24.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga · RECARGA: <b>6 turnos</b></span></div><button class="btn" onclick="addToCart('Nanite Blood',24000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">TÁTICO</span><span class="tag comum">COMUM</span><h3>Kiroshi Optics</h3><p>Camada de software sobre a visão que analisa o ambiente em tempo real. <b>Habilidade — Scan:</b> revela inimigos, pontos fracos e dados básicos do alvo, com +20% de precisão contra ele por 3 turnos.</p><div class="imp-meta"><span>SLOT <b>NERVO ÓPTICO</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="price">4.800 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>5</b> de sobrecarga</span></div><button class="btn" onclick="addToCart('Kiroshi Optics',4800,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">TÁTICO</span><span class="tag raro">RARO</span><h3>Kiroshi Predator</h3><p>Visão de combate que marca o alvo. <b>Habilidade — Weak Point:</b> identifica um ponto vulnerável do inimigo; o próximo ataque contra ele causa +50% de dano.</p><div class="imp-meta"><span>SLOT <b>NERVO ÓPTICO</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="price">11.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>12</b> de sobrecarga · RECARGA: <b>3 turnos</b></span></div><button class="btn" onclick="addToCart('Kiroshi Predator',11000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">TÁTICO</span><span class="tag experimental">EXPERIMENTAL</span><h3>Optical Camo</h3><p>Nanomáquinas na pele alteram a aparência do usuário para dificultar a detecção. <b>Habilidade — Camuflagem:</b> fica invisível por 1 turno ou até realizar um ataque.</p><div class="imp-meta"><span>SLOT <b>PELE</b></span><span>AFINIDADE <b>TÁTICO</b></span></div><div class="price">20.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>25</b> de sobrecarga · RECARGA: <b>4 turnos</b></span></div><button class="btn" onclick="addToCart('Optical Camo',20000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">TÁTICO</span><span class="tag raro">RARO</span><h3>Tactician AI</h3><p>IA de combate que lê o campo de batalha e dita jogadas. <b>Habilidade — Ordem Tática:</b> escolhe um aliado; ele recebe +20% de precisão e +15% de esquiva por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>TÁTICO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">9.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>12</b> de sobrecarga · RECARGA: <b>3 turnos</b></span></div><button class="btn" onclick="addToCart('Tactician AI',9000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">NETRUNNER</span><span class="tag comum">COMUM</span><h3>DataJack</h3><p>Porta na nuca que liga você direto a terminais e dispositivos compatíveis. <b>Habilidade — Jack-In:</b> conecta e faz uma ação de hacking sem precisar de deck, com +20% nos testes de invasão por 3 turnos.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">3.600 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>8</b> de sobrecarga · RECARGA: <b>2 turnos</b></span><span>DESVANTAGEM: não pode se mover enquanto estiver conectado</span></div><button class="btn" onclick="addToCart('DataJack',3600,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">NETRUNNER</span><span class="tag raro">RARO</span><h3>Ghost Brain</h3><p>Processador neural secundário que faz cálculos em paralelo. <b>Habilidade — Multitarefa:</b> permite duas ações diferentes no mesmo turno, desde que a segunda não seja um ataque.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span></div><div class="price">18.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>15</b> de sobrecarga · RECARGA: <b>2 turnos</b></span></div><button class="btn" onclick="addToCart('Ghost Brain',18000,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">NETRUNNER</span><span class="tag comum">COMUM</span><h3>NEXUS-FOCUS</h3><p>Estimulador de concentração para quem vive conectado. <b>Habilidade — Foco Total:</b> por 3 turnos, +15% de precisão e não pode ser Distraído.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">850 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>6</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>DESVANTAGEM: -10% esquiva por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('NEXUS-FOCUS',850,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag raro">REFORÇO</span><span class="tag raro">RARO</span><h3>Medic Daemon</h3><p>Daemon médico que dirige nanossuturas à distância. <b>Habilidade — Cura Remota:</b> cura 20% da vida máxima do alvo.</p><div class="imp-meta"><span>SLOT <b>SANGUE E ÓRGÃOS</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">8.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>12</b> de sobrecarga · RECARGA: <b>2 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Medic Daemon',8000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag experimental">REFORÇO</span><span class="tag experimental">EXPERIMENTAL</span><h3>Medic Daemon Mk-II</h3><p>Daemon médico que dirige nanossuturas à distância. <b>Habilidade — Cura Remota II:</b> cura 35% da vida máxima do alvo e remove 1 estado negativo.</p><div class="imp-meta"><span>SLOT <b>SANGUE E ÓRGÃOS</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">20.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga · RECARGA: <b>2 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Medic Daemon Mk-II',20000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag proibido">REFORÇO</span><span class="tag proibido">PROIBIDO</span><h3>Medic Daemon Mk-III</h3><p>Daemon médico que dirige nanossuturas à distância. <b>Habilidade — Cura Remota III:</b> cura 50% da vida máxima do alvo e remove todos os estados negativos.</p><div class="imp-meta"><span>SLOT <b>SANGUE E ÓRGÃOS</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">42.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>30</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Medic Daemon Mk-III',42000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliados"><div class="scanline"></div><span class="tag raro">REFORÇO</span><span class="tag raro">RARO</span><h3>Pulse Aura</h3><p>Emissor no peito que banha a equipe em nanopulsos. <b>Habilidade — Aura de Reparo:</b> cura 10% da vida máxima de todos os aliados.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">11.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>18</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>todos os aliados</b></span></div><button class="btn" onclick="addToCart('Pulse Aura',11000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliados"><div class="scanline"></div><span class="tag experimental">REFORÇO</span><span class="tag experimental">EXPERIMENTAL</span><h3>Pulse Aura Mk-II</h3><p>Emissor no peito que banha a equipe em nanopulsos. <b>Habilidade — Aura de Reparo II:</b> cura 15% de todos os aliados e +10% de resistência por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">26.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>28</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>todos os aliados</b></span></div><button class="btn" onclick="addToCart('Pulse Aura Mk-II',26000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliados"><div class="scanline"></div><span class="tag proibido">REFORÇO</span><span class="tag proibido">PROIBIDO</span><h3>Pulse Aura Mk-III</h3><p>Emissor no peito que banha a equipe em nanopulsos. <b>Habilidade — Aura de Reparo III:</b> cura 25% de todos os aliados e +20% de resistência por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">52.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>38</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>todos os aliados</b></span></div><button class="btn" onclick="addToCart('Pulse Aura Mk-III',52000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag raro">REFORÇO</span><span class="tag raro">RARO</span><h3>Stim Injector</h3><p>Injetores sob a pele que dosam estimulantes em quem você tocar ou mirar. <b>Habilidade — Dose de Combate:</b> alvo causa +20% de dano por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>SANGUE E ÓRGÃOS</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">7.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>12</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span><span>DESVANTAGEM: alvo sofre -10% de esquiva por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('Stim Injector',7500,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag experimental">REFORÇO</span><span class="tag experimental">EXPERIMENTAL</span><h3>Stim Injector Mk-II</h3><p>Injetores sob a pele que dosam estimulantes em quem você tocar ou mirar. <b>Habilidade — Dose de Combate II:</b> alvo causa +30% de dano e +15% de velocidade por 3 turnos.</p><div class="imp-meta"><span>SLOT <b>SANGUE E ÓRGÃOS</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">18.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span><span>DESVANTAGEM: alvo sofre -10% de esquiva por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('Stim Injector Mk-II',18000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag proibido">REFORÇO</span><span class="tag proibido">PROIBIDO</span><h3>Stim Injector Mk-III</h3><p>Injetores sob a pele que dosam estimulantes em quem você tocar ou mirar. <b>Habilidade — Dose de Combate III:</b> alvo causa +45% de dano, +25% de velocidade e +15% de precisão por 3 turnos.</p><div class="imp-meta"><span>SLOT <b>SANGUE E ÓRGÃOS</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">38.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>30</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span><span>DESVANTAGEM: alvo sofre -10% de esquiva por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('Stim Injector Mk-III',38000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag raro">REFORÇO</span><span class="tag raro">RARO</span><h3>Aegis Link</h3><p>Link neural que projeta um campo defensivo sobre um aliado. <b>Habilidade — Barreira Compartilhada:</b> alvo recebe +20% de resistência por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">9.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>12</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Aegis Link',9000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag experimental">REFORÇO</span><span class="tag experimental">EXPERIMENTAL</span><h3>Aegis Link Mk-II</h3><p>Link neural que projeta um campo defensivo sobre um aliado. <b>Habilidade — Barreira Compartilhada II:</b> alvo recebe +30% de resistência e escudo de 10% da vida máxima por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">21.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Aegis Link Mk-II',21000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag proibido">REFORÇO</span><span class="tag proibido">PROIBIDO</span><h3>Aegis Link Mk-III</h3><p>Link neural que projeta um campo defensivo sobre um aliado. <b>Habilidade — Barreira Compartilhada III:</b> alvo recebe +40% de resistência, escudo de 20% da vida máxima e imunidade a Atordoamento por 3 turnos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">44.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>28</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Aegis Link Mk-III',44000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag comum">REFORÇO</span><span class="tag comum">COMUM</span><h3>Purge Protocol</h3><p>Antivírus biológico que limpa o organismo de quem estiver sob efeito. <b>Habilidade — Purificação:</b> remove 1 estado negativo do alvo.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">6.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>8</b> de sobrecarga · RECARGA: <b>2 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Purge Protocol',6500,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag raro">REFORÇO</span><span class="tag raro">RARO</span><h3>Purge Protocol Mk-II</h3><p>Antivírus biológico que limpa o organismo de quem estiver sob efeito. <b>Habilidade — Purificação II:</b> remove todos os estados negativos do alvo.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">16.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>14</b> de sobrecarga · RECARGA: <b>2 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Purge Protocol Mk-II',16000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado"><div class="scanline"></div><span class="tag experimental">REFORÇO</span><span class="tag experimental">EXPERIMENTAL</span><h3>Purge Protocol Mk-III</h3><p>Antivírus biológico que limpa o organismo de quem estiver sob efeito. <b>Habilidade — Purificação III:</b> remove todos os estados negativos do alvo e o torna imune a eles por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">34.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>22</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 aliado (ou você)</b></span></div><button class="btn" onclick="addToCart('Purge Protocol Mk-III',34000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado_caido"><div class="scanline"></div><span class="tag raro">REFORÇO</span><span class="tag raro">RARO</span><h3>Second Wind Core</h3><p>Desfibrilador de campo: traz de volta quem caiu. <b>Habilidade — Ressurgir:</b> revive um aliado Inconsciente com 25% da vida máxima.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">15.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>25</b> de sobrecarga · RECARGA: <b>6 turnos</b></span><span>ALVO: <b>1 aliado Inconsciente</b></span><span>DESVANTAGEM: você fica Esgotado por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('Second Wind Core',15000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado_caido"><div class="scanline"></div><span class="tag experimental">REFORÇO</span><span class="tag experimental">EXPERIMENTAL</span><h3>Second Wind Core Mk-II</h3><p>Desfibrilador de campo: traz de volta quem caiu. <b>Habilidade — Ressurgir II:</b> revive um aliado Inconsciente com 40% da vida máxima.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">34.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>35</b> de sobrecarga · RECARGA: <b>6 turnos</b></span><span>ALVO: <b>1 aliado Inconsciente</b></span><span>DESVANTAGEM: você fica Esgotado por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('Second Wind Core Mk-II',34000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="aliado_caido"><div class="scanline"></div><span class="tag proibido">REFORÇO</span><span class="tag proibido">PROIBIDO</span><h3>Second Wind Core Mk-III</h3><p>Desfibrilador de campo: traz de volta quem caiu. <b>Habilidade — Ressurgir III:</b> revive um aliado Inconsciente com 60% da vida máxima e +20% de dano por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>CORAÇÃO</b></span><span>AFINIDADE <b>REFORÇO</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">68.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>45</b> de sobrecarga · RECARGA: <b>7 turnos</b></span><span>ALVO: <b>1 aliado Inconsciente</b></span><span>DESVANTAGEM: você fica Esgotado por 1 turno após o efeito</span></div><button class="btn" onclick="addToCart('Second Wind Core Mk-III',68000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="queimando"><div class="scanline"></div><span class="tag raro">NETRUNNER</span><span class="tag raro">RARO</span><h3>Inferno Script</h3><p>Script que força o hardware do alvo a superaquecer. <b>Habilidade — Sobrecarga Térmica:</b> causa 1d8 de dano e aplica Queimando por 3 turnos (1d4 por turno).</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">7.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>12</b> de sobrecarga · RECARGA: <b>2 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Inferno Script',7000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="queimando"><div class="scanline"></div><span class="tag experimental">NETRUNNER</span><span class="tag experimental">EXPERIMENTAL</span><h3>Inferno Script Mk-II</h3><p>Script que força o hardware do alvo a superaquecer. <b>Habilidade — Sobrecarga Térmica II:</b> causa 2d8 de dano e aplica Queimando por 3 turnos (1d6 por turno).</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">17.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Inferno Script Mk-II',17000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="queimando"><div class="scanline"></div><span class="tag proibido">NETRUNNER</span><span class="tag proibido">PROIBIDO</span><h3>Inferno Script Mk-III</h3><p>Script que força o hardware do alvo a superaquecer. <b>Habilidade — Sobrecarga Térmica III:</b> causa 4d8 de dano e aplica Queimando por 4 turnos (2d6 por turno).</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">36.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>30</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Inferno Script Mk-III',36000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="envenenado"><div class="scanline"></div><span class="tag raro">NETRUNNER</span><span class="tag raro">RARO</span><h3>Toxin Worm</h3><p>Worm que adultera o sistema de dosagem e libera toxinas no alvo. <b>Habilidade — Verme Tóxico:</b> aplica Envenenado por 3 turnos (1d6 por turno).</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">6.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>10</b> de sobrecarga · RECARGA: <b>2 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Toxin Worm',6500,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="envenenado"><div class="scanline"></div><span class="tag experimental">NETRUNNER</span><span class="tag experimental">EXPERIMENTAL</span><h3>Toxin Worm Mk-II</h3><p>Worm que adultera o sistema de dosagem e libera toxinas no alvo. <b>Habilidade — Verme Tóxico II:</b> aplica Envenenado por 4 turnos (1d8 por turno) e -10% de precisão do alvo.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">16.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>18</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Toxin Worm Mk-II',16000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="envenenado"><div class="scanline"></div><span class="tag proibido">NETRUNNER</span><span class="tag proibido">PROIBIDO</span><h3>Toxin Worm Mk-III</h3><p>Worm que adultera o sistema de dosagem e libera toxinas no alvo. <b>Habilidade — Verme Tóxico III:</b> aplica Envenenado por 5 turnos (2d8 por turno) e -20% de precisão do alvo.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">34.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>26</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Toxin Worm Mk-III',34000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="eletrocutado"><div class="scanline"></div><span class="tag raro">NETRUNNER</span><span class="tag raro">RARO</span><h3>Arc Surge</h3><p>Descarga de rede que se converte em corrente real. <b>Habilidade — Surto Elétrico:</b> causa 1d10 de dano e aplica Eletrocutado por 2 turnos (25% de chance de perder a ação).</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">7.500 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>12</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Arc Surge',7500,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="eletrocutado"><div class="scanline"></div><span class="tag experimental">NETRUNNER</span><span class="tag experimental">EXPERIMENTAL</span><h3>Arc Surge Mk-II</h3><p>Descarga de rede que se converte em corrente real. <b>Habilidade — Surto Elétrico II:</b> causa 2d10 de dano e aplica Eletrocutado por 2 turnos (35% de chance de perder a ação).</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">18.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>20</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Arc Surge Mk-II',18000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="eletrocutado"><div class="scanline"></div><span class="tag proibido">NETRUNNER</span><span class="tag proibido">PROIBIDO</span><h3>Arc Surge Mk-III</h3><p>Descarga de rede que se converte em corrente real. <b>Habilidade — Surto Elétrico III:</b> causa 4d10 de dano e aplica Eletrocutado por 3 turnos (50% de chance de perder a ação).</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">38.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>30</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Arc Surge Mk-III',38000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="tonto"><div class="scanline"></div><span class="tag raro">NETRUNNER</span><span class="tag raro">RARO</span><h3>Mind Spike</h3><p>Pico de dados direto na mente do alvo. Ignora armadura. <b>Habilidade — Espinho Mental:</b> causa 2d6 de dano direto e aplica Tonto por 1 turno.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">8.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>14</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Mind Spike',8000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="tonto"><div class="scanline"></div><span class="tag experimental">NETRUNNER</span><span class="tag experimental">EXPERIMENTAL</span><h3>Mind Spike Mk-II</h3><p>Pico de dados direto na mente do alvo. Ignora armadura. <b>Habilidade — Espinho Mental II:</b> causa 4d6 de dano direto e aplica Tonto por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">19.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>22</b> de sobrecarga · RECARGA: <b>3 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Mind Spike Mk-II',19000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="tonto"><div class="scanline"></div><span class="tag proibido">NETRUNNER</span><span class="tag proibido">PROIBIDO</span><h3>Mind Spike Mk-III</h3><p>Pico de dados direto na mente do alvo. Ignora armadura. <b>Habilidade — Espinho Mental III:</b> causa 6d6 de dano direto e aplica Tonto por 2 turnos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">40.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>32</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>1 inimigo</b></span></div><button class="btn" onclick="addToCart('Mind Spike Mk-III',40000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigos" data-status="hackeado"><div class="scanline"></div><span class="tag raro">NETRUNNER</span><span class="tag raro">RARO</span><h3>Fork Bomb</h3><p>Código que se replica até travar tudo que estiver na rede. <b>Habilidade — Bomba de Processos:</b> causa 1d6 de dano e aplica Hackeado por 1 turno em todos os inimigos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">12.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>18</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>todos os inimigos</b></span></div><button class="btn" onclick="addToCart('Fork Bomb',12000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigos" data-status="hackeado"><div class="scanline"></div><span class="tag experimental">NETRUNNER</span><span class="tag experimental">EXPERIMENTAL</span><h3>Fork Bomb Mk-II</h3><p>Código que se replica até travar tudo que estiver na rede. <b>Habilidade — Bomba de Processos II:</b> causa 2d6 de dano e aplica Hackeado por 2 turnos em todos os inimigos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">28.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>28</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>todos os inimigos</b></span></div><button class="btn" onclick="addToCart('Fork Bomb Mk-II',28000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigos" data-status="hackeado"><div class="scanline"></div><span class="tag proibido">NETRUNNER</span><span class="tag proibido">PROIBIDO</span><h3>Fork Bomb Mk-III</h3><p>Código que se replica até travar tudo que estiver na rede. <b>Habilidade — Bomba de Processos III:</b> causa 3d6 de dano e aplica Hackeado por 2 turnos em todos os inimigos.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">56.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>38</b> de sobrecarga · RECARGA: <b>5 turnos</b></span><span>ALVO: <b>todos os inimigos</b></span></div><button class="btn" onclick="addToCart('Fork Bomb Mk-III',56000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigos" data-status="cego"><div class="scanline"></div><span class="tag raro">NETRUNNER</span><span class="tag raro">RARO</span><h3>Blackout Virus</h3><p>Vírus que derruba sensores e óticas de todos ao redor. <b>Habilidade — Apagão:</b> aplica Cego por 1 turno em todos os inimigos.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">9.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>15</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>todos os inimigos</b></span></div><button class="btn" onclick="addToCart('Blackout Virus',9000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigos" data-status="cego"><div class="scanline"></div><span class="tag experimental">NETRUNNER</span><span class="tag experimental">EXPERIMENTAL</span><h3>Blackout Virus Mk-II</h3><p>Vírus que derruba sensores e óticas de todos ao redor. <b>Habilidade — Apagão II:</b> aplica Cego por 2 turnos em todos os inimigos.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">22.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>24</b> de sobrecarga · RECARGA: <b>4 turnos</b></span><span>ALVO: <b>todos os inimigos</b></span></div><button class="btn" onclick="addToCart('Blackout Virus Mk-II',22000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigos" data-status="cego"><div class="scanline"></div><span class="tag proibido">NETRUNNER</span><span class="tag proibido">PROIBIDO</span><h3>Blackout Virus Mk-III</h3><p>Vírus que derruba sensores e óticas de todos ao redor. <b>Habilidade — Apagão III:</b> aplica Cego por 2 turnos e -20% de dano em todos os inimigos.</p><div class="imp-meta"><span>SLOT <b>PORTA NEURAL</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">46.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>34</b> de sobrecarga · RECARGA: <b>5 turnos</b></span><span>ALVO: <b>todos os inimigos</b></span></div><button class="btn" onclick="addToCart('Blackout Virus Mk-III',46000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="hackeado"><div class="scanline"></div><span class="tag experimental">NETRUNNER</span><span class="tag experimental">EXPERIMENTAL</span><h3>Puppeteer</h3><p>Invade o controle motor do alvo e assume o comando dele. <b>Habilidade — Marionete:</b> controla um inimigo comum por 1 turno (teste de resistência; chefes são imunes).</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">20.000 créditos</div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>25</b> de sobrecarga · RECARGA: <b>5 turnos</b></span><span>ALVO: <b>1 inimigo</b></span><span>DESVANTAGEM: o controle falha se o alvo for atingido pelos aliados antes do seu turno</span></div><button class="btn" onclick="addToCart('Puppeteer',20000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="hackeado"><div class="scanline"></div><span class="tag experimental">NETRUNNER</span><span class="tag experimental">EXPERIMENTAL</span><h3>Puppeteer Mk-II</h3><p>Invade o controle motor do alvo e assume o comando dele. <b>Habilidade — Marionete II:</b> controla um inimigo por 1 turno (chefes têm teste de resistência).</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">45.000 créditos<small>estágio 2</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>35</b> de sobrecarga · RECARGA: <b>5 turnos</b></span><span>ALVO: <b>1 inimigo</b></span><span>DESVANTAGEM: o controle falha se o alvo for atingido pelos aliados antes do seu turno</span></div><button class="btn" onclick="addToCart('Puppeteer Mk-II',45000,this)">ADQUIRIR</button></div>
+    <div class="card" data-alvo="inimigo" data-status="hackeado"><div class="scanline"></div><span class="tag proibido">NETRUNNER</span><span class="tag proibido">PROIBIDO</span><h3>Puppeteer Mk-III</h3><p>Invade o controle motor do alvo e assume o comando dele. <b>Habilidade — Marionete III:</b> controla qualquer inimigo por 1 turno, incluindo o uso das habilidades dele.</p><div class="imp-meta"><span>SLOT <b>CÉREBRO</b></span><span>AFINIDADE <b>NETRUNNER</b></span><span class="novo">★ HABILIDADE NOVA</span></div><div class="price">90.000 créditos<small>estágio 3</small></div><div class="imp-crit"><span class="ic-cost">⚡ CUSTO: <b>45</b> de sobrecarga · RECARGA: <b>6 turnos</b></span><span>ALVO: <b>1 inimigo</b></span><span>DESVANTAGEM: o controle falha se o alvo for atingido pelos aliados antes do seu turno</span></div><button class="btn" onclick="addToCart('Puppeteer Mk-III',90000,this)">ADQUIRIR</button></div>
+  </div>
+</section>
+
+<!-- COMIDA -->
+<section id="comida">
+  <h2 class="sec-title">🍜 <span>RATIONS &amp; STREET FOOD</span></h2>
+  <p class="sec-sub">// A fome é o único implante que todo mundo já tem. A gente trata isso. //</p>
+  <div class="items">
+    <div class="card"><div class="scanline"></div><span class="tag comum">STREET FOOD</span><h3>Pizza Neon XL</h3><p>Mussarela sintética, pepperoni de proteína cultivada e borda recheada de "queijo" que brilha no escuro. Alimenta o grupo inteiro.</p><div class="price">80 créditos</div><button class="btn" onclick="addToCart('Pizza Neon XL',80,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">STREET FOOD</span><h3>SynthBurger Duplo</h3><p>Dois discos de carne de laboratório, bacon defumado e molho especial da casa. Clássico do balcão do Setor 7 desde 2081.</p><div class="price">45 créditos</div><button class="btn" onclick="addToCart('SynthBurger Duplo',45,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">STREET FOOD</span><h3>Ramen do Beco 404</h3><p>Caldo fervendo servido às 3h da manhã por um robô que não faz perguntas. Onde todo runner já refletiu sobre a vida.</p><div class="price">60 créditos</div><button class="btn" onclick="addToCart('Ramen do Beco 404',60,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">STREET FOOD</span><h3>Batata Neon Fries</h3><p>Fritas crocantes temperadas com sal de íon e poeira de pimenta síntese. Viciante de propósito (literalmente, leia o rótulo).</p><div class="price">25 créditos</div><button class="btn" onclick="addToCart('Batata Neon Fries',25,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag comum">BEBIDA</span><h3>Guaraná Voltagem</h3><p>Energético radioativo (não-radioativo, juramos) com gosto de frutas tropicais e 48h de insônia garantida.</p><div class="price">15 créditos</div><button class="btn" onclick="addToCart('Guaraná Voltagem',15,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Scop Premium</h3><p>Proteína de organismo unicelular, o alimento oficial de quem vive entre prédios. Essa é a versão gourmet: sabor "churrasco".</p><div class="price">120 créditos<small>+ refeição completa, 1 semana</small></div><button class="btn" onclick="addToCart('Scop Premium',120,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag raro">RARO</span><h3>Sushi Transgênico</h3><p>Peixe cultivado em tanques do último aquário público da cidade. Corte pelo chef-ciborgue Hando. Oito peças, zero arrependimento.</p><div class="price">250 créditos</div><button class="btn" onclick="addToCart('Sushi Transgênico',250,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Refresco Célula-G</h3><p>Nutrientes líquidos bioengenhados que se adaptam ao seu metabolismo em tempo real. Sabor escolhido pela sua própria língua.</p><div class="price">400 créditos<small>+ análise metabólica incluída</small></div><button class="btn" onclick="addToCart('Refresco Célula-G',400,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag experimental">EXPERIMENTAL</span><h3>Chocolate Noir 99%</h3><p>Cacau real, de plantação clandestina protegida por mercenários. Mais caro que muito implante. Totalmente vale.</p><div class="price">900 créditos<small>+ edição limitada, 50 barras/mês</small></div><button class="btn" onclick="addToCart('Chocolate Noir 99%',900,this)">ADQUIRIR</button></div>
+    <div class="card"><div class="scanline"></div><span class="tag proibido">PROIBIDO</span><h3>Sabor Fantasma</h3><p>Gelado vendido por IA sem rosto numa food truck que nunca está no mesmo lugar duas vezes. Dizem que o gosto é uma memória sua que você esqueceu.</p><div class="price">1.500 créditos<small>+ a gente não sabe o que tem dentro</small></div><button class="btn" onclick="addToCart('Sabor Fantasma',1500,this)">ADQUIRIR</button></div>
+  </div>
+</section>
+
+<!-- ÍNDICE DE SOBRECARGA -->
+<section id="sobrecarga">
+  <h2 class="sec-title">⚠ <span>ÍNDICE DE SOBRECARGA</span></h2>
+  <p class="sec-sub">// Cada prótese e cada implante pesa. Cada peso cobra. Calcule antes de comprar. //</p>
+  <div class="overload-box">
+    <div class="state-row">
+      <span class="st-contained">■ CONTAINED</span>
+      <span class="st-unleashed">■ UNLEASHED</span>
+      <span class="st-trance">▲ TRANCE</span>
+    </div>
+    <p style="color:#9a9ab0;font-size:.8rem;line-height:1.8;">
+      <span style="color:var(--neon-cyan)">🟢 0–30%</span> corpo normal &nbsp;•&nbsp;
+      <span style="color:var(--neon-yellow)">🟡 31–60%</span> pequenas falhas &nbsp;•&nbsp;
+      <span style="color:#ff9a3d">🟠 61–85%</span> interferência entre implantes &nbsp;•&nbsp;
+      <span style="color:var(--neon-pink)">🔴 86–99%</span> sistema instável &nbsp;•&nbsp;
+      ⚫ 100% = SOBRECARGA
+    </p>
+    <div class="meter"><div class="meter-fill" id="ovFill"></div></div>
+    <div class="meter-ticks"><span>0%</span><span>30%</span><span>60%</span><span>85%</span><span>100%</span></div>
+    <p id="ovStatus" style="margin-top:15px;">SEU ÍNDICE ATUAL: 0% — CORPO HUMANO PADRÃO</p>
+  </div>
+</section>
+
+<!-- CART -->
+<div class="cart-float" onclick="toggleCart()">
+  <div>🛒 <span id="cartCount">0</span> itens</div>
+  <div id="cartTotal">0 créditos</div>
+</div>
+<div class="cart-panel" id="cartPanel">
+  <button class="close-cart" onclick="toggleCart()">✕</button>
+  <h2>SEU PEDIDO</h2>
+  <p class="proto">OVERRIDE_PROTOCOL // TRANSACAO-77.A</p>
+  <div class="wallet">
+    <label>// SUA CARTEIRA (créditos) //</label>
+    <input type="number" id="walletInput" min="0" placeholder="0" oninput="setWallet(this.value)">
+    <div class="wallet-row"><span>GASTO:</span><b id="ovSpent">0 cr</b></div>
+    <div class="wallet-row"><span>RESTANTE:</span><b id="ovLeft" class="ok">0 cr</b></div>
+  </div>
+  <div id="cartItems"></div>
+  <div class="cart-total">TOTAL: <span id="cartTotalBig">0</span> créditos</div>
+  <button class="btn" style="margin-top:20px" onclick="checkout()">FINALIZAR TRANSAÇÃO</button>
+</div>
+
+<footer>
+  ARMA-ZENADS © 2088 — <span>NENHUMA PERGUNTA. NENHUM REEMBOLSO.</span> — SETOR 7, ANDAR SUBSOLO 3
+</footer>
+
+
+<script>
+  let cart = [];
+  let wallet = parseInt(localStorage.getItem('az_wallet') || '0');
+  function setWallet(v){
+    wallet = Math.max(0, parseInt(v) || 0);
+    localStorage.setItem('az_wallet', wallet);
+    updateCart();
+  }
+  const ovMap = {'Medic Daemon':6,'Medic Daemon Mk-II':12,'Medic Daemon Mk-III':18,'Pulse Aura':8,'Pulse Aura Mk-II':16,'Pulse Aura Mk-III':24,'Stim Injector':6,'Stim Injector Mk-II':12,'Stim Injector Mk-III':18,'Aegis Link':7,'Aegis Link Mk-II':14,'Aegis Link Mk-III':21,'Purge Protocol':4,'Purge Protocol Mk-II':8,'Purge Protocol Mk-III':12,'Second Wind Core':10,'Second Wind Core Mk-II':20,'Second Wind Core Mk-III':30,'Inferno Script':6,'Inferno Script Mk-II':12,'Inferno Script Mk-III':18,'Toxin Worm':5,'Toxin Worm Mk-II':10,'Toxin Worm Mk-III':15,'Arc Surge':6,'Arc Surge Mk-II':12,'Arc Surge Mk-III':18,'Mind Spike':7,'Mind Spike Mk-II':14,'Mind Spike Mk-III':21,'Fork Bomb':9,'Fork Bomb Mk-II':18,'Fork Bomb Mk-III':27,'Blackout Virus':7,'Blackout Virus Mk-II':14,'Blackout Virus Mk-III':21,'Puppeteer':12,'Puppeteer Mk-II':24,'Puppeteer Mk-III':36,'Titan-04':4,'Titan-04 Mk-II':8,'Titan-04 Mk-III':12,'Ossatura-X':5,'Ossatura-X Mk-II':10,'Ossatura-X Mk-III':15,'Punho Graviton':6,'Punho Graviton Mk-II':12,'Punho Graviton Mk-III':18,'Servo-Leg':5,'Servo-Leg Mk-II':10,'Servo-Leg Mk-III':15,'Hydra Muscle':9,'Hydra Muscle Mk-II':18,'Hydra Muscle Mk-III':27,'Colossus Core':14,'Colossus Core Mk-II':28,'Colossus Core Mk-III':40,'NeuroBoost':4,'NeuroBoost Mk-II':8,'NeuroBoost Mk-III':12,'Flash-Step':5,'Flash-Step Mk-II':10,'Flash-Step Mk-III':15,'Overclock Neural':10,'Overclock Neural Mk-II':20,'Overclock Neural Mk-III':30,'Vector Legs':7,'Vector Legs Mk-II':14,'Vector Legs Mk-III':21,'Blink Drive':13,'Blink Drive Mk-II':26,'Blink Drive Mk-III':39,'Synapse-7':5,'Synapse-7 Mk-II':10,'Synapse-7 Mk-III':15,'Memory Chip':3,'Memory Chip Mk-II':6,'Memory Chip Mk-III':9,'Tactician AI':11,'Tactician AI Mk-II':22,'Tactician AI Mk-III':33,'EyeScan':6,'EyeScan Mk-II':12,'EyeScan Mk-III':18,'Quantum Brain':16,'Quantum Brain Mk-II':32,'Quantum Brain Mk-III':40,'Neon Eyes':5,'Neon Eyes Mk-II':10,'Neon Eyes Mk-III':15,'Cyber Arm':6,'Cyber Arm Mk-II':12,'Cyber Arm Mk-III':18,'DataJack':4,'DataJack Mk-II':8,'DataJack Mk-III':12,'Reactor Heart':12,'Reactor Heart Mk-II':24,'Reactor Heart Mk-III':36,'Nanite Blood':15,'Nanite Blood Mk-II':30,'Nanite Blood Mk-III':40,'Ghost Chip':20,'Ghost Chip Mk-II':40,'Ghost Chip Mk-III':40,'NEXUS-FOCUS':4,'GHOST-EYE':6,'OVERDRIVE NEURAL':7,'KINETIC CORE':8,'SYNAPSE LINK':8,'PHANTOM STEP':8,'MEMORY VAULT':5,'ADRENAL BOOSTER':10,'VOID SKIN':12,'ARES FRAME':20};
+  function addToCart(name, price, btn){
+    cart.push({name, price});
+    if(btn){ btn.textContent='✓ ADICIONADO'; btn.classList.add('added'); setTimeout(()=>{btn.textContent='ADQUIRIR';btn.classList.remove('added');},1200); }
+    updateCart();
+  }
+  function removeFromCart(i){ cart.splice(i,1); updateCart(); }
+  function updateCart(){
+    document.getElementById('cartCount').textContent = cart.length;
+    const total = cart.reduce((s,i)=>s+i.price,0);
+    document.getElementById('cartTotal').textContent = total.toLocaleString('pt-BR') + ' créditos';
+    document.getElementById('cartTotalBig').textContent = total.toLocaleString('pt-BR');
+    const walletInput = document.getElementById('walletInput');
+    if(document.activeElement !== walletInput) walletInput.value = wallet || '';
+    document.getElementById('ovSpent').textContent = total.toLocaleString('pt-BR') + ' cr';
+    const left = wallet - total;
+    const leftEl = document.getElementById('ovLeft');
+    leftEl.textContent = (left < 0 ? '-' : '') + Math.abs(left).toLocaleString('pt-BR') + ' cr';
+    leftEl.className = left < 0 ? 'neg' : 'ok';
+    document.getElementById('cartItems').innerHTML = cart.map((i,idx)=>
+      `<div class="cart-item"><span>${i.name}</span><span>${i.price.toLocaleString('pt-BR')}cr <button class="rm" onclick="removeFromCart(${idx})">✕</button></span></div>`
+    ).join('') || '<p style="color:#666;font-size:.75rem;">Carrinho vazio. Sua sobrevivência agradece.</p>';
+    // overload
+    let ov = cart.reduce((s,i)=> s + (ovMap[i.name]||1), 0);
+    ov = Math.min(ov, 100);
+    document.getElementById('ovFill').style.width = ov + '%';
+    let status;
+    if(ov===0) status='CORPO HUMANO PADRÃO';
+    else if(ov<=30) status='CORPO NORMAL — IMPLANTES ESTÁVEIS';
+    else if(ov<=60) status='PEQUENAS FALHAS + NECESSIDADE MAIOR DE ENERGIA';
+    else if(ov<=85) status='⚠ IMPLANTES COMEÇAM A INTERFERIR UNS NOS OUTROS';
+    else if(ov<100) status='🔴 SISTEMA EXTREMAMENTE INSTÁVEL';
+    else status='⚫ SOBRECARGA! DESLIGUE ALGUNS IMPLANTES OU PERCA O CONTROLE';
+    document.getElementById('ovStatus').textContent = 'SEU ÍNDICE ATUAL: ' + ov + '% — ' + status;
+  }
+  function toggleCart(){ document.getElementById('cartPanel').classList.toggle('open'); }
+  function checkout(){
+    if(!cart.length){ alert('Carrinho vazio. A Rede agradece sua hesitação.'); return; }
+    let ov = Math.min(cart.reduce((s,i)=>s+(ovMap[i.name]||1),0),100);
+    if(ov>=100){ alert('⚫ TRANSAÇÃO BLOQUEADA: Índice de Sobrecarga em 100%.\nO vendedor olha para você e balança a cabeça.\n"Volte quando estiver menos... máquina."'); return; }
+    const tot = cart.reduce((s,i)=>s+i.price,0);
+    if(tot > wallet){ alert('⚠ FUNDS INSUFICIENTES\nFaltam ' + (tot - wallet).toLocaleString('pt-BR') + ' créditos.\nA Rede não aceita promessas.'); return; }
+    let noInv = 0;
+    try{
+      const CAT = window.S7CATALOGO || [];
+      noInv = window.S7INV ? S7INV.addFromLoja(cart.map(c=>{
+        const k = CAT.find(x=>x.nome===c.name) || {};
+        return {name:c.name, price:c.price, meta:{sec:k.sec, tag:k.tag, melee:k.melee, rar:k.raridade, desc:k.desc, efeito:k.efeito}};
+      })) : 0;
+    }catch(e){ console.error('inventário:', e); }
+    wallet -= tot; try{ localStorage.setItem('az_wallet', wallet); }catch(e){}
+    alert('✓ TRANSAÇÃO APROVADA\nTotal: ' + cart.reduce((s,i)=>s+i.price,0).toLocaleString('pt-BR') + ' créditos\n\nRetire no beco atrás do Setor 7.\nNão olhe para as câmeras.\n\nSaldo restante: ' + wallet.toLocaleString('pt-BR') + ' créditos.' + (noInv ? '\n\n🎒 ' + noInv + ' item(ns) enviado(s) ao seu INVENTÁRIO.' : ''));
+    cart = []; updateCart(); toggleCart();
+  }
+  updateCart();
+</script>
+<script>
+  // Navbar: sempre rolar na mesma página, nunca abrir nova guia
+  document.querySelectorAll('.navbar a').forEach(function(link){
+    link.addEventListener('click', function(e){
+      var href = link.getAttribute('href');
+      if(href.charAt(0) !== '#') return;   // links de outras páginas navegam normalmente
+      e.preventDefault();
+      var alvo = document.querySelector(href);
+      if(alvo){
+        alvo.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  });
+</script>
+<script>
+/* ========== CARROSSEL (agrupa os cards por categoria) — próteses e implantes ========== */
+(function(){
+  function carousel(secId, cats, ads){
+    var sec = document.getElementById(secId), items = sec && sec.querySelector('.items');
+    if(!items) return;
+    var byCat = {};
+    items.querySelectorAll('.card').forEach(function(c){
+      var tagEl = c.querySelector('.tag');
+      var t = tagEl ? tagEl.textContent.trim() : 'OUTROS';
+      (byCat[t] = byCat[t] || []).push(c);
+    });
+    var nav = document.createElement('nav');
+    nav.className = 'impl-nav';
+    var h = '';
+    cats.forEach(function(c){ if(byCat[c[0]]) h += '<a href="#'+c[2]+'">'+c[1]+' '+c[0]+'</a>'; });
+    if(ads){
+      h += '<span class="ad-chip">📢 AD // NEONCOLA — ABRA E ESCUTE O FUTURO</span>';
+      h += '<span class="ad-chip ad-alt">📢 AD // SINTWHISKY TARJA PRETA — 18+</span>';
+    }
+    nav.innerHTML = h;
+    sec.insertBefore(nav, items);
+    items.remove();
+    cats.forEach(function(c){
+      if(!byCat[c[0]]) return;
+      var g = document.createElement('div');
+      g.id = c[2];
+      g.innerHTML = '<h3 class="impl-sub">'+c[1]+' '+c[0]+' <small>// '+byCat[c[0]].length+' MODELOS</small></h3>';
+      var grid = document.createElement('div');
+      grid.className = 'items';
+      byCat[c[0]].forEach(function(card){ grid.appendChild(card); });
+      g.appendChild(grid);
+      sec.appendChild(g);
+    });
+    nav.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        var alvo = document.querySelector(a.getAttribute('href'));
+        if(alvo) alvo.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
+  }
+  /* próteses: agrupadas pelo atributo que melhoram */
+  carousel('proteses', [['FORÇA','💪','prot-forca'],['VELOCIDADE','⚡','prot-velocidade'],['RESISTÊNCIA','🛡','prot-resistencia'],
+                        ['PERCEPÇÃO','👁','prot-percepcao'],['ENERGIA','🔋','prot-energia']], false);
+  /* implantes: agrupados por especialidade */
+  carousel('implantes', [['VELOZ','⚡','impl-veloz'],['BRUTO','💪','impl-bruto'],['TANQUE','🛡','impl-tanque'],
+                         ['TÁTICO','🎯','impl-tatico'],['NETRUNNER','🧠','impl-netrunner'],['REFORÇO','🩺','impl-reforco']], true);
+})();
+</script>
+<script>
+/* ===== ORDENAR / FILTRAR CADA SEÇÃO DA LOJA ===== */
+(function(){
+  var RAR = {comum:0, raro:1, experimental:2, proibido:3};
+  var RAR_N = ['COMUM','RARO','EXPERIMENTAL','PROIBIDO'];
+  var SEC_IDS = ['armas','cura','sanidade','armadura','hacker','proteses','implantes','comida'];
+
+  function priceOf(card){
+    var b = card.querySelector('.btn'), m = b && /,\s*(\d+)\s*,\s*this/.exec(b.getAttribute('onclick')||'');
+    return m ? +m[1] : 0;
+  }
+  function rarOf(card){
+    var tg = card.querySelector('.tag'); if(!tg) return 0;
+    for(var k in RAR){ if(tg.classList.contains(k)) return RAR[k]; }
+    return 0;
+  }
+  function nameOf(card){ var h = card.querySelector('h3'); return h ? h.textContent.trim() : ''; }
+  function byName(a,b){ return a.nome.localeCompare(b.nome,'pt-BR',{numeric:true,sensitivity:'base'}); }
+
+  var SORTS = {
+    padrao:  {n:'Padrão da loja',             f:function(a,b){ return a.i-b.i; }},
+    preco_a: {n:'Preço: menor → maior',       f:function(a,b){ return a.preco-b.preco || byName(a,b); }},
+    preco_d: {n:'Preço: maior → menor',       f:function(a,b){ return b.preco-a.preco || byName(a,b); }},
+    rar_a:   {n:'Raridade: comum → proibido', f:function(a,b){ return a.rar-b.rar || a.preco-b.preco; }},
+    rar_d:   {n:'Raridade: proibido → comum', f:function(a,b){ return b.rar-a.rar || a.preco-b.preco; }},
+    nome_a:  {n:'Nome: A → Z',                f:function(a,b){ return byName(a,b); }},
+    nome_d:  {n:'Nome: Z → A',                f:function(a,b){ return byName(b,a); }}
+  };
+
+  function setup(sec){
+    var boxes = Array.prototype.slice.call(sec.querySelectorAll('.items'));
+    if(!boxes.length) return;
+
+    /* grupos: um por título .grp-sub (armas) ou por grade (implantes: uma grade por categoria) */
+    var groups = [], idx = 0;
+    boxes.forEach(function(box){
+      var wrap = box.parentNode !== sec ? box.parentNode : null;   /* implantes: <div id="impl-..."> */
+      var firstHead = box.querySelector('.grp-sub');
+      var cur = {box:box, head:null, wrap:wrap, cards:[], nextHead:firstHead};
+      groups.push(cur);
+      Array.prototype.slice.call(box.children).forEach(function(el){
+        if(el.classList.contains('grp-sub')){
+          cur = {box:box, head:el, wrap:wrap, cards:[], nextHead:null}; groups.push(cur);
+        } else if(el.classList.contains('card')){
+          cur.cards.push({el:el, i:idx++, preco:priceOf(el), rar:rarOf(el), nome:nameOf(el)});
+        }
+      });
+    });
+    var total = idx;
+    var wraps = groups.filter(function(g,i){ return g.wrap && groups.findIndex(function(o){return o.wrap===g.wrap;})===i; });
+
+    var bar = document.createElement('div');
+    bar.className = 'sortbar';
+    var sOpts = Object.keys(SORTS).map(function(k){ return '<option value="'+k+'">'+SORTS[k].n+'</option>'; }).join('');
+    var rOpts = '<option value="-1">Todas</option>' + RAR_N.map(function(n,i){ return '<option value="'+i+'">'+n+'</option>'; }).join('');
+    var cOpts = '';
+    if(wraps.length > 1){
+      cOpts = '<option value="">Todas</option>' + wraps.map(function(g){
+        var st = g.wrap.querySelector('.impl-sub');
+        var lbl = st ? st.firstChild.textContent.trim() : g.wrap.id;
+        return '<option value="'+g.wrap.id+'">'+lbl+'</option>';
+      }).join('');
+    }
+    bar.innerHTML =
+      '<label>▸ Ordenar por<select class="sb-sort">'+sOpts+'</select></label>'+
+      '<label>▸ Raridade<select class="sb-rar">'+rOpts+'</select></label>'+
+      (cOpts ? '<label>▸ Categoria<select class="sb-cat">'+cOpts+'</select></label>' : '')+
+      '<button type="button" class="sb-reset">⟲ LIMPAR</button>'+
+      '<span class="sb-count">EXIBINDO <b>'+total+'</b>/'+total+'</span>';
+
+    var ref = boxes[0].parentNode !== sec ? boxes[0].parentNode : boxes[0];
+    ref.parentNode.insertBefore(bar, ref);
+
+    var selS = bar.querySelector('.sb-sort'), selR = bar.querySelector('.sb-rar'),
+        selC = bar.querySelector('.sb-cat'), cnt = bar.querySelector('.sb-count');
+
+    function run(){
+      var f = SORTS[selS.value].f, rf = +selR.value, cf = selC ? selC.value : '', shown = 0;
+      var perWrap = {};
+      groups.forEach(function(g){
+        var list = g.cards.slice().sort(f), vis = 0, anchor = g.head;
+        var catOk = !cf || !g.wrap || g.wrap.id === cf;
+        list.forEach(function(c){
+          var ok = catOk && (rf < 0 || c.rar === rf);
+          c.el.classList.toggle('f-hide', !ok);
+          if(ok){ vis++; shown++; }
+          if(anchor){ anchor.after(c.el); anchor = c.el; }
+          else { g.box.insertBefore(c.el, g.nextHead); }
+        });
+        if(g.head) g.head.classList.toggle('f-hide', vis === 0);
+        if(g.wrap) perWrap[g.wrap.id] = (perWrap[g.wrap.id]||0) + vis;
+      });
+      /* implantes: esconde categoria vazia (e o atalho dela no carrossel) e atualiza "N MODELOS" */
+      wraps.forEach(function(g){
+        var n = perWrap[g.wrap.id]||0;
+        g.wrap.classList.toggle('f-hide', n === 0);
+        var sm = g.wrap.querySelector('.impl-sub small'); if(sm) sm.textContent = '// '+n+' MODELOS';
+        var lk = sec.querySelector('.impl-nav a[href="#'+g.wrap.id+'"]'); if(lk) lk.classList.toggle('f-hide', n === 0);
+      });
+      cnt.innerHTML = 'EXIBINDO <b>'+shown+'</b>/'+total;
+    }
+    selS.addEventListener('change', run);
+    selR.addEventListener('change', run);
+    if(selC) selC.addEventListener('change', run);
+    bar.querySelector('.sb-reset').addEventListener('click', function(){
+      selS.value='padrao'; selR.value='-1'; if(selC) selC.value=''; run();
+    });
+  }
+
+  SEC_IDS.forEach(function(id){ var s = document.getElementById(id); if(s) setup(s); });
+})();
+</script>
+<script>
+function toggleNav(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('menuToggle');
+  nav.classList.toggle('menu-open');
+  btn.setAttribute('aria-expanded', nav.classList.contains('menu-open'));
+}
+function toggleShortcuts(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('shortcutsToggle');
+  nav.classList.toggle('shortcuts-collapsed');
+  btn.setAttribute('aria-expanded', !nav.classList.contains('shortcuts-collapsed'));
+}
+</script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="catalogo.js"></script>
+<script src="inventario.js"></script>
+<script src="tooltip_loja.js"></script>
+<script>
+/* ==================================================================
+   LOJA v6 — monta o trilho de abas, mostra uma vitrine por vez e
+   redesenha os cards (arma = card alto com selo de preço; demais = card
+   compacto). NÃO altera os itens: lê o HTML que já existe.
+   Carregue DEPOIS de inventario.js, tooltip_loja.js e do lucide.
+   ================================================================== */
+(function(){
+  var I = window.S7INV;
+  var SECS = [
+    ['COMBATE'],
+    ['armas',     'ARSENAL',     'crosshair',      '⚔',  '--k-armas',     '#ff5a5a'],
+    ['armadura',  'ARMADURA',    'shield',         '🛡', '--k-armadura',  '#4d6bff'],
+    ['SUPORTE'],
+    ['cura',      'MÉDICO',      'heart-pulse',    '✚',  '--k-cura',      '#22e6d2'],
+    ['sanidade',  'SOBRECARGA',  'battery-charging','🔋','--k-sanidade',  '#8b5bff'],
+    ['comida',    'COMIDA',      'utensils',       '🍜', '--k-comida',    '#ffa62b'],
+    ['TECNOLOGIA'],
+    ['hacker',    'HACKER',      'terminal',       '⌁',  '--k-hacker',    '#46ff7a'],
+    ['proteses',  'PRÓTESES',    'bot',            '🦾', '--k-implantes', '#d82aff'],
+    ['implantes', 'IMPLANTES',   'brain',          '🧠', '--k-implantes', '#d82aff'],
+    ['SISTEMA'],
+    ['sobrecarga','ÍNDICE',      'gauge',          '⚠',  '--amber',       '#ffb300']
+  ];
+  var RAR = {comum:1, raro:1, experimental:1, proibido:1};
+  function el(tag, cls, html){ var e = document.createElement(tag); if(cls) e.className = cls; if(html != null) e.innerHTML = html; return e; }
+  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function fmt(n){ return (+n||0).toLocaleString('pt-BR'); }
+  function kcOf(s){ return 'var('+s[4]+','+s[5]+')'; }
+  function ico(s){ return window.lucide ? '<i data-lucide="'+s[2]+'"></i>' : '<span>'+s[3]+'</span>'; }
+
+  var first = document.getElementById('armas');
+  if(!first) return;
+
+  /* ---------- esqueleto ---------- */
+  var shop = el('div'); shop.id = 'shop';
+  var rail = el('aside','rail'), stage = el('main','stage');
+  var cli = ''; try{ cli = localStorage.getItem('az_cli'); if(!cli){ cli = 'NC' + (100000 + Math.floor(Math.random()*899999)); localStorage.setItem('az_cli', cli); } }catch(e){ cli = 'NC000000'; }
+  rail.innerHTML =
+    '<div class="zr-brand"><b>ARMA<i>·</i>ZENADS</b><small>MILITECH SURPLUS // SETOR 7</small></div>'+
+    '<div class="zr-id"><span>cliente</span><b>#'+cli+'</b></div>'+
+    '<div class="zr-id"><span>carteira</span><b class="zr-wal">0 cr</b></div>'+
+    '<nav class="zr-tabs" role="tablist" aria-label="Categorias da loja"></nav>'+
+    '<div class="zr-ord"><div class="k">SEU PEDIDO</div>'+
+      '<div class="zr-tot">0<small>CR</small></div>'+
+      '<div class="zr-row"><span class="zr-cnt">0 itens</span><span>sobra <b class="zr-left">0 cr</b></span></div>'+
+      '<div class="zr-ov" title="Índice de sobrecarga"><i></i></div>'+
+      '<div class="zr-row"><span>sobrecarga</span><b class="zr-ovn">0%</b></div>'+
+      '<button type="button" class="zr-pill main" data-a="open">Revisar e confirmar</button>'+
+      '<button type="button" class="zr-pill" data-a="clear">Limpar</button></div>';
+  shop.appendChild(rail); shop.appendChild(stage);
+  first.parentNode.insertBefore(shop, first);
+  var tabsBox = rail.querySelector('.zr-tabs');
+
+  var panes = {}, tabs = {};
+  SECS.forEach(function(s){
+    if(s.length === 1){ tabsBox.appendChild(el('div','zr-g',s[0])); return; }
+    var sec = document.getElementById(s[0]); if(!sec) return;
+    var extra = [], n = sec.nextElementSibling;
+    while(n && n.classList.contains('ad-banner')){ extra.push(n); n = n.nextElementSibling; }
+    var pane = el('div','pane'); pane.id = 'pane-'+s[0]; pane.setAttribute('role','tabpanel');
+    pane.style.setProperty('--kc', kcOf(s));
+    pane.appendChild(sec); extra.forEach(function(x){ pane.appendChild(x); });
+    stage.appendChild(pane); panes[s[0]] = pane;
+    var cnt = sec.querySelectorAll('.card .btn').length;
+    var b = el('button','zr-tab', ico(s)+'<span>'+s[1]+'</span>'+(cnt ? '<span class="n">'+cnt+'</span>' : ''));
+    b.type = 'button'; b.setAttribute('role','tab'); b.dataset.id = s[0];
+    b.style.setProperty('--kc', kcOf(s));
+    tabsBox.appendChild(b); tabs[s[0]] = b;
+  });
+
+  function go(id, user){
+    if(!panes[id]) id = 'armas';
+    Object.keys(panes).forEach(function(k){
+      var on = k === id;
+      panes[k].classList.toggle('on', on);
+      tabs[k].classList.toggle('on', on);
+      tabs[k].setAttribute('aria-selected', on);
+    });
+    try{ localStorage.setItem('az_tab', id); }catch(e){}
+    if(user){
+      try{ history.replaceState(null,'','#'+id); }catch(e){}
+      var nav = document.getElementById('navShell'), nh = nav ? nav.offsetHeight : 48;
+      var strip = rail.offsetWidth > shop.offsetWidth * 0.8 ? rail.offsetHeight : 0;   /* celular em pé: faixa de abas fica grudada no topo */
+      var top = shop.getBoundingClientRect().top;
+      if(top < nh + strip) window.scrollTo({top: window.scrollY + top - nh - strip - 6});
+    }
+  }
+  tabsBox.addEventListener('click', function(e){ var b = e.target.closest('.zr-tab'); if(b) go(b.dataset.id, true); });
+  /* links #armas, #cura... (atalhos antigos) agora abrem a aba certa */
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href^="#"]'); if(!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if(panes[id]){ e.preventDefault(); e.stopPropagation(); go(id, true); }
+  }, true);
+  window.addEventListener('hashchange', function(){ var id = location.hash.slice(1); if(panes[id]) go(id, true); });
+
+  var start = location.hash.slice(1);
+  if(!panes[start]){ try{ start = localStorage.getItem('az_tab'); }catch(e){} }
+  go(start, false);
+
+  /* ---------- cards ---------- */
+  function hash(s){ var h = 2166136261; for(var i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h,16777619); } return h>>>0; }
+  function bars(name){
+    var h = hash(name), out = '';
+    for(var i=0;i<46;i++){ h = Math.imul(h ^ (h>>>13), 1274126177)>>>0; out += '<i style="width:'+(1+h%3)+'px'+(i%2 ? ';background:transparent' : '')+'"></i>'; }
+    return out;
+  }
+  var FALL = {arma:'crosshair',corpo:'sword',cura:'syringe',sanidade:'pill',armadura:'shield',hacker:'terminal',implante:'brain',protese:'bot',comida:'utensils',outro:'package'};
+  function setIcon(box, icone, cat){
+    if(!I){ box.textContent = '▣'; return; }
+    if(window.S7EMO && S7EMO.is(icone)){
+      /* emoji personalizado (:nome:): espera a imagem; se não existir na pasta emojis/, usa um ícone Lucide da categoria */
+      S7EMO.look(icone.trim().slice(1,-1),
+        function(u){ box.innerHTML = '<img class="emo" alt="" src="'+esc(u)+'">'; },
+        function(){ box.innerHTML = I.iconHTML('lucide:'+(FALL[cat]||'package'), cat); if(window.lucide && lucide.createIcons) lucide.createIcons(); });
+    } else box.innerHTML = I.iconHTML(icone, cat);
+  }
+  function enhance(card){
+    if(card.dataset.zz || !card.querySelector('.btn') || !card.querySelector('h3')) return;
+    card.dataset.zz = '1';
+    var sec = card.closest('section'), sid = sec ? sec.id : '';
+    var tags = [].slice.call(card.querySelectorAll(':scope > .tag')), rar = 'comum';
+    if(tags.length){
+      var c = [].filter.call(tags[tags.length-1].classList, function(x){ return x !== 'tag'; })[0];
+      if(RAR[c]) rar = c;
+      tags[tags.length-1].classList.add('zr-rar');
+    }
+    var melee = false;
+    if(sid === 'armas'){
+      for(var p = card.previousElementSibling; p; p = p.previousElementSibling){
+        if(p.classList.contains('grp-sub')){ melee = /L[ÂA]MINAS/i.test(p.textContent); break; }
+      }
+    }
+    var nome = card.querySelector('h3').textContent.trim();
+    var cat = I ? I.guessCat(nome, sid, '', melee) : 'outro';
+    var sp = I ? I.spec(nome) : null, C = I ? I.CATS[cat] : null;
+    var icone = (sp && sp.icone) || (C ? 'lucide:'+C.lu : '');
+    var w = sp ? sp.w : (C ? C.w : 1), h = sp ? sp.h : (C ? C.h : 1);
+    var isW = sid === 'armas';
+
+    card.classList.add('r-'+rar, isW ? 'k-w' : 'k-i');
+
+    /* preço e observação lidos do próprio card (o .price original fica escondido, mas intacto) */
+    var pr = card.querySelector('.price'), sm = pr && pr.querySelector('small');
+    var note = sm ? sm.textContent.trim() : '';
+    var num = pr ? (/[\d.,]+/.exec(pr.firstChild ? pr.firstChild.nodeValue : pr.textContent) || [''])[0] : '';
+
+    var inner = el('div','c-in');
+    while(card.firstChild) inner.appendChild(card.firstChild);
+    card.appendChild(inner);
+
+    var head = el('div','c-head'), tbox = el('div','c-tags');
+    tags.forEach(function(t){ tbox.appendChild(t); });
+    head.appendChild(tbox); head.appendChild(inner.querySelector('h3'));
+
+    var bar = el('div','c-bar', bars(nome));
+    var ib = el('div','c-ico'), im = el('div','c-img'); ib.appendChild(im); setIcon(im, icone, cat);
+    tbox.appendChild(el('span','c-size','▦ '+w+'×'+h));
+
+    var pbig = el('div','c-pbig','<b>'+esc(num)+'</b><i>créditos</i>');
+    var foot = el('div','c-foot');
+    var btn = inner.querySelector('.btn');
+    foot.appendChild(pbig);
+    foot.appendChild(btn);
+
+    inner.insertBefore(ib, inner.firstChild);
+    inner.insertBefore(bar, ib);
+    inner.insertBefore(head, bar);
+    if(note) inner.appendChild(el('div','c-note','+ '+esc(note.replace(/^\+\s*/,''))));
+    inner.appendChild(foot);
+  }
+  [].forEach.call(document.querySelectorAll('#shop .card'), enhance);
+  if(window.lucide && lucide.createIcons) lucide.createIcons();
+
+  /* ---------- pedido no trilho (espelha o carrinho existente) ---------- */
+  function q(s){ return rail.querySelector(s); }
+  function sync(){
+    try{
+      var tot = cart.reduce(function(s,i){ return s + i.price; }, 0), left = wallet - tot;
+      q('.zr-tot').innerHTML = fmt(tot)+'<small>CR</small>';
+      q('.zr-cnt').textContent = cart.length + (cart.length === 1 ? ' item' : ' itens');
+      var l = q('.zr-left'); l.textContent = (left < 0 ? '-' : '') + fmt(Math.abs(left)) + ' cr'; l.className = 'zr-left' + (left < 0 ? ' neg' : '');
+      q('.zr-wal').textContent = fmt(wallet) + ' cr';
+      var f = document.getElementById('ovFill'), ov = f ? (parseFloat(f.style.width) || 0) : 0;
+      q('.zr-ov i').style.width = ov + '%'; q('.zr-ovn').textContent = Math.round(ov) + '%';
+    }catch(e){}
+  }
+  var _uc = window.updateCart;
+  if(typeof _uc === 'function'){ window.updateCart = function(){ var r = _uc.apply(this, arguments); sync(); return r; }; }
+  rail.addEventListener('click', function(e){
+    var b = e.target.closest('.zr-pill'); if(!b) return;
+    if(b.dataset.a === 'open') toggleCart();
+    else { cart.length = 0; updateCart(); }
+  });
+  sync();
+})();
+</script>
+</body>
+</html>

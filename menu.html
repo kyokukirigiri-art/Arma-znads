@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MENU DA PARTY // SETOR 7</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<script src="party.js"></script>
+<script src="inventario.js"></script>
+<script src="catalogo.js"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+main{max-width:1100px;margin:auto;padding:18px 3% 50px}
+.back{display:inline-block;color:var(--cyan);font-size:.7rem;letter-spacing:.15em;margin-bottom:12px;text-decoration:none}
+
+/* ---- trilho de ícones: caixa reta, botões quadrados ---- */
+.rail{background:var(--panel);border:2px solid var(--cell-line);padding:6px;display:flex;flex-direction:column;gap:6px}
+.rb{width:100%;height:58px;border:2px solid var(--cell-line);border-radius:0;background:var(--bgc,var(--cell));display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;position:relative;text-decoration:none;color:#fff;padding:0;font-family:inherit}
+.rb span{filter:grayscale(1) brightness(2.4);line-height:1;margin-bottom:8px}
+.rb small{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:.42rem;letter-spacing:.08em;color:#ddd;background:rgba(0,0,0,.55);padding:1px 0}
+.rb:hover{border-color:var(--cyan)}
+.rb.on{border-color:#fff}
+
+/* ---- janela: vários quadros separados, cada um com sua borda (como no Termina) ---- */
+.win{display:flex;flex-direction:column;gap:6px;padding:6px;min-height:520px;background:var(--bg2);border:2px solid var(--cell-line);color:var(--txt,#dbe9ee);font-family:var(--mono,'Share Tech Mono',monospace)}
+.pn,.desc{background:var(--panel);border:2px solid var(--cell-line);padding:10px}
+.desc{border-left:4px solid var(--cyan);min-height:84px;font-size:.95rem;line-height:1.6}
+.desc b{color:var(--cyan)}
+.row2{display:grid;grid-template-columns:200px 1fr;gap:6px}
+.row3{display:grid;grid-template-columns:1.1fr 1fr;gap:6px}
+
+/* ---- listas: texto centralizado nas categorias, faixa de seleção reta ---- */
+.cats button,.slot{display:block;width:100%;background:none;border:0;color:var(--txt,#dbe9ee);font-family:var(--hud,inherit);letter-spacing:.14em;font-size:.85rem;padding:10px 12px;cursor:pointer;border-radius:0}
+.cats button{text-align:center;font-size:.95rem}
+.slot{text-align:left}
+.cats button.on,.slot.on,.it.on{background:linear-gradient(90deg,transparent,var(--cyan-dim,rgba(34,230,210,.35)) 12%,var(--cyan-dim,rgba(34,230,210,.35)) 88%,transparent);color:#fff}
+.cats button:hover,.slot:hover,.it:hover{background:color-mix(in srgb,var(--purple) 22%,transparent)}
+
+/* ---- painel de detalhe: quadrados com a cor --cell atrás das informações ---- */
+.det{display:grid;grid-template-columns:130px 1fr 1fr;gap:2px;background:var(--cell-line);border:2px solid var(--cell-line)}
+.det .ic{grid-row:span 4;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--cell);position:relative}
+.det .ic svg{width:52px;height:52px}
+.det .ic.r{outline:2px solid var(--rc);outline-offset:-2px}
+.det .c{display:flex;justify-content:space-between;align-items:center;gap:6px;background:var(--cell);padding:8px 10px;font-size:.78rem;letter-spacing:.04em;min-height:38px}
+.det .c em{font-style:normal;color:color-mix(in srgb,var(--txt) 70%,var(--bg2))}
+.det .c b{font-weight:400;color:var(--yellow,#e8f500)}
+.det .c b.z{color:var(--dim)}
+.chp{display:inline-flex;gap:4px;padding:1px 6px;border:1px solid var(--ec);color:var(--ec);font-size:.68rem;background:#0008}
+
+/* ---- lista de itens ---- */
+.list{min-height:250px;max-height:400px;overflow:auto}
+.it{display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;font-size:.92rem}
+.it .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it .ico{width:22px;text-align:center;color:var(--rc,#fff)}.it .ico svg{width:18px;height:18px;vertical-align:middle}
+.it b{font-weight:400;color:#fff}
+.tit{font-family:var(--hud,inherit);letter-spacing:.14em;font-size:1rem;color:#fff;margin-bottom:6px}
+.meta{font-size:.74rem;line-height:1.9;color:color-mix(in srgb,var(--txt) 70%,var(--bg2));margin:6px 0}.meta b{color:#fff;font-weight:400}
+.mem{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.mem .th{width:58px;height:78px;border:2px solid var(--cell-line);cursor:pointer;position:relative;overflow:hidden;background:#000}
+.mem .th.on{border-color:var(--cyan)}
+.mem .th .pt-frame{position:absolute;inset:0;aspect-ratio:auto}
+.mem .th i{position:absolute;bottom:0;left:0;right:0;background:#000b;font-style:normal;font-size:.5rem;text-align:center;overflow:hidden;white-space:nowrap}
+.usebar{border:1px solid var(--cyan);background:var(--cell);padding:6px 10px;margin:6px 0;font-size:.74rem}
+.btn{background:var(--cell);border:2px solid var(--cyan);color:var(--cyan);padding:8px 14px;font-family:inherit;font-size:.72rem;letter-spacing:.14em;cursor:pointer;border-radius:0}
+.btn:hover{background:var(--cyan);color:#000}
+
+/* ---- status (aba EQUIPAR): linhas com fundo --cell ---- */
+.stat{display:flex;justify-content:space-between;background:var(--cell);margin-bottom:2px;padding:9px 12px;font-size:.85rem}
+.stat b{font-weight:400;color:var(--yellow,#e8f500)}
+
+/* ---- cartão do operativo (aba EQUIPAR) ---- */
+.char{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:start}
+.char .pt-frame{width:76px;border:2px solid var(--cell-line)}
+.char .nm{font-family:Georgia,serif;font-size:1.2rem;color:#fff}
+.char .ph{font-family:Georgia,serif;font-size:.9rem;color:var(--txt);margin-bottom:6px}
+
+/* ---- HUD da party (aba PARTY) ---- */
+.hud{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.hud .pm2{background:var(--cell);border:2px solid var(--cell-line);padding:8px}
+.hud .nm{font-family:Georgia,serif;font-size:1.05rem;color:#fff}.hud .ph{font-family:Georgia,serif;font-size:.85rem;color:var(--txt)}
+.hud .fig{aspect-ratio:3/5;position:relative;overflow:hidden;background:#000;margin:6px 0;cursor:pointer}
+.hud .fig .pt-frame{position:absolute;inset:0;aspect-ratio:auto}
+.sb-row{display:flex;justify-content:space-between;align-items:baseline;font-family:Georgia,'Times New Roman',serif;font-size:.95rem;color:#fff;line-height:1.1}
+.sb-bar{height:6px;margin-bottom:5px;background:linear-gradient(var(--bg) 40%,var(--cell) 40%)}
+.sb-bar i{display:block;height:100%;background:linear-gradient(var(--cell-line) 40%,#b0391f 40%)}
+.sb-bar.s i{background:linear-gradient(var(--cell-line) 40%,#8a2a78 40%)}
+.sb-bar.h i{background:linear-gradient(var(--bg) 40%,color-mix(in srgb,var(--purple) 70%,var(--bg2)) 40%)}
+.sb-bar.o i{background:linear-gradient(var(--cell-line) 40%,var(--purple) 40%)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#000;border:1px solid var(--cyan);color:var(--cyan);padding:8px 14px;font-size:.75rem;z-index:99;opacity:0;transition:.2s;pointer-events:none}.toast.on{opacity:1}
+@media(max-width:700px){.row2,.row3{grid-template-columns:1fr}.det{grid-template-columns:80px 1fr}.det .ic{grid-row:auto;grid-column:span 2;min-height:70px}}
+
+.bt-top{border:2px solid var(--cyan);background:var(--cell);padding:10px 12px;min-height:96px;font-size:.82rem;line-height:1.7}
+.bt-top .ok{color:var(--green)}.bt-top .no{color:#ff5a5a}.bt-top .cr{color:var(--yellow)}.bt-top .tt{font-size:1.15rem;letter-spacing:.1em}
+.bt-win{display:grid;grid-template-columns:170px 1fr;gap:6px;margin-top:8px}
+.bt-cmd button{display:block;width:100%;background:none;border:0;color:#fff;font:inherit;font-size:1rem;padding:8px;cursor:pointer;text-align:center}
+.bt-cmd button.on{background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.bt-cmd button:disabled{opacity:.4}
+.bt-opt label{display:flex;gap:8px;align-items:center;padding:4px 2px;font-size:.8rem}
+.bt-opt label.off{opacity:.4}
+.bt-opt select,.bt-opt input[type=number]{background:var(--bg);color:#fff;border:1px solid var(--cyan);padding:3px 6px;font:inherit;width:auto}
+.bt-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.at-mode .bt-row{display:none}
+.at-list{display:grid;gap:8px;margin:4px 0}
+.at{border:1px solid var(--sc);background:color-mix(in srgb,var(--sc) 7%,transparent);padding:8px 10px;font-size:.8rem;line-height:1.45}
+.at-h{display:flex;align-items:center;justify-content:space-between;gap:6px;color:#fff}
+.at-n{color:var(--sc);letter-spacing:.06em;text-transform:uppercase;font-size:.78rem;margin-top:2px}
+.at-t{margin:3px 0}.at-m{font-size:.72rem;opacity:.85}.at-m .no{color:#ff5a5a}.at-d{font-size:.72rem;color:#ff9a3d;margin-top:2px}
+.at .btn{margin-top:6px;width:100%}.at .btn:disabled{opacity:.45;cursor:not-allowed}
+.at-row{margin:8px 0}.at-pas{font-size:.75rem;color:var(--cyan);margin-bottom:6px}
+.est-box{border:1px solid var(--line,#2d1040);background:color-mix(in srgb,var(--cyan) 5%,transparent);padding:6px 10px;margin-bottom:6px;font-size:.76rem;line-height:1.5}
+.est-r{border-left:3px solid var(--ec);padding-left:8px;margin:2px 0}.est-r b{color:var(--ec);font-weight:400;letter-spacing:.05em}.est-r span{opacity:.85}
+.est-t{margin:4px 0 2px}.est-t b{color:var(--yellow)}
+.sg-box{border:1px dashed #ff3355;padding:6px 10px;margin:6px 0;font-size:.76rem}.sg-h{color:#ff3355;letter-spacing:.06em;margin-bottom:2px}.sg-p{opacity:.9;margin-top:2px}
+.bt-log{font-size:.68rem;opacity:.8;margin-top:6px}
+@media(max-width:700px){.bt-win{grid-template-columns:1fr}}
+.pmg{display:grid;gap:12px;padding:8px}
+.pmg .pm{display:flex;flex-direction:column;min-width:0}
+.pmg .pm-name{font-family:Georgia,'Times New Roman',serif;font-size:clamp(.95rem,2vw,1.35rem);color:#fff;line-height:1.15;min-height:1.15em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmg .pm-tit{font-family:Georgia,'Times New Roman',serif;font-size:clamp(.85rem,1.8vw,1.2rem);color:#fff;line-height:1.15;min-height:1.15em;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmg .pm-art{position:relative;cursor:pointer;background:#050505}
+.pmg .pm.dead .pt-img{filter:grayscale(1) brightness(.55)}.pmg .pm.ko .pt-img{filter:brightness(.6) saturate(.6)}
+.pmg .pm-est{position:absolute;left:4px;top:4px;right:4px;display:flex;flex-wrap:wrap;gap:3px;z-index:3;pointer-events:none}
+.pmg .pm-bars{position:absolute;left:0;right:0;bottom:0;padding:26px 6px 6px;background:linear-gradient(transparent,rgba(0,0,0,.85) 45%);z-index:2;pointer-events:none}
+.pmg .sb-row{font-size:clamp(.72rem,1.5vw,.95rem);text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000}
+.pmg .sb-bar{margin-bottom:4px}
+
+/* ================= MENU REDESENHADO: abas no topo + 2 temas ================= */
+.menu{display:block;padding:10px;border:2px solid var(--cell-line);background:var(--bg2)}
+.tabs{display:flex;gap:6px;align-items:stretch;margin-bottom:10px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tb{font-family:inherit;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.tb svg{width:20px;height:20px}
+.tb-gap{flex:1;min-width:6px}
+
+/* ---------- ITENS: mesma linguagem visual do EQUIPAR (HUD teal) ---------- */
+.win.t-i{background:none;border:0;padding:0;min-height:0;gap:10px;color:var(--txt);font-family:'Chakra Petch','Share Tech Mono',sans-serif}
+.t-i .i-cats{display:flex;gap:6px;flex-wrap:wrap}
+.t-i .ic{display:flex;align-items:center;gap:6px;padding:6px 14px;background:color-mix(in srgb,var(--cyan) 5%,transparent);color:color-mix(in srgb,var(--cyan) 55%,var(--txt));border:1px solid var(--cell-line);font-family:inherit;font-size:.78rem;letter-spacing:.04em;cursor:pointer;border-radius:0;transition:background .2s,color .2s}
+.t-i .ic svg{width:16px;height:16px}
+.t-i .ic:hover{background:color-mix(in srgb,var(--cyan) 18%,transparent)}
+.t-i .ic.on{background:var(--cyan);color:var(--bg);border-color:var(--cyan)}
+.t-i .i-main{display:grid;grid-template-columns:minmax(210px,300px) 1fr;gap:14px;border-top:1px solid var(--cell-line);padding-top:12px}
+.t-i .i-list{border:1px solid var(--cell-line);background:color-mix(in srgb,var(--cyan) 3%,transparent);max-height:300px;min-height:200px;overflow:auto}
+.t-i .ir{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid var(--line);cursor:pointer;color:var(--txt);font-size:.88rem}
+.t-i .ir:hover{background:color-mix(in srgb,var(--cyan) 12%,transparent)}
+.t-i .ir.on{background:var(--cyan);color:var(--bg)}
+.t-i .ir.off{cursor:default;opacity:.55;justify-content:center;padding:20px}
+.t-i .ir .sq{width:28px;height:28px;flex:none;display:grid;place-items:center;border:1px solid var(--cell-line);background:var(--panel2);color:var(--cyan);font-size:1rem;box-shadow:inset 0 -3px 0 var(--rc,transparent)}
+.t-i .ir .sq svg{width:17px;height:17px}
+.t-i .ir.on .sq{background:color-mix(in srgb,var(--bg) 25%,transparent);border-color:var(--bg);color:var(--bg)}
+.t-i .ir .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-i .ir b{font-weight:400;font-size:.8rem}
+.t-i .i-det{display:flex;flex-direction:column;border:1px solid var(--cell-line);background:color-mix(in srgb,var(--cyan) 3%,transparent);min-height:200px}
+.t-i .i-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:8px 12px;border-bottom:1px solid var(--cell-line);background:var(--cell)}
+.t-i .i-title{font-weight:700;font-size:1.15rem;letter-spacing:.02em;color:#fff}
+.t-i .i-kind{font-size:.72rem;border:1px solid var(--cyan);color:var(--cyan);padding:1px 8px}
+.t-i .i-body{display:grid;grid-template-columns:96px 1fr minmax(120px,170px);gap:14px;padding:14px;align-items:start;flex:1}
+.t-i .i-ico{width:96px;height:96px;display:grid;place-items:center;border:1px solid var(--cyan);background:var(--panel2);color:var(--cyan);font-size:2.8rem;outline:2px solid var(--rc,transparent);outline-offset:-8px}
+.t-i .i-ico svg{width:50px;height:50px}
+.t-i .i-txt{font-size:.88rem;line-height:1.6;color:var(--txt)}
+.t-i .i-txt p{margin:0}
+.t-i .i-eff{border:1px solid var(--cell-line);background:color-mix(in srgb,var(--cyan) 7%,transparent);padding:6px 10px;font-size:.78rem;line-height:1.5;color:color-mix(in srgb,var(--cyan) 55%,var(--txt))}
+.t-i .i-eff b{display:block;font-weight:400;font-size:.95rem;color:#fff}
+.t-i .i-eff small{opacity:.7}
+.t-i .i-low{display:grid;grid-template-columns:1.2fr 1fr .9fr;gap:14px;align-items:start}
+.t-i .i-box{border:1px solid var(--cell-line);background:color-mix(in srgb,var(--cyan) 3%,transparent);padding:0 0 6px;min-height:100px}
+.t-i .i-cap{background:var(--cell);color:var(--cyan);padding:3px 10px;font-size:.72rem;letter-spacing:.06em;margin-bottom:6px}
+.t-i .er{display:flex;justify-content:space-between;gap:8px;margin:4px 8px;padding:5px 10px;background:color-mix(in srgb,var(--cyan) 7%,transparent);border-left:2px solid var(--cyan);font-size:.82rem;color:var(--txt)}
+.t-i .er.dim{border-left-color:var(--line);opacity:.7;justify-content:center}
+.t-i .er b{font-weight:400;color:var(--cyan)}
+.t-i .i-box .mem{margin:6px 8px}
+.t-i .mem .th{border-color:var(--cell-line);background:#000}
+.t-i .mem .th.on{border-color:var(--cyan);outline:2px solid var(--cyan)}
+.t-i .usebar{margin:6px 8px;background:color-mix(in srgb,var(--cyan) 7%,transparent);border:1px solid var(--cell-line);color:var(--txt);font-size:.74rem}
+.t-i .i-btn{display:block;width:calc(100% - 16px);margin:6px 8px 0;background:none;color:var(--cyan);border:1px solid var(--cyan);padding:8px;font-family:inherit;font-size:.78rem;letter-spacing:.12em;cursor:pointer;border-radius:0}
+.t-i .i-btn:hover{background:var(--cyan);color:var(--bg)}
+.t-i .i-foot{display:flex;align-items:center;gap:12px;font-size:.74rem;color:color-mix(in srgb,var(--cyan) 55%,var(--txt));padding:2px 4px}
+.t-i .i-foot i{flex:1;border-top:1px dashed var(--cell-line)}
+.t-i .i-foot b{font-weight:400;color:#fff}
+
+/* ---------- transição suave ao trocar de aba ---------- */
+@keyframes s7in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.win.swap{animation:s7in .3s ease-out}
+.menu{transition:background-color .3s,border-color .3s}
+.tb{transition:background .2s,color .2s,border-color .2s}
+@media (prefers-reduced-motion:reduce){.win.swap{animation:none}}
+
+/* ---------- tema EQUIPAR: HUD teal, ficha do operativo ---------- */
+.menu.t-i,.menu.t-e,.menu.t-d{background:var(--bg2);border-color:var(--cell-line)}
+.t-i .tb,.t-e .tb,.t-d .tb{flex-direction:column;gap:3px;min-width:88px;padding:8px 14px;color:color-mix(in srgb,var(--cyan) 55%,var(--txt));background:color-mix(in srgb,var(--cyan) 7%,transparent);border:1px solid var(--cell-line);font-size:.76rem;letter-spacing:.04em;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px))}
+.t-i .tb:hover,.t-e .tb:hover,.t-d .tb:hover{background:color-mix(in srgb,var(--cyan) 20%,transparent)}
+.t-i .tb.on,.t-e .tb.on,.t-d .tb.on{background:var(--cyan);color:var(--bg);border-color:var(--cyan)}
+.t-i .tb.lk,.t-e .tb.lk,.t-d .tb.lk{color:var(--purple);border-color:color-mix(in srgb,var(--purple) 50%,var(--bg2));background:color-mix(in srgb,var(--purple) 7%,transparent)}
+.t-i .tb.lk:hover,.t-e .tb.lk:hover,.t-d .tb.lk:hover{background:color-mix(in srgb,var(--purple) 22%,transparent)}
+.win.t-e{background:none;border:0;padding:0;min-height:0;gap:10px;color:var(--txt);font-family:'Chakra Petch','Share Tech Mono',sans-serif}
+.t-e .e-grid{display:grid;grid-template-columns:240px minmax(210px,260px) minmax(190px,1fr);gap:18px;padding:6px 6px 0}
+.t-e .e-name{font-size:1.9rem;font-weight:400;letter-spacing:.02em;color:#fff;line-height:1.1;text-transform:uppercase}
+.t-e .e-role{margin:8px 0 10px;padding-left:10px;border-left:3px solid var(--cell-line);font-size:.85rem;color:#fff}
+.t-e .e-role small{display:block;color:var(--cyan);opacity:.8;font-size:.72rem}
+.t-e .e-pager{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.t-e .e-pager button{width:52px;height:30px;background:none;border:1px solid var(--cyan);color:var(--cyan);font-family:inherit;cursor:pointer;border-radius:0}
+.t-e .e-pager button:hover{background:var(--cyan);color:var(--bg)}
+.t-e .e-pager span{flex:1;text-align:center;color:var(--cyan);font-size:.8rem}
+.t-e .e-sub{font-size:.76rem;color:var(--cyan);margin-bottom:6px}
+.t-e .e-box{border:1px solid var(--cell-line);padding:10px 12px;margin-bottom:12px;background:color-mix(in srgb,var(--cyan) 3%,transparent)}
+.t-e .e-row{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:.82rem}
+.t-e .e-row>em{font-style:normal;width:84px;flex:none;color:var(--txt)}
+.t-e .e-row>b{font-weight:400;min-width:34px;text-align:right;font-size:.78rem;color:var(--cyan)}
+.t-e .sg{flex:1;display:flex;gap:2px}
+.t-e .sg i{flex:1;height:9px;background:var(--panel2);border:1px solid var(--line)}
+.t-e .sg i.f{background:var(--cyan);border-color:var(--cyan)}
+.t-e .sg.o i.f{background:var(--amber);border-color:var(--amber)}
+.t-e .sg.p i.f{background:color-mix(in srgb,var(--purple) 60%,#fff);border-color:color-mix(in srgb,var(--purple) 60%,#fff)}
+.t-e .hs{flex:1;letter-spacing:4px;color:#ff5fa8;font-size:.95rem;white-space:nowrap}
+.t-e .hs u{text-decoration:none;color:var(--line)}
+.t-e .e-def{display:flex;justify-content:space-between;font-size:.78rem;color:color-mix(in srgb,var(--cyan) 55%,var(--txt));padding:0 2px}
+.t-e .e-def b{font-weight:400;color:var(--cyan)}
+.t-e .e-arms{display:flex;flex-direction:column;gap:8px}
+.t-e .e-side{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.t-e .sl{position:relative;text-align:left;font-family:inherit;color:var(--txt);background:color-mix(in srgb,var(--cyan) 5%,transparent);border:1px solid var(--cyan);cursor:pointer;border-radius:0;display:flex;flex-direction:column;padding:10px 12px}
+.t-e .sl:hover{background:color-mix(in srgb,var(--cyan) 14%,transparent)}
+.t-e .sl.on{background:color-mix(in srgb,var(--cyan) 22%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--cyan) 35%,transparent)}
+.t-e .sl.has::after{content:'';position:absolute;top:7px;right:7px;width:7px;height:7px;background:var(--rc)}
+.t-e .sl-k{font-size:.72rem;color:var(--cyan);opacity:.85;margin-bottom:6px}
+.t-e .sl-n{font-size:1.02rem;color:#fff;line-height:1.15;overflow-wrap:anywhere}
+.t-e .sl-n.dim{color:var(--dim)}
+.t-e .sl-t{font-size:.76rem;color:color-mix(in srgb,var(--cyan) 55%,var(--txt));margin-top:2px}
+.t-e .sl-i{display:grid;place-items:center;color:var(--cyan);margin-top:auto;padding-top:10px}
+.t-e .sl.big{min-height:0;display:grid;grid-template-columns:1fr 40px;grid-template-areas:"k i" "n i" "t i";align-items:center;column-gap:8px;padding:8px 12px}
+.t-e .sl.big .sl-k{grid-area:k;margin-bottom:2px}.t-e .sl.big .sl-n{grid-area:n}.t-e .sl.big .sl-t{grid-area:t;margin-top:0}
+.t-e .sl.big .sl-i svg{width:30px;height:30px;stroke-width:1.5}
+.t-e .sl.big .sl-i{font-size:1.7rem;grid-area:i;margin:0;padding:0}
+.t-e .sl.sm{aspect-ratio:3/2;padding:6px;align-items:center;justify-content:center}
+.t-e .sl.sm .sl-i{margin:0;padding:0;font-size:1.8rem}
+.t-e .sl.sm .sl-i svg{width:38px;height:38px;stroke-width:1.5}
+.t-e .sl.sm .sl-i.off{opacity:.35}
+.t-e .sl-lab{font-size:.7rem;color:var(--cyan);margin:0 0 3px}
+.t-e .e-fig{position:relative;max-width:310px;width:100%;margin:0 auto;align-self:start}
+.t-e .e-fig .pt-frame{background:transparent;outline:1px solid var(--line)}
+.t-e .e-est{position:absolute;left:4px;top:4px;right:4px;display:flex;flex-wrap:wrap;gap:3px;z-index:3}
+.t-e .e-on{margin-top:6px;text-align:right;font-size:.72rem;color:var(--cyan);opacity:.8}
+.t-e .e-on.bad{color:#ff5a7a;opacity:1}
+.t-e .e-pick{display:grid;grid-template-columns:minmax(220px,1fr) 1.2fr;gap:14px;border-top:1px solid var(--cell-line);padding-top:12px}
+.t-e .e-cap{font-size:.72rem;letter-spacing:.06em;color:var(--cyan);background:var(--cell);padding:3px 10px;margin:0;border:1px solid var(--cell-line);border-bottom:0}
+.t-e .list{border:1px solid var(--cell-line);background:color-mix(in srgb,var(--cyan) 3%,transparent);max-height:260px;min-height:120px}
+.t-e .it{color:var(--txt);border-bottom:1px solid var(--line);font-size:.88rem}
+.t-e .it:hover{background:color-mix(in srgb,var(--cyan) 12%,transparent)}
+.t-e .it.on{background:var(--cyan);color:var(--bg)}
+.t-e .it.on .ico,.t-e .it.on b{color:var(--bg)}
+.t-e .it .ico{color:var(--cyan)}
+.t-e .it b{color:var(--cyan);font-size:.7rem}
+.t-e .it .ico{width:28px;height:28px;flex:none;display:grid;place-items:center;border:1px solid var(--cell-line);background:var(--panel2);box-shadow:inset 0 -3px 0 var(--rc,transparent)}
+.t-e .it.on .ico{background:color-mix(in srgb,var(--bg) 25%,transparent);border-color:var(--bg)}
+.t-e .e-ps{border:1px solid var(--cell-line);padding:10px 12px;background:color-mix(in srgb,var(--cyan) 3%,transparent)}
+.t-e .tit{color:#fff;font-size:1.1rem;letter-spacing:.02em}
+.t-e .e-ps .tit{margin:-10px -12px 8px;padding:8px 12px;background:var(--cell);border-bottom:1px solid var(--cell-line)}
+.t-e .meta{color:color-mix(in srgb,var(--cyan) 55%,var(--txt))}
+.t-e .stat{background:color-mix(in srgb,var(--cyan) 7%,transparent);border-left:2px solid var(--cyan);color:var(--txt);font-size:.82rem;padding:6px 10px}
+.t-e .stat b{color:var(--cyan)}
+.t-e .btn{background:none;border:1px solid var(--cyan);color:var(--cyan);font-family:inherit;letter-spacing:.06em;border-radius:0}
+.t-e .btn:hover{background:var(--cyan);color:var(--bg)}
+.t-e .chp{background:rgba(0,0,0,.6)}
+
+@media(max-width:900px){
+  .t-e .e-grid{grid-template-columns:1fr 1fr;gap:14px}
+  .t-e .e-fig{grid-column:1/3;order:-1}
+  .t-e .e-side{grid-template-columns:repeat(4,1fr)}
+  .t-e .e-pick{grid-template-columns:1fr}
+  .t-i .i-main,.t-i .i-low{grid-template-columns:1fr}
+  .t-i .i-body{grid-template-columns:80px 1fr}.t-i .i-eff{grid-column:1/3}
+}
+.sin{display:inline-block;font-size:.66rem;letter-spacing:.08em;padding:1px 8px;border:1px solid var(--sc);color:var(--sc);border-radius:99px;white-space:nowrap}
+.sin.sm{font-size:.56rem;padding:0 6px;margin-left:6px}
+.sin-note{font-size:.72rem;line-height:1.4;padding:6px 10px;margin:2px 0 6px;border-left:2px solid var(--sc);color:var(--sc);background:color-mix(in srgb,var(--sc) 8%,transparent)}
+.t-e .e-cls{margin:0 0 10px;padding:6px 10px;border-left:3px solid var(--cc);background:color-mix(in srgb,var(--cc) 10%,transparent);font-size:.8rem;color:#fff}
+.t-e .e-cls small{display:block;color:var(--cc);opacity:.9;font-size:.72rem}
+.t-e .e-cls b{font-weight:400;font-size:1.05rem;letter-spacing:.06em;color:var(--cc)}
+.t-e .e-cls span,.t-e .e-cls em{display:block;font-style:normal;font-size:.7rem;opacity:.75}
+.t-e .e-cls.vazio{--cc:#8a7a9a}
+@media(max-width:560px){.t-e .e-grid{grid-template-columns:1fr}.t-e .e-fig{grid-column:auto}.t-e .e-name{font-size:1.5rem}}
+
+/* ===== CORREÇÃO MOBILE (inventário/equipar cortando na borda) =====
+   1fr = minmax(auto,1fr): conteúdo largo empurrava a coluna além da tela e o
+   body{overflow-x:hidden} escondia o excesso. minmax(0,1fr) + min-width:0 deixa encolher. */
+.menu,.win,.win>*{min-width:0;max-width:100%}
+.t-i .i-det,.t-i .i-box,.t-i .i-txt,.t-i .i-list,.t-i .i-body>*,.t-i .i-low>*,.t-i .i-main>*{min-width:0}
+.t-i .i-head{flex-wrap:wrap}
+.t-i .i-title,.t-i .er span,.t-i .er b,.t-i .ir .n,.t-i .i-txt{overflow-wrap:anywhere}
+.t-i .er{flex-wrap:wrap}
+.t-i .i-cats{max-width:100%}
+.t-i .i-ico{max-width:100%}
+.t-i .mem{max-width:100%}
+.t-e .e-grid>*,.t-e .e-pick>*,.t-e .e-side>*{min-width:0}
+@media(max-width:900px){
+  .row2,.row3{grid-template-columns:minmax(0,1fr)}
+  .t-i .i-main,.t-i .i-low{grid-template-columns:minmax(0,1fr)}
+  .t-i .i-body{grid-template-columns:80px minmax(0,1fr)}
+  .t-i .i-ico{width:80px;height:80px}
+  .t-e .e-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .t-e .e-pick{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:560px){
+  main{padding:12px 2% 40px}
+  .menu{padding:6px}
+  .t-e .e-grid{grid-template-columns:minmax(0,1fr)}
+  .t-i .i-body{grid-template-columns:64px minmax(0,1fr);gap:10px;padding:10px}
+  .t-i .i-ico{width:64px;height:64px;font-size:2rem}
+  .t-i .i-ico svg{width:34px;height:34px}
+  .t-i .ic{padding:6px 10px}
+}
+</style>
+</head>
+<body>
+  
+
+<div class="grid-bg"></div>
+<header><div class="hud-tag">SYS.BOOT // MENU_DA_PARTY</div><h1><span class="mk">MENU DA PARTY</span></h1><p>// ITENS · EQUIPAR · ESQUADRA //</p></header>
+<main>
+<a class="back" href="base_de_comando.html">◂ VOLTAR PARA A BASE</a>
+<div class="ad-marquee"><span>📦 INVENTÁRIO // ⚡ EQUIPAMENTOS DISPONÍVEIS // 🧪 CONSUMÍVEIS // 🔧 COMPONENTES // 💳 CRÉDITOS // ⚠️ CAPACIDADE DE CARGA: 72% //</span></div>
+<div class="menu t-i" id="menu">
+  <div class="tabs" id="rail"></div>
+  <div class="win" id="win"></div>
+</div>
+<div class="ad-marquee"><span>/// ACESSANDO INVENTÁRIO /// CARGA DETECTADA // ARMAS // IMPLANTES // CONSUMÍVEIS // MUNIÇÃO // SUCATAS // CRÉDITOS // SISTEMA OPERACIONAL //</span></div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+var I=S7INV, P=S7P, CAT=window.S7CATALOGO||[], tab='itens', cat='cura', selIt=null, who=null, slotK='arma', eqSel=null;
+var TABS=[['itens','🧪','ITENS','','backpack'],['equip','⛑️','EQUIPAR','','shield'],['party','☯️','PARTY','','users'],['batalha','⚔️','BATALHA','','swords']];
+var LINKS=[['ficha.html','👁️','FICHA','','file-user'],['inventario.html','💼','BAG','','briefcase'],['base_de_comando.html','🚪','BASE','','door-open']];
+var ICATS=[['cura','CURA','syringe','💉'],['sanidade','SOBRECARGA','zap','🔋'],['comida','FOME','utensils','🍜'],['outro','OUTROS','package','📦']];
+function ic(n,e){return window.lucide?'<i data-lucide="'+n+'"></i>':e}
+var SLOTS=[['arma','ARMA','arma'],['corpo','CORPO A CORPO','corpo'],['armadura','ARMADURA','armadura'],['hacker','HACKER','hacker'],['implante','IMPLANTE','implante'],['protese','PRÓTESE','protese']];
+function $(i){return document.getElementById(i)}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('on')},2200)}
+function party(){var F=P.fichas(),pt=P.getParty();return pt.slots.map(function(id){return F.filter(function(f){return f.id===id})[0]}).filter(Boolean)}
+function pc(a,b){return Math.max(0,Math.min(100,b?a/b*100:0))}
+function money(n){return Number(n).toLocaleString('pt-BR')+'cr'}
+function thumb(f){P.ensure(f);return '<div class="th'+(who===f.id?' on':'')+'" data-w="'+f.id+'"><div class="pt-frame">'+P.portraitHTML(f.retrato)+'</div><i>'+P.esc(f.nome)+'</i></div>'}
+function cur(){var L=party();if(!who||!L.some(function(f){return f.id===who}))who=L[0]&&L[0].id;return L.filter(function(f){return f.id===who})[0]}
+function sbar(lbl,val,pct,cls){return '<div class="sb-row"><span>'+lbl+'</span><b style="font-weight:400">'+val+'</b></div><div class="sb-bar '+(cls||'')+'"><i style="width:'+pct+'%"></i></div>'}
+
+/* junta o que o item já tem com o que a LOJA (catalogo.js) sabe dele */
+function enrich(it){
+  var c=CAT.filter(function(x){return x.nome===it.nome})[0]||{},e=Object.assign({},it);
+  e.desc=it.desc||c.desc||'';e.efeito=it.efeito||c.efeito||'';e.preco=it.preco||c.preco||0;
+  e.raridade=I.RAR[it.raridade]&&it.raridade!=='comum'?it.raridade:(I.RAR[c.raridade]?c.raridade:(it.raridade||'comum'));
+  e.tag=c.tag||'';e.afin=c.afin||'';e.alvo=c.alvo||'';e.status=c.status||'';e.slot=c.slot||'';return e;
+}
+function chip(k){var e=P.ESTADOS.filter(function(x){return x.k===k})[0];return e?'<span class="chp" style="--ec:'+e.c+'">'+e.i+' '+e.n+'</span>':''}
+
+function draw(){
+  var th=tab==='itens'?'t-i':tab==='equip'?'t-e':'t-d';
+  $('menu').className='menu '+th;
+  $('win').className='win'+(th==='t-d'?'':' '+th)+(draw.last!==undefined&&draw.last!==tab?' swap':'');draw.last=tab;
+  $('rail').innerHTML=TABS.map(function(t){return '<button class="tb'+(tab===t[0]?' on':'')+'" data-t="'+t[0]+'" title="'+t[2]+'">'+ic(t[4],t[1])+'<span>'+t[2]+'</span></button>'}).join('')+
+    '<span class="tb-gap"></span>'+
+    LINKS.map(function(t){return '<a class="tb lk" href="'+t[0]+'" title="'+t[2]+'">'+ic(t[4],t[1])+'<span>'+t[2]+'</span></a>'}).join('');
+  $('rail').querySelectorAll('.tb[data-t]').forEach(function(b){b.onclick=function(){tab=b.dataset.t;draw()}});
+  var L=party();
+  if(!L.length){$('win').className='win';$('win').innerHTML='<div class="desc">Nenhum operativo na party. Volte à BASE e adicione membros.</div>';return}
+  cur(); ({itens:vItens,equip:vEquip,party:vParty,batalha:vBatalha})[tab](L);
+  document.querySelectorAll('[data-w]').forEach(function(e){e.onclick=function(){who=e.dataset.w;draw()}});
+  I.lucideRefresh&&I.lucideRefresh();
+}
+
+/* ---- ITENS (visual: terminal de blueprint, papel creme) ---- */
+function vItens(L){
+  var D=I.load(),its=D.items.filter(function(i){return i.cat===cat});
+  if(!its.some(function(i){return i.id===selIt}))selIt=its[0]&&its[0].id;
+  var it=its.filter(function(i){return i.id===selIt})[0],e=it&&enrich(it),ef=e&&P.efeitoDe(e),f=cur();
+  var rr=e?(I.RAR[e.raridade]||I.RAR.comum):I.RAR.comum,rc=rr.c;
+  var cells=[['Cura máxima',ef&&ef.tipo==='vida'&&ef.pct?ef.n+'%':''],['Cura',ef&&ef.tipo==='vida'&&!ef.pct?'+'+ef.n:''],
+    ['Sobrecarga máx.',ef&&ef.tipo==='sobre'&&ef.pct?'−'+ef.n+'%':''],['Sobrecarga',ef&&ef.tipo==='sobre'&&!ef.pct?'−'+ef.n:''],
+    ['Remove estado',ef&&ef.tipo==='vida'?chip('inconsciente'):''],['Comida',ef&&ef.tipo==='comida'?'+'+ef.n:''],
+    ['Alcance',ef&&ef.todos?'TODA a party':'']].filter(function(c){return c[1]});
+  var sym=ef?(ef.tipo==='vida'?'✚':ef.tipo==='sobre'?'⚡':'🍜'):'◇';
+  var eq=D.items.filter(function(i){return i.owner===f.id}).length;
+  var h='<div class="i-cats">'+ICATS.map(function(c){return '<button class="ic'+(cat===c[0]?' on':'')+'" data-c="'+c[0]+'">'+ic(c[2],c[3])+'<span>'+c[1]+'</span></button>'}).join('')+'</div>'+
+   '<div class="i-main"><div class="i-list">'+(its.length?its.map(function(i){var r=(I.RAR[enrich(i).raridade]||I.RAR.comum).c;
+      return '<div class="ir'+(i.id===selIt?' on':'')+'" data-i="'+i.id+'"><span class="sq" style="--rc:'+r+'">'+I.iconHTML(i.icone,i.cat)+'</span><span class="n">'+P.esc(i.nome)+'</span><b>×'+i.qtd+'</b></div>'}).join(''):'<div class="ir off">— vazio —</div>')+'</div>'+
+   '<div class="i-det">'+(e?
+     '<div class="i-head"><span class="i-title">'+P.esc(e.nome)+'</span><span class="i-kind">'+P.esc(((I.CATS[e.cat]||{}).n||'')+(e.tag?' · '+e.tag:''))+'</span></div>'+
+     '<div class="i-body"><div class="i-ico" style="--rc:'+rc+'">'+I.iconHTML(e.icone,e.cat)+'</div>'+
+       '<div class="i-txt"><p>'+P.esc(e.desc||'Sem descrição.')+'</p></div>'+
+       '<div class="i-eff">'+sym+' EFEITO<b>'+P.esc(e.efeito||(ef?'+'+ef.n:'—'))+'</b><small>'+(ef?'consumível':'sem uso direto')+'</small></div></div>'
+     :'<div class="i-head"><span class="i-title">—</span></div><div class="i-body"><div class="i-txt"><p>Escolha uma categoria e um item.</p></div></div>')+'</div></div>'+
+   '<div class="i-low">'+
+     '<div class="i-box"><div class="i-cap">EFEITOS</div>'+(cells.length?cells.map(function(c){return '<div class="er"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join(''):'<div class="er dim">nenhum efeito direto</div>')+'</div>'+
+     '<div class="i-box"><div class="i-cap">APLICAR EM</div><div class="mem">'+L.map(thumb).join('')+'</div>'+
+       (ef?'<div class="usebar">▶ <b>'+P.esc(f.nome)+'</b>'+(ef.todos?' (efeito em TODA a party)':'')+'</div><button class="i-btn" data-u="'+it.id+'">USAR</button>':'')+'</div>'+
+     '<div class="i-box"><div class="i-cap">DADOS</div>'+
+       '<div class="er"><span>Raridade</span><b style="background:var(--bg);color:'+rc+';padding:0 6px">'+rr.n+'</b></div>'+
+       '<div class="er"><span>Valor</span><b>'+(e&&e.preco?money(e.preco):'—')+'</b></div>'+
+       '<div class="er"><span>Na bolsa</span><b>'+(it?'×'+it.qtd:'—')+'</b></div></div>'+
+   '</div>'+
+   '<div class="i-foot"><span>operativo ativo</span><i></i><b>'+P.esc(f.nome)+'</b><i></i><span>'+eq+' equipado'+(eq===1?'':'s')+'</span></div>';
+  $('win').innerHTML=h;
+  $('win').querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){cat=b.dataset.c;selIt=null;draw()}});
+  $('win').querySelectorAll('.ir[data-i]').forEach(function(x){x.onclick=function(){selIt=x.dataset.i;draw()}});
+  $('win').querySelectorAll('[data-u]').forEach(function(b){b.onclick=function(){usar(b.dataset.u)}});
+}
+function usar(id){
+  var D=I.load(),it=D.items.filter(function(i){return i.id===id})[0],ef=it&&P.efeitoDe(enrich(it)),list=P.fichas(),f=cur();
+  if(!it||!ef||!f)return;
+  var alvos=ef.todos?party().map(function(x){return x.id}):[f.id];
+  list.forEach(function(x){if(alvos.indexOf(x.id)>=0)P.aplicar(x,ef)});
+  if(!P.saveFichas(list))return;
+  if(--it.qtd<=0){D.items=D.items.filter(function(i){return i!==it});selIt=null}
+  I.save(D);toast(it.nome+' usado em '+(ef.todos?'toda a party':f.nome));draw();
+}
+
+/* ---- EQUIPAR ---- */
+/* ---- CLASSE x AFINIDADE DO IMPLANTE ----
+   nativo = 100% · compatível = dado -1 degrau, fixo/crítico -25%, sobrecarga +25% (+1 no uso normal)
+   sem sinergia = dado -2 degraus, fixo/crítico -50%, sobrecarga +50% (+2 no uso normal) */
+var DADOS=[4,6,8,10,12,20];
+var SIN={
+ nativo:{n:'NATIVO',i:'✦',c:'#46ff7a',dado:0,fix:1,crit:1,sob:1,sobN:0,t:'Sinergia perfeita com a classe: rende 100%.'},
+ compativel:{n:'COMPATÍVEL',i:'◐',c:'#ffb300',dado:1,fix:.75,crit:.75,sob:1.25,sobN:1,t:'Sinergia parcial: dado 1 degrau menor, bônus fixo e crítico −25%, sobrecarga +25%.'},
+ incompativel:{n:'SEM SINERGIA',i:'✖',c:'#ff3355',dado:2,fix:.5,crit:.5,sob:1.5,sobN:2,t:'Não combina com a classe: dado 2 degraus menor, bônus fixo e crítico −50%, sobrecarga +50%.'},
+ livre:{n:'UNIVERSAL',i:'∞',c:'#22e6d2',dado:0,fix:1,crit:1,sob:1,sobN:0,t:'Afinidade QUALQUER: rende 100% em todas as classes.'},
+ semclasse:{n:'SEM CLASSE',i:'?',c:'#8a7a9a',dado:0,fix:1,crit:1,sob:1,sobN:0,t:'Escolha a classe na FICHA para calcular a sinergia. Por enquanto rende 100%.'}
+};
+function clsOf(f){return P.CLASSES.filter(function(c){return c.k===f.classe})[0]}
+function sinNivel(f,e){var a=String(e.afin||'').toUpperCase().trim();
+  if(!a||(e.cat!=='implante'&&e.cat!=='protese'))return null;
+  if(a==='QUALQUER')return 'livre';var c=clsOf(f);if(!c)return 'semclasse';
+  return a===c.nat?'nativo':c.comp.indexOf(a)>=0?'compativel':'incompativel'}
+function dadoDown(d,n){if(!d||!d.s||!n)return d;var k=DADOS.indexOf(d.s);if(k<0)return d;return{n:d.n,s:DADOS[Math.max(0,k-n)],b:d.b}}
+function dtxt(d){return d?(d.n?d.n+'d'+d.s:'')+(d.b?(d.n?'+':'')+d.b:''):''}
+function sinBadge(nv,small){var S=SIN[nv];if(!S)return '';
+  return '<span class="sin'+(small?' sm':'')+'" style="--sc:'+S.c+'" title="'+P.esc(S.t)+'">'+S.i+' '+S.n+'</span>'}
+function specs(e,f){var t=String(e.efeito||''),r=[],m,a=f?efi(e,f):null,
+    adj=!!(a&&(a.nivel==='compativel'||a.nivel==='incompativel'));
+  if(a&&a.red&&!adj)adj=true;
+  function row(l,now,base,pre){var x=P.esc((pre||'')+now);
+    if(adj&&String(now)!==String(base))x+=' <s style="opacity:.5;font-size:.85em">'+P.esc((pre||'')+base)+'</s>';r.push([l,x])}
+  if(m=t.match(/DANO\s*(\d*d\d+(?:\+\d+)?)/i))row('Dano',m[1],m[1]);
+  if(m=t.match(/DEFESA\s*\+?(\d+)/i))row('Defesa',m[1],m[1],'+');
+  if(m=t.match(/B[ÔO]NUS\s+[^\d\n·]*?(\d*d\d+(?:\+\d+)?)/i))row('Bônus (dado)',adj&&a.bonus?dtxt(a.bonus):m[1],m[1]);
+  if(m=t.match(/CR[ÍI]TICO:\s*b[ôo]nus\s*(\d+)/i))row('Crítico (extremo)',adj?a.crit:m[1],m[1],'+');
+  if(m=t.match(/gasta\s*(\d+)\s*de sobrecarga/i))row('Sobrecarga (extremo)',(adj||(a&&a.red))?a.gasta:m[1],m[1],'+');
+  if(m=t.match(/USO NORMAL:\s*gasta\s*(\d*d\d+(?:\+\d+)?)/i))row('Sobrecarga (normal)',m[1]+(adj&&a.sobN?'+'+a.sobN:''),m[1]);
+  return r}
+function specPanel(e,it,f){
+  if(!e)return '<div class="meta">Escolha um item na lista para ver a descrição e as especificações.</div>';
+  var rr=I.RAR[e.raridade]||I.RAR.comum,sp=specs(e,f),on=it.owner===f.id,nv=sinNivel(f,e),cl=clsOf(f);
+  var rows=[['Raridade','<span style="color:'+rr.c+'">'+rr.n+'</span>'],['Categoria',P.esc((I.CATS[e.cat]||{}).n||'')+(e.tag?' · '+P.esc(e.tag):'')]]
+    .concat(nv?[['Afinidade',P.esc(e.afin)],['Sinergia',sinBadge(nv)]]:[]).concat(sp);
+  if(!sp.length&&e.efeito)rows.push(['Efeito',P.esc(e.efeito)]);
+  var nota=nv?'<div class="sin-note" style="--sc:'+SIN[nv].c+'">'+P.esc(SIN[nv].t)+(nv==='incompativel'&&cl?' Classe '+P.esc(cl.n)+': nativo '+P.esc(cl.nat)+', compatível '+P.esc(cl.comp.join(', '))+'.':'')+'</div>':'';
+  if(e.preco)rows.push(['Valor',money(e.preco)]);
+  return '<div class="tit" style="color:'+rr.c+';margin-bottom:4px">'+P.esc(e.nome)+'</div>'+
+   '<div style="font-size:.78rem;line-height:1.5;margin:0 0 6px;color:var(--txt)">'+P.esc(e.desc||'Sem descrição.')+'</div>'+
+   rows.map(function(x){return '<div class="stat"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'}).join('')+nota+
+   '<button class="btn" id="bEq" data-id="'+it.id+'" style="margin:8px 0 10px;width:100%">'+(on?'✕ DESEQUIPAR':'✔ EQUIPAR')+'</button>'}
+/* ---- EQUIPAR (visual: ficha do operativo em HUD teal) ---- */
+function segs(n,tot,cls){var s='',i;for(i=0;i<tot;i++)s+='<i'+(i<n?' class="f"':'')+'></i>';return '<span class="sg '+(cls||'')+'">'+s+'</span>'}
+function vEquip(L){
+  var D=I.load(),f=cur(),S=P.stats(f),sl=SLOTS.filter(function(s){return s[0]===slotK})[0];P.ensure(f);
+  var mine=function(c){return D.items.filter(function(i){return i.cat===c&&i.owner===f.id})};
+  var pool=D.items.filter(function(i){return i.cat===sl[2]&&(!i.owner||i.owner===f.id)});
+  var selE=pool.filter(function(i){return i.id===eqSel})[0]||mine(sl[2])[0]||pool[0],ee=selE&&enrich(selE);
+  var def=D.items.filter(function(i){return i.owner===f.id&&i.cat==='armadura'}).reduce(function(a,i){var m=String(enrich(i).efeito).match(/(\d+)/);return a+(m?+m[1]:0)},0);
+  var pos=0;L.forEach(function(x,n){if(x.id===f.id)pos=n});
+  function lab(k){return SLOTS.filter(function(s){return s[0]===k})[0][1].toLowerCase()}
+  function slot(k,big){
+    var m=mine(k)[0],e=m&&enrich(m),rc=e?(I.RAR[e.raridade]||I.RAR.comum).c:'',sn=e&&sinNivel(f,e);
+    var on=slotK===k?' on':'',has=m?' has':'';
+    if(big)return '<button class="sl big'+on+has+'" data-s="'+k+'" style="--rc:'+rc+'"><span class="sl-k">'+lab(k)+'</span>'+
+      (m?'<span class="sl-n">'+P.esc(m.nome)+'</span><span class="sl-t">'+P.esc(e.tag||(I.CATS[k]||{}).n.toLowerCase())+'</span>'+(sn?sinBadge(sn,1):''):'<span class="sl-n dim">vazio</span>')+
+      '<span class="sl-i">'+(m?I.iconHTML(m.icone,m.cat):I.catIcon(k))+'</span></button>';
+    return '<div><div class="sl-lab">'+lab(k)+'</div><button class="sl sm'+on+has+'" data-s="'+k+'" style="--rc:'+rc+'" title="'+P.esc(m?m.nome+(sn?' — '+SIN[sn].n:''):'vazio')+'"'+(sn?' data-sin="'+sn+'"':'')+'><span class="sl-i'+(m?'':' off')+'">'+(m?I.iconHTML(m.icone,m.cat):I.catIcon(k))+'</span></button></div>';
+  }
+  var hp=pc(S.vida,S.vidaMax),hearts=Math.round(hp/100*6),sob=Math.min(100,S.sobre),fo=pc(S.comida,50);
+  var at=f.atributos||{};
+  var attrs=[['vel','Velocidade'],['forca','Força'],['int','Inteligência'],['sorte','Sorte']].map(function(a){
+    var v=Number(at[a[0]])||10;return '<div class="e-row"><em>'+a[1]+'</em>'+segs(Math.round(Math.min(20,v)/2),10)+'<b>'+v+'</b></div>'}).join('');
+  var h='<div class="e-grid">'+
+   '<div class="e-info"><div class="e-name">'+P.esc(f.nome)+'</div>'+
+     '<div class="e-role"><small>título</small>'+P.esc(f.titulo||'—')+'</div>'+
+     (clsOf(f)?'<div class="e-cls" style="--cc:'+clsOf(f).c+'"><small>classe</small><b>'+clsOf(f).i+' '+P.esc(clsOf(f).n)+'</b><span>'+P.esc(clsOf(f).foco)+'</span><em>implantes: nativo '+P.esc(clsOf(f).nat)+' · compatível '+P.esc(clsOf(f).comp.join(', '))+'</em></div>':'<div class="e-cls vazio"><small>classe</small><b>— sem classe —</b><span>escolha na FICHA</span></div>')+
+     '<div class="e-pager"><button data-nav="-1" aria-label="anterior">‹</button><span>'+(pos+1)+' / '+L.length+'</span><button data-nav="1" aria-label="próximo">›</button></div>'+
+     '<div class="e-sub">atributos</div><div class="e-box">'+attrs+'</div>'+
+     '<div class="e-box">'+
+       '<div class="e-row"><em>vida</em><span class="hs">'+new Array(hearts+1).join('♥')+'<u>'+new Array(7-hearts).join('♥')+'</u></span><b>'+Math.round(hp)+'%</b></div>'+
+       '<div class="e-row"><em>sobrecarga</em>'+segs(Math.round(sob/10),10,'o')+'<b>'+S.sobre+'%</b></div>'+
+       '<div class="e-row"><em>comida</em>'+segs(Math.round(fo/10),10,'p')+'<b>'+Math.round(fo)+'%</b></div>'+
+       '<div class="e-def"><span>defesa (armadura)</span><b>+'+def+'</b></div></div></div>'+
+   '<div class="e-arms">'+slot('arma',1)+slot('corpo',1)+'<div class="e-side">'+slot('implante')+slot('armadura')+slot('hacker')+slot('protese')+'</div></div>'+
+   '<div class="e-fig"><div class="pt-frame">'+P.portraitHTML(f.retrato)+'</div><div class="e-est">'+P.estadoChips(f)+'</div>'+
+     '<div class="e-on'+(S.sobre>=100?' bad':'')+'">'+(S.sobre>=100?'ciberpsicose':'implantes online')+'</div></div>'+
+   '</div>'+
+   '<div class="e-pick"><div><div class="e-cap">'+lab(slotK)+' · disponíveis na bolsa</div><div class="list">'+
+     (pool.length?pool.map(function(i){var e=enrich(i);return '<div class="it'+(selE&&i.id===selE.id?' on':'')+'" data-e="'+i.id+'" style="--rc:'+(I.RAR[e.raridade]||I.RAR.comum).c+'"><span class="ico">'+I.iconHTML(i.icone,i.cat)+'</span><span class="n">'+P.esc(i.nome)+'</span>'+sinBadge(sinNivel(f,e),1)+'<b>'+(i.owner===f.id?'EQUIPADO ✓':'')+'</b></div>'}).join(''):'<div class="it">— nenhum item desta categoria —</div>')+'</div></div>'+
+   '<div class="e-ps">'+specPanel(ee,selE,f)+'</div></div>';
+  $('win').innerHTML=h;
+  $('win').querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){slotK=b.dataset.s;eqSel=null;draw()}});
+  $('win').querySelectorAll('[data-nav]').forEach(function(b){b.onclick=function(){who=L[(pos+(+b.dataset.nav)+L.length)%L.length].id;eqSel=null;draw()}});
+  $('win').querySelectorAll('[data-e]').forEach(function(x){x.onclick=function(){eqSel=x.dataset.e;draw()}});
+  var bq=$('bEq');if(bq)bq.onclick=function(){var d=I.load(),it=d.items.filter(function(i){return i.id===bq.dataset.id})[0];if(!it)return;
+      if(it.owner===f.id){it.owner='';toast(it.nome+' desequipado')}
+      else{if(['arma','corpo','armadura','hacker'].indexOf(it.cat)>=0)d.items.forEach(function(o){if(o.cat===it.cat&&o.owner===f.id)o.owner=''});it.owner=f.id;toast(it.nome+' equipado em '+f.nome)}
+      I.save(d);draw()};
+}
+
+/* ---- PARTY ---- */
+function vParty(L){
+  var n=P.getParty().n,sl=P.getParty().slots,F=P.fichas();
+  $('win').innerHTML='<div class="pmg" style="grid-template-columns:repeat('+n+',1fr)">'+sl.map(function(id){var f=F.filter(function(x){return x.id===id})[0];
+   if(!f)return '<div class="pm"><div class="pm-name">&nbsp;</div><div class="pm-tit">&nbsp;</div><div class="pm-art pt-frame" style="border:1px dashed #333"></div></div>';
+   P.ensure(f);var s=P.stats(f),cls=f.estados.indexOf('morto')>=0?' dead':f.estados.indexOf('inconsciente')>=0?' ko':'';
+   return '<div class="pm'+cls+'"><div class="pm-name">'+P.esc(f.nome)+'</div><div class="pm-tit">'+P.esc(f.titulo||'')+'&nbsp;</div>'+
+    '<div class="pm-art pt-frame" data-w="'+f.id+'">'+P.portraitHTML(f.retrato)+'<div class="pm-est">'+P.estadoChips(f)+'</div><div class="pm-bars">'+
+    sbar('Comida',s.comida,pc(s.comida,50),'h')+sbar('Vida',s.vida+'/ '+s.vidaMax,pc(s.vida,s.vidaMax))+sbar('Sobrecarga',s.sobre+'/ 100',Math.min(100,s.sobre),'s')+'</div></div></div>'}).join('')+'</div>'+
+   '<div class="usebar" style="margin-top:6px">Toque num retrato para escolher o operativo e vá em ITENS para curar.</div>';
+  $('win').querySelectorAll('.pm-art[data-w]').forEach(function(x){x.onclick=function(){who=x.dataset.w;tab='itens';draw()}});
+}
+var qt=new URLSearchParams(location.search).get('t');if(qt&&TABS.some(function(t){return t[0]===qt}))tab=qt;
+/* ---- BATALHA: teste de acerto, dano, sobrecarga e hack ---- */
+var bt={cmd:'atk',mode:'soco',imp:'',ext:false,ficha:true,nd:13,mult:4,res:{},log:[],cd:{},tg:{},sgN:{},adv:0,arm:0,nano:false,pernas2:false};
+function rl(n){return 1+Math.floor(Math.random()*n)}
+function pd(t){var m=String(t||'').match(/(\d*)d(\d+)\s*(?:\+\s*(\d+))?/i);if(m)return{n:+(m[1]||1),s:+m[2],b:+(m[3]||0)};m=String(t||'').match(/^\s*\+?(\d+)\s*$/);return m?{n:0,s:0,b:+m[1]}:null}
+function rd(d){var r=[],i;if(!d)return{t:0,tx:'0'};for(i=0;i<d.n;i++)r.push(rl(d.s));var t=r.reduce(function(a,b){return a+b},0)+d.b;return{t:t,tx:(d.n?d.n+'d'+d.s+'['+r.join(',')+']':'')+(d.b?(d.n?'+':'')+d.b:'')}}
+function reatorRed(f){var r=0;I.load().items.forEach(function(x){if(x.owner===f.id&&/^reactor heart/i.test(x.nome)){var m=String(enrich(x).efeito).match(/-(\d+)%/);if(m)r=Math.max(r,+m[1])}});return r}
+function efi(it,f){var E=enrich(it),e=String(E.efeito||''),
+  b=e.match(/B[ÔO]NUS\s+[^\d\n·]*?(\d*d\d+(?:\+\d+)?)/i),c=e.match(/CR[ÍI]TICO:\s*b[ôo]nus\s*(\d+)/i),
+  g=e.match(/gasta\s*(\d+)\s*de sobrecarga/i),d=e.match(/DANO\s*(\d*d\d+(?:\+\d+)?)/i),
+  o={bonus:b&&pd(b[1]),crit:c?+c[1]:0,gasta:g?+g[1]:0,dano:d&&pd(d[1]),nivel:null,sobN:0},
+  nv=f?sinNivel(f,E):null,S=nv&&SIN[nv];
+  o.nivel=nv;
+  if(S){if(o.bonus){o.bonus=dadoDown(o.bonus,S.dado);o.bonus.b=Math.floor(o.bonus.b*S.fix)}
+    o.crit=Math.floor(o.crit*S.crit);o.gasta=Math.ceil(o.gasta*S.sob);o.sobN=S.sobN}
+  o.red=f?reatorRed(f):0;if(o.red)o.gasta=Math.round(o.gasta*(1-o.red/100));
+  return o}
+/* ---- ESTADOS (debuffs) que mexem nos testes — valores das REGRAS ----
+   all = todos os testes · atk = ataques · vel = Velocidade · int = Inteligência (números negativos)
+   desv:true = desvantagem fixa · block = não pode agir. Para mudar uma regra, edite aqui. */
+var EST={
+ esgotado:{all:-2,t:'−2 em todos os testes'},
+ assustado:{all:-2,t:'−2 em todos os testes (medo)'},
+ eletrocutado:{all:-2,t:'−2 em todos os testes · +1d4 de sobrecarga por implante ativado'},
+ tonto:{atk:-2,vel:-2,t:'−2 em ataques e em Velocidade'},
+ cego:{atk:-5,t:'−5 em ataques e em testes de visão; não mira à distância'},
+ congelado:{vel:-3,t:'−3 em Velocidade; só ações com as mãos'},
+ imobilizado:{vel:-3,t:'−3 em Velocidade (uma perna) · desvantagem em Velocidade (duas pernas)'},
+ drogado:{vel:-2,int:-2,t:'−2 em Velocidade e Inteligência'},
+ inconsciente:{block:'Inconsciente: não age.'},
+ morto:{block:'Morto: não age.'},
+ ciberpsicose:{block:'Ciberpsicose: virou NPC, o mestre controla.'},
+ sangrando:{dot:'nivel',t:'perde Vida no começo do turno: Leve 1d6 · Moderado 1d10 · Grave 1d12+5 (não altera testes)'},
+ queimando:{dot:'1d8',t:'perde 1d8 de Vida no começo do turno (não altera testes)'},
+ envenenado:{dot:'1d6',t:'perde 1d6 de Vida no começo do turno (valor padrão — ajuste em EST)'},
+ hackeado:{t:'sem regra definida'}
+};
+function estNome(k){var e=P.ESTADOS.filter(function(x){return x.k===k})[0];return e?e.n:k}
+/* kind: 'atk' | 'hack' · k: 'vel' | 'forca' | 'int'. Dentro do MESMO estado vale só a pior penalidade que se aplica; estados diferentes somam. */
+function modInfo(f,kind,k){var tot=0,pt=[],desv=false,block='';
+  (f.estados||[]).forEach(function(s){var d=EST[s];if(!d)return;
+    if(d.block&&!block)block=d.block;
+    var c=[d.all,kind==='atk'?d.atk:0,k==='vel'?d.vel:0,k==='int'?d.int:0].filter(Boolean),m=c.length?Math.min.apply(null,c):0;
+    if(m){tot+=m;pt.push(estNome(s)+' '+sg(m))}
+    if(s==='imobilizado'&&bt.pernas2&&k==='vel'){desv=true;pt.push('IMOBILIZADO (2 pernas) desvantagem')}
+    if(d.desv){desv=true;pt.push(estNome(s)+' desvantagem')}});
+  return{tot:tot,pt:pt,desv:desv,block:block}}
+/* vantagem/desvantagem: manual (seletor) + automática (estados). Se uma anula a outra, rola normal. */
+function advNet(auto){var n=(bt.adv||0)+(auto?-1:0);return n>0?1:n<0?-1:0}
+function r20(adv){var a=rl(20);if(!adv)return{v:a,tx:'d20['+a+']'};
+  var b=rl(20),v=adv>0?Math.max(a,b):Math.min(a,b);
+  return{v:v,tx:'d20['+a+','+b+']→'+v+(adv>0?' (vantagem)':' (desvantagem)')}}
+function estPanel(f,c){
+  var L=(f.estados||[]).map(function(s){var e=P.ESTADOS.filter(function(x){return x.k===s})[0];return e?{e:e,d:EST[s]||{}}:null}).filter(Boolean),
+    kind=bt.cmd==='hack'?'hack':'atk',k=bt.cmd==='hack'?'int':(btMode(c)==='arma'?'vel':'forca'),mi=modInfo(f,kind,k),
+    h='<div class="est-box">';
+  h+=L.length?L.map(function(x){return '<div class="est-r" style="--ec:'+x.e.c+'"><b>'+x.e.i+' '+x.e.n+'</b> <span>'+P.esc(x.d.t||x.d.block||'sem efeito em testes')+'</span></div>'}).join(''):'<div class="est-r" style="--ec:#46ff7a"><span>Sem estados ativos (nenhum debuff).</span></div>';
+  if(L.length)h+='<div class="est-t">Neste teste: <b>'+(mi.block?'NÃO PODE AGIR':sg(mi.tot)+(mi.desv?' · DESVANTAGEM':''))+'</b></div>';
+  if((f.estados||[]).indexOf('imobilizado')>=0)h+='<label><input type="checkbox" id="bPer"'+(bt.pernas2?' checked':'')+'> perdeu as duas pernas (desvantagem em Velocidade)</label>';
+  if((f.estados||[]).indexOf('sangrando')>=0)h+='<label>Nível do sangramento <select id="bSgN">'+NIVEL.map(function(n,i){return '<option value="'+i+'"'+((bt.sgN[f.id]||0)===i?' selected':'')+'>'+n[0]+' ('+n[1]+')</option>'}).join('')+'</select></label>';
+  h+='<label>Rolagem <select id="bAdv">'+[[0,'normal'],[1,'vantagem (melhor de 2d20)'],[-1,'desvantagem (pior de 2d20)']].map(function(o){return '<option value="'+o[0]+'"'+((bt.adv||0)===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></label>';
+  return h+'</div>'}
+
+/* ---- SANGRAMENTO (cortantes) e TONTURA (impacto) ---- */
+var NIVEL=[['Leve','1d6',10],['Moderado','1d10',13],['Grave','1d12+5',16]];
+function limArma(w){if(!w)return null;
+  var n=String(w.nome).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''),
+    T=[[/lanca arc/,'s',4,0],[/faca/,'s',5,0],[/katana/,'s',6,0],[/espada/,'s',7,1],[/monolamina/,'s',8,1],[/garras/,'s',9,1],[/machado/,'s',10,2],[/foice/,'s',11,2],
+       [/bastao/,'t',5,0],[/punho titan/,'t',7,0],[/martelo/,'t',10,0]];
+  for(var i=0;i<T.length;i++)if(T[i][0].test(n))return{tipo:T[i][1],lim:T[i][2],nivel:T[i][3],dur:/martelo/.test(n)?3:2,nome:w.nome};
+  return null}
+function sangUI(c,m){var L=m==='corpo'&&limArma(c.corpo);if(!L)return '';
+  var red=bt.arm||0,lim=Math.max(0,L.lim-red);
+  return '<div class="sg-box"><div class="sg-h">'+(L.tipo==='s'?'🩸 SANGRAMENTO':'💫 TONTURA')+' · '+P.esc(L.nome)+'</div>'+
+   '<label>Armadura do alvo <select id="bArm">'+[[0,'nenhuma'],[1,'comum (−1)'],[2,'rara (−2)'],[3,'experimental/proibida (−3)']].map(function(o){return '<option value="'+o[0]+'"'+((bt.arm||0)===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></label>'+
+   (L.tipo==='s'?'<label><input type="checkbox" id="bNano"'+(bt.nano?' checked':'')+'> alvo tem Nanite Blood (rola 2d20, fica o pior)</label>':'')+
+   '<div class="sg-p">limiar '+L.lim+(red?' −'+red:'')+' = <b>≤ '+lim+'</b> ('+lim*5+'%)'+(L.tipo==='s'?' · nível '+NIVEL[L.nivel][0]+' ('+NIVEL[L.nivel][1]+' por turno)':' · dura '+L.dur+' turnos')+'</div></div>'}
+function sangBtn(c,m,r){var L=m==='corpo'&&limArma(c.corpo);if(!L)return '';
+  return '<button class="btn" id="bSg"'+((r.dmg&&!r.sang)?'':' disabled')+'>'+(L.tipo==='s'?'🩸 ROLAR SANGRAMENTO':'💫 ROLAR TONTURA')+'</button>'}
+function btSang(){var c=btCtx(),f=c.f,L=limArma(c.corpo),r=bt.res||{};if(!L||!r.ok||r.sang)return;
+  var red=bt.arm||0,lim=Math.max(0,L.lim-red),pt=[],hit=false,nv=L.nivel,sang=L.tipo==='s',out;
+  if(sang&&r.nat20){hit=true;pt.push('20 natural no ataque: sangra sem rolar')}
+  else{var a=rl(20),v=a;
+    if(sang&&bt.nano){var b=rl(20);v=Math.max(a,b);pt.push('Nanite Blood: d20['+a+','+b+'] → fica o pior ('+v+')')}else pt.push('d20['+a+']');
+    hit=v<=lim||(sang&&v===1);
+    if(sang&&v===1){nv=Math.min(2,nv+1);pt.push('1 natural: sangra um nível acima')}}
+  pt.push('limiar '+L.lim+(red?' −'+red+' (armadura)':'')+' = ≤ '+lim);
+  if(!hit)out='<div class="tt ok">'+(sang?'NÃO SANGROU':'NÃO FICOU TONTO')+'</div>'+pt.join(' · ');
+  else if(sang)out='<div class="tt no">🩸 SANGRA — '+NIVEL[nv][0].toUpperCase()+'</div>'+NIVEL[nv][1]+' de Vida no começo de cada turno do alvo · parar: Int ND '+NIVEL[nv][2]+' (+2 se outro ajuda) ou item de CURA<br><span style="opacity:.75">Mesmo nível já ativo sobe para o seguinte; maior substitui; menor é ignorado.</span><br>'+pt.join(' · ');
+  else out='<div class="tt no">💫 TONTO — '+L.dur+' TURNOS</div>−2 em ataques e Velocidade (inclusive iniciativa). Não acumula, só renova.<br>'+pt.join(' · ');
+  r.sang=out;bt.log.unshift(f.nome+': '+(sang?'sangramento ':'tontura ')+(hit?'→ '+(sang?NIVEL[nv][0]:'tonto'):'→ não pegou'));btDraw()}
+/* ---- IMPLANTES COM HABILIDADE ATIVA (custo de sobrecarga + recarga) ---- */
+function ativoInfo(it,f){
+  if(it.cat!=='implante'&&it.cat!=='protese')return null;
+  var E=enrich(it),d=String(E.desc||''),ef=String(E.efeito||''),
+    h=d.match(/Habilidade\s*[—–-]\s*([^:]+?)\s*:\s*([\s\S]*)$/i),cu=ef.match(/CUSTO:\s*(\d+)/i);
+  if(!h||!cu)return null;
+  var rc=ef.match(/RECARGA:\s*(\d+)\s*turnos?/i),rr=/RECARGA:[^·]*por rodada/i.test(ef),dv=ef.match(/DESVANTAGEM:\s*([\s\S]*)$/i),
+    nv=sinNivel(f,E),S=SIN[nv]||SIN.nativo,red=reatorRed(f),base=+cu[1],
+    custo=Math.max(1,Math.round(base*S.sob*(1-red/100))),
+    txt=h[2].trim().replace(/(\d+)%/g,function(m,n){return Math.round(n*S.fix)+'%'});
+  return{it:it,nome:h[1].trim(),txt:txt,orig:h[2].trim(),base:base,custo:custo,red:red,nv:nv,S:S,
+    cd:rc?+rc[1]:rr?1:0,cdTxt:rc?rc[1]+' turnos':rr?'1x por rodada':'sem recarga',dv:dv?dv[1].trim():'',alvo:E.alvo||(/escolhe um aliado/i.test(d)?'aliado':''),st:E.status||''}}
+function ativoUI(c){
+  var L=c.all.map(function(i){return ativoInfo(i,c.f)}).filter(Boolean),sobre=P.stats(c.f).sobre,red=reatorRed(c.f);
+  var top=red?'<div class="at-pas">🫀 Reactor Heart ativo: −'+red+'% no gasto de sobrecarga</div>':'';
+  if(!L.length)return top+'<div class="meta">Nenhum implante com habilidade ativa equipado. Equipe um na aba EQUIPAR.</div>';
+  return top+'<div class="at-list">'+L.map(function(a){var cd=bt.cd[a.it.id]||0,pr=sobre+a.custo;
+    return '<div class="at" style="--sc:'+a.S.c+'"><div class="at-h"><b>'+P.esc(a.it.nome)+'</b>'+sinBadge(a.nv,1)+'</div>'+
+      '<div class="at-n">'+P.esc(a.nome)+'</div><div class="at-t" title="Base: '+P.esc(a.orig)+'">'+P.esc(a.txt)+'</div>'+
+      '<div class="at-m">⚡ '+a.custo+(a.custo!==a.base?' <s>'+a.base+'</s>':'')+' sobrecarga · recarga '+a.cdTxt+(pr>=100?' · <span class="no">☠ levaria a '+pr+'%</span>':'')+'</div>'+
+      (a.dv?'<div class="at-d">⚠ '+P.esc(a.dv)+'</div>':'')+
+      tgUI(a)+'<button class="btn" data-at="'+a.it.id+'"'+(cd?' disabled':'')+'>'+(cd?'RECARGA: '+cd+' turno'+(cd>1?'s':''):'ATIVAR')+'</button></div>'}).join('')+'</div>'+
+    '<div class="at-row"><button class="btn" id="bTurn">⏭ PASSAR TURNO</button></div>'}
+function tgUI(a){var al=a.alvo,id=a.it.id,L=party();
+  if(al==='aliados')return '<div class="at-d">🎯 Alvo: <b>toda a party</b></div>';
+  if(al==='inimigo'||al==='inimigos')return '<div class="at-d">🎯 Alvo: <b>'+(al==='inimigos'?'todos os inimigos':'1 inimigo')+'</b> (o mestre aplica o efeito)</div>';
+  if(al!=='aliado'&&al!=='aliado_caido')return '';
+  if(al==='aliado_caido')L=L.filter(function(x){return(x.estados||[]).indexOf('inconsciente')>=0});
+  if(!L.some(function(x){return x.id===bt.tg[id]}))bt.tg[id]=al==='aliado'?cur().id:(L[0]&&L[0].id);
+  return L.length?'<label class="at-d">🎯 Em quem: <select data-tg="'+id+'">'+L.map(function(x){return '<option value="'+x.id+'"'+(x.id===bt.tg[id]?' selected':'')+'>'+P.esc(x.nome)+'</option>'}).join('')+'</select></label>':'<div class="at-d">🎯 Nenhum aliado Inconsciente</div>'}
+function btFx(a){var al=a.alvo,c=btCtx();if(!al)return '';
+  if(al==='inimigo'||al==='inimigos')return '<hr>🎯 <b>'+(al==='inimigos'?'TODOS OS INIMIGOS':'INIMIGO')+'</b> — aplique: '+P.esc(a.txt)+(a.st?' '+chip(a.st):'');
+  var L=P.fichas(),ids=al==='aliados'?party().map(function(x){return x.id}):[bt.tg[a.it.id]||c.f.id],nm=[],
+    m=a.txt.match(/(?:cura|revive[^.]*? com)\s*(\d+)%/i),rm=a.txt.match(/remove (\d+|todos os)\s+estados?/i);
+  L.forEach(function(x){if(ids.indexOf(x.id)<0)return;P.ensure(x);nm.push(x.nome);
+    if(m)P.aplicar(x,{tipo:'vida',pct:true,n:+m[1]});
+    if(rm){var n=/todos/i.test(rm[1])?99:+rm[1],ok=x.estados.filter(function(k){return k!=='morto'&&k!=='inconsciente'}).slice(0,n);x.estados=x.estados.filter(function(k){return ok.indexOf(k)<0})}});
+  P.saveFichas(L);
+  bt.log.unshift(c.f.nome+' → '+nm.join(', ')+': '+a.nome);
+  return '<hr>✚ Aplicado em <b>'+P.esc(nm.join(', '))+'</b>'+(m?' · cura '+m[1]+'%':'')+(rm?' · estados removidos':'')+
+    (/(\+|−|-)\d+%|escudo|imun/i.test(a.txt.replace(/(?:cura|revive[^.]*? com)\s*\d+%/i,''))?'<br>⚑ buff/efeito extra (anote na ficha): '+P.esc(a.txt):'')}
+function btDot(f){var es=f.estados||[],L=es.filter(function(s){return EST[s]&&EST[s].dot}),parts=[],tot=0;
+  if(!L.length||es.indexOf('morto')>=0)return null;
+  L.forEach(function(s){var dice=EST[s].dot==='nivel'?NIVEL[bt.sgN[f.id]||0][1]:EST[s].dot,x=rd(pd(dice));tot+=x.t;parts.push({n:estNome(s),tx:x.tx+' = '+x.t})});
+  return{parts:parts,total:tot,done:false}}
+function dotHTML(d){return '<hr>🩸 Dano de estados (começo do turno): '+d.parts.map(function(p){return P.esc(p.n)+' '+p.tx}).join(' · ')+' → <b>−'+d.total+' de Vida</b>'+
+  (d.done?' ✔ aplicado':' <button class="btn" id="bDot">APLICAR NA FICHA</button>')}
+function btDotApply(){var d=bt.res&&bt.res.dot,f=cur();if(!d||d.done||!f)return;
+  var L=P.fichas(),x=L.filter(function(y){return y.id===f.id})[0];if(!x)return;P.ensure(x);
+  var pt=x.partes||{},at=function(k){return Number(pt[k].atual)||0},ks=Object.keys(pt).filter(function(k){return at(k)>0}),
+    tot=ks.reduce(function(s,k){return s+at(k)},0),n=Math.min(d.total,tot),left=n;
+  ks.forEach(function(k){var c=Math.min(at(k),left,Math.round(n*at(k)/tot));pt[k].atual=at(k)-c;left-=c});
+  ks.forEach(function(k){var c=Math.min(at(k),left);pt[k].atual=at(k)-c;left-=c});
+  if(P.stats(x).vida<=0&&x.estados.indexOf('inconsciente')<0)x.estados.push('inconsciente');
+  if(!P.saveFichas(L))return;
+  d.done=true;bt.log.unshift(x.nome+': −'+n+' de vida por estados ('+d.parts.map(function(p){return p.n}).join(', ')+')');
+  toast('−'+n+' de vida em '+x.nome+(P.stats(x).vida<=0?' · INCONSCIENTE':''));btDraw()}
+function btAtivar(id){
+  var c=btCtx(),it=c.all.filter(function(i){return i.id===id})[0],a=it&&ativoInfo(it,c.f);
+  if(!a||bt.cd[id]>0)return;
+  if(a.alvo==='aliado_caido'&&!party().some(function(x){return x.id===bt.tg[id]&&(x.estados||[]).indexOf('inconsciente')>=0})){toast('Escolha um aliado Inconsciente');return}
+  if(a.cd)bt.cd[id]=a.cd;
+  var emp=(c.f.estados||[]).indexOf('eletrocutado')>=0?rl(4):0,tot=a.custo+emp,pr=P.stats(c.f).sobre+tot;
+  var fx=btFx(a);
+  bt.res={hit:'<div class="tt cr">✦ '+P.esc(a.nome.toUpperCase())+'</div>'+P.esc(a.it.nome)+' · '+P.esc(a.txt)+
+    (a.dv?'<br><span class="no">⚠ '+P.esc(a.dv)+'</span>':'')+(pr>=100?'<br><span class="no">☠ sobrecarga em '+pr+'% — risco de ciberpsicose</span>':'')+fx,
+    ok:true,sob:{n:tot,fail:false,ext:false,custom:true,emp:emp}};
+  bt.log.unshift(c.f.nome+': ativou '+a.nome+' ('+a.it.nome+') · +'+tot+' sobrecarga');bt.res.dot=btDot(c.f);
+  btSob()}
+function btCtx(){var f=cur(),D=I.load(),mine=D.items.filter(function(i){return i.owner===f.id});
+  var one=function(c){return mine.filter(function(i){return i.cat===c})[0]};
+  var imps=mine.filter(function(i){return(i.cat==='implante'||i.cat==='protese')&&efi(i,f).bonus});
+  return{f:f,all:mine,arma:one('arma'),corpo:one('corpo'),hack:one('hacker'),imps:imps}}
+function btMode(c){var m=bt.mode;if(bt.cmd==='skill')m='soco';if(m==='arma'&&!c.arma)m='soco';if(m==='corpo'&&!c.corpo)m='soco';return m}
+function btImp(c){var it=c.imps.filter(function(i){return i.id===bt.imp})[0];return it||(bt.cmd==='skill'?c.imps[0]:null)}
+function mod(f,k){return (Number(f.atributos&&f.atributos[k])||10)-10}
+function sg(n){return (n>=0?'+':'')+n}
+function btHit(){
+  var c=btCtx(),f=c.f,m=btMode(c),k=m==='arma'?'vel':'forca',im=btImp(c),pt=[],tot=0,mi=modInfo(f,'atk',k),R=null,d20=0;
+  if(mi.block){bt.res={msg:'<span class="no">✖ '+P.esc(mi.block)+'</span>'};return btDraw()}
+  R=r20(advNet(mi.desv));d20=R.v;
+  if(bt.cmd==='skill'&&!im){bt.res={msg:'<span class="no">Equipe um implante/prótese com BÔNUS na aba EQUIPAR.</span>'};return btDraw()}
+  var md=mod(f,k);tot=d20+md+mi.tot;pt.push(R.tx,(k==='vel'?'VEL':'FOR')+sg(md));if(mi.pt.length)pt.push('ESTADOS '+mi.pt.join(' · '));
+  if(bt.ficha&&f.extra&&f.extra[k]){var x=rd(pd(f.extra[k]));tot+=x.t;pt.push('extra ficha '+x.tx)}
+  var sob=null,s0=P.stats(f).sobre;
+  if(im){var e=efi(im,f),x;if(bt.ext&&e.crit){x={t:e.crit,tx:'CRÍTICO '+e.crit};sob={n:e.gasta||e.crit,fail:false,ext:true}}
+    else{x=rd(e.bonus);var g=rl(4),lim=s0<=30?1:s0<=85?2:s0<=99?3:4;sob={n:Math.max(1,Math.round((g+e.sobN)*(1-(e.red||0)/100))),fail:g<=lim,ext:false,roll:g,extra:e.sobN,red:e.red}}
+    tot+=x.t;pt.push(im.nome+(e.nivel&&SIN[e.nivel]&&e.nivel!=='nativo'&&e.nivel!=='livre'?' ['+SIN[e.nivel].n+']':'')+' '+x.tx)}
+  if(sob&&(f.estados||[]).indexOf('eletrocutado')>=0){sob.emp=rl(4);sob.n+=sob.emp}
+  var ok=tot>=bt.nd,cls=d20===20?'cr':d20===1?'no':ok?'ok':'no',lab=d20===20?'✦ SUCESSO CRÍTICO':d20===1?'✖ FALHA CRÍTICA':ok?'ACERTOU':'ERROU';
+  if(d20===20)ok=true;if(d20===1)ok=false;
+  bt.res={hit:'<div class="tt '+cls+'">'+lab+' — '+tot+' vs '+bt.nd+'</div>'+pt.join(' · '),ok:ok,sob:sob,dmg:null,nat20:d20===20};
+  bt.log.unshift(f.nome+': acerto '+tot+' vs '+bt.nd+' → '+lab);bt.res.dot=btDot(f);btDraw()}
+function btDmg(){
+  var c=btCtx(),f=c.f,m=btMode(c),im=btImp(c),pt=[],t=0,w=m==='arma'?c.arma:m==='corpo'?c.corpo:null,wd=w?efi(w).dano:pd('1d4');
+  var x=rd(wd);t+=x.t;pt.push((w?w.nome:'Soco')+' '+x.tx);
+  if(m!=='arma'&&mod(f,'forca')>0){t+=mod(f,'forca');pt.push('FOR'+sg(mod(f,'forca')))}
+  if(im){var e=efi(im,f),y=bt.ext&&e.crit?{t:e.crit,tx:'CRÍTICO '+e.crit}:rd(e.bonus);t+=y.t;pt.push(im.nome+' '+y.tx)}
+  var fin=t*bt.mult;bt.res.dmg='<div class="tt cr">DANO '+fin+'</div>('+pt.join(' + ')+') = '+t+' × '+bt.mult;
+  bt.log.unshift(f.nome+': dano '+fin);btDraw()}
+function btHack(){
+  var c=btCtx(),f=c.f;if(!c.hack){bt.res={msg:'<span class="no">Nenhum item HACKER equipado.</span>'};return btDraw()}
+  var mi=modInfo(f,'hack','int');if(mi.block){bt.res={msg:'<span class="no">✖ '+P.esc(mi.block)+'</span>'};return btDraw()}
+  var R=r20(advNet(mi.desv)),d20=R.v,md=mod(f,'int'),t=d20+md+mi.tot,pt=[R.tx,'INT'+sg(md),c.hack.nome];if(mi.pt.length)pt.push('ESTADOS '+mi.pt.join(' · '));
+  if(bt.ficha&&f.extra&&f.extra.int){var x=rd(pd(f.extra.int));t+=x.t;pt.push('extra '+x.tx)}
+  var ok=d20===20||(d20!==1&&t>=bt.nd);
+  bt.res={hit:'<div class="tt '+(ok?'ok':'no')+'">'+(ok?'INVASÃO BEM-SUCEDIDA':'HACK FALHOU')+' — '+t+' vs '+bt.nd+'</div>'+pt.join(' · '),ok:ok};
+  bt.log.unshift(f.nome+': hack '+t+' vs '+bt.nd+' → '+(ok?'sucesso':'falha'));bt.res.dot=btDot(f);btDraw()}
+function btSob(){
+  var sb=bt.res.sob,list=P.fichas(),f=cur();if(!sb||sb.done)return;
+  list.forEach(function(x){if(x.id===f.id)x.sobreAjuste=(Number(x.sobreAjuste)||0)+sb.n});
+  if(P.saveFichas(list)){sb.done=true;toast('+'+sb.n+' de sobrecarga em '+f.nome)}btDraw()}
+function btDraw(){
+  var c=btCtx(),f=c.f,S=P.stats(f),m=btMode(c),r=bt.res||{},sb=r.sob;
+  var top=r.msg||((r.hit||'<span style="opacity:.7">Escolha um comando e role o teste.</span>')+(r.dmg?'<hr>'+r.dmg:'')+(r.sang?'<hr>'+r.sang:'')+
+    (sb?'<hr>🔋 Sobrecarga: <b>+'+sb.n+'</b>'+(sb.custom?' (custo da habilidade'+(sb.emp?' +'+sb.emp+' EMP':'')+')':sb.ext?' (uso extremo)':' (1d4: '+sb.roll+(sb.extra?' +'+sb.extra+' sinergia':'')+(sb.red?' −'+sb.red+'% reator':'')+(sb.emp?' +'+sb.emp+' EMP (eletrocutado)':'')+')')+(sb.fail?' <span class="no">⚠ FALHA DO IMPLANTE</span>':'')+
+      (sb.done?' ✔ aplicada':' <button class="btn" id="bSob">APLICAR NA FICHA</button>'):''));
+  if(r.dot&&!r.msg)top+=dotHTML(r.dot);
+  var modes=[['soco','👊 Sem arma (Força)',1],['arma',':pistol-gun: '+(c.arma?c.arma.nome:'Arma de fogo')+' (Velocidade)',!!c.arma],['corpo','🗡️ '+(c.corpo?c.corpo.nome:'Corpo a corpo')+' (Força)',!!c.corpo]];
+  var opt=bt.cmd==='ativo'?ativoUI(c):bt.cmd==='hack'?'<div>Deck: <b>'+(c.hack?P.esc(c.hack.nome):'— não equipado —')+'</b> · teste de INT</div>':
+    (bt.cmd==='skill'?'':modes.map(function(o){return '<label class="'+(o[2]?'':'off')+'"><input type="radio" name="md" value="'+o[0]+'"'+(m===o[0]?' checked':'')+(o[2]?'':' disabled')+'> '+P.esc(o[1])+'</label>'}).join(''))+
+    '<label>Implante/prótese: <select id="bImp"><option value="">— nenhum —</option>'+c.imps.map(function(i){return '<option value="'+i.id+'"'+(btImp(c)&&btImp(c).id===i.id?' selected':'')+'>'+P.esc(i.nome)+'</option>'}).join('')+'</select></label>'+
+    '<label><input type="checkbox" id="bExt"'+(bt.ext?' checked':'')+'> ⚡ Uso extremo (bônus crítico fixo, gasta sobrecarga alta)</label>';
+  if(bt.cmd!=='ativo')opt=estPanel(f,c)+opt+(bt.cmd==='atk'?sangUI(c,m):'');
+  var h='<div class="bt-top">'+top+'</div><div class="mem" style="margin-top:8px">'+party().map(thumb).join('')+'</div>'+
+   '<div class="bt-win"><div class="panel2 bt-cmd">'+[['atk','Atacar'],['skill','Prótese'],['ativo','Implantes'],['hack','Hackear']].map(function(o){return '<button data-k="'+o[0]+'" class="'+(bt.cmd===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('')+'</div>'+
+   '<div class="panel2 bt-opt'+(bt.cmd==='ativo'?' at-mode':'')+'"><div class="stat"><span>'+P.esc(f.nome)+'</span><b>Vida '+S.vida+'/'+S.vidaMax+' · Sobrecarga '+S.sobre+'%</b></div>'+opt+
+   '<div class="bt-row"><label>Alvo (ND/defesa) <input type="number" id="bNd" value="'+bt.nd+'" style="width:64px"></label>'+(bt.cmd==='hack'?'':'<label>Multiplicador <input type="number" id="bMu" value="'+bt.mult+'" style="width:56px"></label>')+
+   '<label><input type="checkbox" id="bFi"'+(bt.ficha?' checked':'')+'> dado extra da ficha</label></div>'+
+   '<div class="bt-row">'+(bt.cmd==='hack'?'<button class="btn" id="bGo">🎲 ROLAR HACK</button>':'<button class="btn" id="bGo">🎲 ROLAR ACERTO</button><button class="btn" id="bDm"'+(r.ok?'':' disabled')+'>💥 ROLAR DANO</button>'+sangBtn(c,m,r))+'</div>'+
+   '<div class="bt-log">'+bt.log.slice(0,6).map(P.esc).join('<br>')+'</div></div></div>';
+  $('win').innerHTML=h;
+  $('win').querySelectorAll('.bt-cmd button').forEach(function(b){b.onclick=function(){bt.cmd=b.dataset.k;bt.res={};btDraw()}});
+  $('win').querySelectorAll('[data-w]').forEach(function(e){e.onclick=function(){who=e.dataset.w;bt.res={};btDraw()}});
+  $('win').querySelectorAll('input[name=md]').forEach(function(e){e.onchange=function(){bt.mode=e.value;bt.res={};btDraw()}});
+  var q=function(i){return $(i)};
+  if(q('bImp'))q('bImp').onchange=function(){bt.imp=this.value;bt.res={};btDraw()};
+  if(q('bExt'))q('bExt').onchange=function(){bt.ext=this.checked;bt.res={};btDraw()};
+  $('win').querySelectorAll('[data-tg]').forEach(function(x){x.onchange=function(){bt.tg[x.dataset.tg]=x.value}});
+  $('win').querySelectorAll('[data-at]').forEach(function(b){b.onclick=function(){btAtivar(b.dataset.at)}});
+  if(q('bArm'))q('bArm').onchange=function(){bt.arm=+this.value;btDraw()};
+  if(q('bNano'))q('bNano').onchange=function(){bt.nano=this.checked;btDraw()};
+  if(q('bAdv'))q('bAdv').onchange=function(){bt.adv=+this.value;btDraw()};
+  if(q('bSgN'))q('bSgN').onchange=function(){bt.sgN[cur().id]=+this.value;btDraw()};
+  if(q('bPer'))q('bPer').onchange=function(){bt.pernas2=this.checked;btDraw()};
+  if(q('bSg'))q('bSg').onclick=btSang;
+  if(q('bTurn'))q('bTurn').onclick=function(){Object.keys(bt.cd).forEach(function(k){if(bt.cd[k]>0)bt.cd[k]--});bt.res={};bt.log.unshift('— turno passou: recargas −1 —');btDraw()};
+  q('bFi').onchange=function(){bt.ficha=this.checked};
+  q('bNd').onchange=function(){bt.nd=parseInt(this.value,10)||0};
+  if(q('bMu'))q('bMu').onchange=function(){bt.mult=Math.max(1,parseInt(this.value,10)||1)};
+  q('bGo').onclick=bt.cmd==='hack'?btHack:btHit;
+  if(q('bDm'))q('bDm').onclick=btDmg;
+  if(q('bSob'))q('bSob').onclick=btSob;
+  if(q('bDot'))q('bDot').onclick=btDotApply}
+function vBatalha(L){bt.res=bt.res||{};btDraw()}
+window.addEventListener('storage',draw);draw();
+</script>
+</body>
+</html>

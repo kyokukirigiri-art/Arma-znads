@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VENDA // BALCÃO DO MERCADOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<script src="catalogo.js"></script>
+<script src="inventario.js"></script>
+<style>
+  /* ============ TEMA BALCÃO — wireframe neon laranja ============ */
+  :root{
+    --wire:#ff9d1c;
+    --wire-rgb:255,157,28;
+    --wire-dim:rgba(var(--wire-rgb),.28);
+    --wire-glow:rgba(var(--wire-rgb),.16);
+    --up:#46ff7a;
+    --down:#ff3355;
+  }
+  body{
+    background-image:
+      radial-gradient(1200px 500px at 50% -10%, rgba(var(--wire-rgb),.06), transparent 60%),
+      radial-gradient(900px 600px at 100% 100%, rgba(var(--wire-rgb),.05), transparent 60%);
+  }
+  main{max-width:1040px;margin:auto;padding:30px 5% 60px;}
+
+  /* ---------- Wordmark ---------- */
+  .chip-frame{
+    position:relative;margin:20px auto 8px;max-width:640px;
+    padding:64px 30px;
+    border:3px solid var(--wire);
+    clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px));
+    box-shadow:0 0 24px var(--wire-glow), inset 0 0 34px rgba(var(--wire-rgb),.05);
+    background:rgba(var(--wire-rgb),.02);
+    text-align:center;
+  }
+  .chip-frame .strip{
+    position:absolute;left:10px;right:10px;overflow:hidden;white-space:nowrap;
+    font-size:.62rem;letter-spacing:.18em;color:var(--wire);
+    text-shadow:0 0 6px var(--wire-glow);opacity:.9;user-select:none;
+  }
+  .chip-frame .strip-top{top:7px;}
+  .chip-frame .strip-bot{bottom:7px;}
+  .chip-frame .strip .logo{
+    display:inline-block;background:var(--wire);color:#07040a;font-weight:700;
+    padding:0 6px;margin:0 8px;letter-spacing:0;
+  }
+  .chip-frame .strip .lit{opacity:1;text-shadow:0 0 8px var(--wire);}
+  .chip-frame .dashes{position:absolute;top:34px;bottom:34px;width:10px;opacity:.8;}
+  .chip-frame .dashes.l{left:12px;border-left:2px dashed var(--wire-dim);}
+  .chip-frame .dashes.r{right:12px;border-right:2px dashed var(--wire-dim);}
+  .chip-word{
+    font-family:var(--hud);font-weight:700;font-size:clamp(2.6rem,8vw,4.6rem);
+    letter-spacing:.18em;color:var(--wire);
+    text-shadow:0 0 6px rgba(var(--wire-rgb),.8),0 0 22px rgba(var(--wire-rgb),.45),0 0 60px rgba(var(--wire-rgb),.25);
+    animation:flicker 6s infinite;
+  }
+  .chip-sub{margin-top:10px;font-size:.72rem;letter-spacing:.35em;color:var(--dim);}
+  @keyframes flicker{
+    0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:.55} 94%{opacity:1} 96%{opacity:.7} 97%{opacity:1}
+  }
+
+  .status-strip{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    margin:26px 0 0;padding:10px 14px;
+    border:1px solid var(--wire-dim);border-left:4px solid var(--wire);
+    font-size:.7rem;letter-spacing:.2em;color:var(--wire);
+    background:rgba(var(--wire-rgb),.03);
+  }
+  .status-strip .blink{animation:blink 1.2s steps(2) infinite;}
+  @keyframes blink{50%{opacity:.15}}
+
+  /* ---------- Seleção de mercadoria (mesmo sistema da loja) ---------- */
+  .neg-panel{margin:30px auto 22px;max-width:560px;text-align:center;}
+  .neg-label{display:block;font-size:.62rem;letter-spacing:.3em;color:var(--dim);margin-bottom:10px;}
+  .neg-panel select{
+    width:100%;padding:12px 14px;background:var(--panel);color:var(--txt);
+    border:1px solid var(--wire-dim);font-family:var(--mono);font-size:.8rem;
+    letter-spacing:.06em;cursor:pointer;
+    clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+  }
+  .neg-panel select:focus{outline:none;border-color:var(--wire);}
+
+  /* ---------- LAYOUT CENTRALIZADO ---------- */
+  .sell-wrap{display:flex;flex-direction:column;align-items:center;gap:26px;margin-top:8px;}
+
+  /* ---------- Mercador em pontos e linhas ---------- */
+  .merchant-box{
+    position:relative;width:100%;max-width:560px;text-align:center;
+    border:2px solid var(--wire);
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+    box-shadow:0 0 14px var(--wire-glow);
+    background:rgba(var(--wire-rgb),.015);
+    padding:26px 18px 20px;overflow:hidden;
+  }
+  .merchant-box .mb-label{position:absolute;top:6px;left:12px;font-size:.56rem;letter-spacing:.26em;color:var(--dim);}
+  .merchant-box .mb-label b{color:var(--wire);}
+  .merchant-box::after{
+    content:"";position:absolute;left:0;right:0;top:-30%;height:26%;
+    background:linear-gradient(180deg,transparent,rgba(var(--wire-rgb),.14),transparent);
+    animation:scan 4.2s linear infinite;pointer-events:none;
+  }
+  @keyframes scan{0%{top:-30%}100%{top:120%}}
+  .merchant-pre{
+    display:inline-block;margin:0 auto;text-align:left;
+    font-size:clamp(6px,1.7vw,11px);line-height:1.15;
+    color:var(--wire);user-select:none;
+    text-shadow:0 0 5px rgba(var(--wire-rgb),.55);
+    animation:merchantFlicker 7s infinite;
+  }
+  @keyframes merchantFlicker{
+    0%,100%{opacity:1} 88%{opacity:1} 89%{opacity:.5} 90%{opacity:1} 94%{opacity:.75} 95%{opacity:1}
+  }
+  .merchant-say{
+    margin-top:14px;padding:9px 14px;border:1px dashed var(--wire-dim);
+    background:rgba(var(--wire-rgb),.04);color:var(--txt);font-size:.78rem;
+    letter-spacing:.05em;min-height:38px;
+  }
+  .merchant-say b{color:var(--wire);}
+  .merchant-say.angry{border-color:rgba(255,51,85,.5);background:rgba(255,51,85,.06);}
+  .merchant-say.happy{border-color:rgba(70,255,122,.5);background:rgba(70,255,122,.06);}
+
+  /* ---------- Card da venda (centralizado, mesmo padrão da loja) ---------- */
+  .deal-card{
+    position:relative;width:100%;max-width:560px;
+    background:rgba(var(--wire-rgb),.015);
+    border:2px solid var(--wire);
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+    box-shadow:0 0 14px var(--wire-glow);
+    padding:28px 24px;text-align:center;
+  }
+  .deal-card h3{
+    font-family:var(--hud);font-size:1.25rem;letter-spacing:.1em;color:var(--txt);
+    margin:6px 0 8px;text-transform:uppercase;
+  }
+  .deal-card p{font-size:.78rem;line-height:1.7;color:#c9b391;min-height:44px;}
+  .deal-base{font-size:.66rem;letter-spacing:.22em;color:var(--dim);margin-top:10px;}
+  .deal-base b{color:var(--wire);}
+
+  /* ---------- Porcentagem central com anel ---------- */
+  .pct-display{position:relative;margin:20px auto 6px;width:220px;height:220px;}
+  .pct-ring{transform:rotate(-90deg);}
+  .pct-ring circle{fill:none;stroke-width:10;}
+  .ring-bg{stroke:rgba(var(--wire-rgb),.12);}
+  .ring-fg{
+    stroke:var(--wire);stroke-linecap:butt;
+    filter:drop-shadow(0 0 6px rgba(var(--wire-rgb),.6));
+    transition:stroke-dashoffset .8s cubic-bezier(.22,1,.36,1), stroke .3s, filter .3s;
+  }
+  .ring-fg.up{stroke:var(--up);filter:drop-shadow(0 0 10px rgba(70,255,122,.8));}
+  .ring-fg.down{stroke:var(--down);filter:drop-shadow(0 0 10px rgba(255,51,85,.8));}
+  .pct-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+  .pct-num{font-family:var(--hud);font-weight:700;font-size:3.2rem;color:var(--txt);line-height:1;}
+  .pct-num .sym{font-size:.65rem;vertical-align:baseline;color:var(--wire);}
+  .pct-cap{font-size:.58rem;letter-spacing:.32em;color:var(--dim);}
+
+  .pct-num.bump-up{animation:bumpUp .7s ease;}
+  .pct-num.bump-down{animation:bumpDown .7s ease;}
+  @keyframes bumpUp{
+    0%{transform:scale(1);color:var(--txt);}
+    30%{transform:scale(1.22);color:var(--up);text-shadow:0 0 22px rgba(70,255,122,.9);}
+    100%{transform:scale(1);color:var(--txt);text-shadow:none;}
+  }
+  @keyframes bumpDown{
+    0%{transform:scale(1) translateX(0);color:var(--txt);}
+    20%{transform:scale(.92) translateX(-5px);color:var(--down);text-shadow:0 0 22px rgba(255,51,85,.9);}
+    40%{transform:scale(.92) translateX(5px);}
+    60%{transform:scale(.95) translateX(-4px);}
+    100%{transform:scale(1) translateX(0);color:var(--txt);text-shadow:none;}
+  }
+  .deal-card.shake{animation:shake .45s ease;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-6px)} 40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)} 80%{transform:translateX(3px)}
+  }
+
+  .pct-bar{
+    margin:14px auto 0;width:min(340px,90%);height:14px;
+    border:1px solid var(--wire-dim);position:relative;overflow:hidden;
+    clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+    background:rgba(var(--wire-rgb),.04);
+  }
+  .pct-bar i{
+    display:block;height:100%;width:0%;
+    background:repeating-linear-gradient(90deg,var(--wire) 0 8px,rgba(var(--wire-rgb),.25) 8px 10px);
+    box-shadow:0 0 10px rgba(var(--wire-rgb),.4);
+    transition:width .8s cubic-bezier(.22,1,.36,1), background .3s;
+  }
+  .pct-bar i.up{background:repeating-linear-gradient(90deg,var(--up) 0 8px,rgba(70,255,122,.25) 8px 10px);box-shadow:0 0 12px rgba(70,255,122,.5);}
+  .pct-bar i.down{background:repeating-linear-gradient(90deg,var(--down) 0 8px,rgba(255,51,85,.25) 8px 10px);box-shadow:0 0 12px rgba(255,51,85,.5);}
+
+  .deal-offer{
+    margin-top:16px;font-family:var(--hud);font-size:1.5rem;letter-spacing:.1em;
+    color:var(--wire);text-shadow:0 0 10px var(--wire-glow);
+  }
+  .deal-offer small{display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.3em;color:var(--dim);margin-top:4px;}
+
+  .deal-controls{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:20px;}
+  .btn-wire{
+    font-family:var(--hud);font-weight:700;letter-spacing:.24em;font-size:.74rem;
+    background:transparent;color:var(--wire);border:1px solid var(--wire);
+    cursor:pointer;padding:12px 22px;
+    clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+    transition:.15s;
+  }
+  .btn-wire:hover{background:rgba(var(--wire-rgb),.12);box-shadow:0 0 14px var(--wire-glow);}
+  .btn-wire:active{transform:scale(.96);}
+  .btn-wire:disabled{opacity:.3;cursor:not-allowed;}
+  .btn-solid{
+    font-family:var(--hud);font-weight:700;letter-spacing:.24em;font-size:.74rem;
+    background:var(--wire);color:#07040a;border:none;cursor:pointer;padding:13px 26px;
+    clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+    box-shadow:0 0 18px rgba(var(--wire-rgb),.35);transition:.15s;
+  }
+  .btn-solid:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(var(--wire-rgb),.55);}
+  .btn-solid:active{transform:scale(.97);}
+  .btn-solid:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+  .deal-tries{margin-top:14px;font-size:.62rem;letter-spacing:.26em;color:var(--dim);}
+  .deal-tries b{color:var(--wire);}
+
+  .credits-line{
+    margin-top:40px;text-align:center;font-family:var(--hud);
+    font-size:1.05rem;letter-spacing:.18em;color:var(--txt);
+  }
+  .credits-line b{color:var(--up);text-shadow:0 0 10px rgba(70,255,122,.5);}
+
+  @media(max-width:560px){
+    .chip-frame{padding:48px 16px;}
+    .pct-display{width:190px;height:190px;}
+    .pct-num{font-size:2.7rem;}
+  }
+
+  /* ---------- REPAGINADA: seletor + layout em 2 colunas ---------- */
+  .sell-layout{display:grid;grid-template-columns:minmax(280px,.9fr) minmax(0,1.1fr);gap:24px;margin-top:26px;align-items:start;}
+  .sell-layout .sell-wrap{margin-top:0;}
+  .picker{position:sticky;top:12px;border:2px solid var(--wire);background:rgba(var(--wire-rgb),.02);padding:14px;
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));box-shadow:0 0 14px var(--wire-glow);}
+  .picker h2{font-family:var(--hud);font-size:.8rem;letter-spacing:.26em;color:var(--wire);margin-bottom:10px;}
+  .picker input[type=search]{width:100%;padding:10px 12px;background:var(--panel);color:var(--txt);border:1px solid var(--wire-dim);font-family:var(--mono);font-size:.78rem;outline:none;}
+  .picker input:focus{border-color:var(--wire);}
+  .pk-chips{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0;}
+  .pk-chip{font-family:var(--hud);font-weight:600;font-size:.58rem;letter-spacing:.1em;cursor:pointer;padding:5px 8px;background:transparent;color:var(--dim);border:1px solid var(--wire-dim);}
+  .pk-chip:hover{color:var(--txt);border-color:var(--wire);}
+  .pk-chip.on{background:rgba(var(--wire-rgb),.16);color:var(--wire);border-color:var(--wire);}
+  .pk-list{max-height:520px;overflow:auto;display:flex;flex-direction:column;gap:4px;padding-right:3px;}
+  .pk-row{display:flex;align-items:center;gap:8px;width:100%;padding:7px 9px;cursor:pointer;text-align:left;font-family:inherit;font-size:.74rem;color:var(--txt);
+    background:rgba(255,255,255,.02);border:1px solid transparent;border-left:3px solid var(--rc);}
+  .pk-row:hover{background:rgba(255,255,255,.07);border-color:var(--rc);}
+  .pk-row.on{background:rgba(var(--wire-rgb),.12);border-color:var(--wire);}
+  .pk-row .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pk-row .p{color:var(--wire);font-size:.66rem;white-space:nowrap;}
+  .pk-row .x{background:none;border:1px solid rgba(255,90,110,.5);color:#ff5a6e;width:20px;height:20px;cursor:pointer;font-size:.55rem;}
+  .pk-empty{color:var(--dim);font-size:.7rem;text-align:center;padding:14px;}
+  .pk-add{width:100%;margin-top:12px;}
+  .ov{position:fixed;inset:0;z-index:200;background:rgba(2,5,6,.86);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px;}
+  .ov.on{display:flex;}
+  .modal{margin:auto;width:min(480px,100%);background:var(--panel);border:1px solid var(--wire);padding:26px;box-shadow:0 0 30px var(--wire-glow);
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));}
+  .modal h2{font-family:var(--hud);letter-spacing:.24em;font-size:.95rem;color:var(--wire);margin-bottom:14px;}
+  .mf{margin-bottom:10px;}
+  .mf label{display:block;font-size:.56rem;letter-spacing:.2em;color:var(--dim);margin-bottom:4px;}
+  .mf input,.mf select,.mf textarea{width:100%;background:#08040b;border:1px solid var(--line);color:var(--txt);padding:8px 9px;font-size:.8rem;outline:none;font-family:inherit;}
+  .mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--wire);}
+  .mf textarea{resize:vertical;min-height:60px;}
+  .mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .m-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:14px;}
+  .v-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:300;background:#170e06;border:1px solid var(--wire);color:var(--wire);padding:10px 18px;font-size:.72rem;opacity:0;pointer-events:none;transition:.2s;}
+  .v-toast.on{opacity:1;}
+  @media(max-width:860px){.sell-layout{grid-template-columns:1fr;}.picker{position:static;}.pk-list{max-height:320px;}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // BALCAO_DO_MERCADOR_v2 // CANAL SEGURO</div>
+  <h1><span class="mk">VENDA</span></h1>
+  <p>// DESPACHE SUA MERCADORIA — O PONTINHO PAGA EM CRÉDITOS //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 O MERCADOR COMPRA QUALQUER COISA: LOOT, IMPLANTE SEM NOTA, ATÉ MEMÓRIA FRIA // 💳 PAGAMENTO NA HORA, SEM PERGUNTAS // ⚡ QUANTO MELHOR SUA LÁBIA, MAIOR A % DA AVALIAÇÃO // 📢 ELE NUNCA TIRA OS ÓCULOS. NINGUÉM SABE POR QUÊ //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+  <a href="missoes.html">🎯 MISSÕES</a>
+  <a href="regras_do_setor_7.html">📜 REGRAS</a>
+  <a href="base_de_comando.html">🏚️ BASE</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+  
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+
+  <!-- Wordmark -->
+  <div class="chip-frame">
+    <div class="strip strip-top">ARMA-ZENADS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲<span class="logo">AZ</span>▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ EST. 2088</div>
+    <div class="dashes l"></div><div class="dashes r"></div>
+    <div class="chip-word">VENDA</div>
+    <div class="chip-sub">// BALCÃO DO MERCADOR — AVALIAÇÃO EM TEMPO REAL //</div>
+    <div class="strip strip-bot">▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯<span class="lit">▮</span>▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯</div>
+  </div>
+
+  <div class="status-strip">
+    <span>▸ CATEGORIAS ACEITAS: <b id="catCount">01</b></span>
+    <span>▸ AJUSTE SORTEADO: <b>±0–200 CR</b></span>
+    <span class="blink">▸ AGUARDANDO OFERTA...</span>
+  </div>
+
+  <div class="sell-layout">
+  <aside class="picker">
+    <h2>// SEU INVENTÁRIO //</h2>
+    <input id="pkQ" type="search" placeholder="Buscar no seu inventário..." aria-label="Buscar item">
+    <div class="pk-chips" id="pkChips"></div>
+    <div class="pk-list" id="pkList"></div>
+    <button class="btn-wire pk-add" id="pkAdd" type="button" hidden style="display:none">+ ADICIONAR VENDA PERSONALIZADA</button>
+  </aside>
+  <div class="sell-wrap">
+
+    <!-- Mercador desenhado com pontos e linhas -->
+    <div class="merchant-box">
+      <div class="mb-label">ID ▸ <b>MERCADOR_7F</b> // FORMA: PONTOS + LINHAS</div>
+      <pre class="merchant-pre" id="merchantArt"></pre>
+      <div class="merchant-say" id="merchantSay">"Traz aí. O pontinho avalia tudo... e não julga ninguém."</div>
+    </div>
+
+    <!-- Card da venda -->
+    <div class="deal-card" id="dealCard">
+      <span class="tag comum" id="sellTag">AGUARDANDO</span>
+      <h3 id="sellName">Escolha a mercadoria acima</h3>
+      <p id="sellDesc">O mercador pega o preço de tabela, sorteia se aumenta ou diminui e aplica um valor aleatório de 500 a 800 créditos.</p>
+      <div class="deal-base">VALOR DE TABELA ▸ <b id="sellBase">—</b></div>
+
+      <!-- Porcentagem central com anel -->
+      <div class="pct-display">
+        <svg class="pct-ring" width="100%" height="100%" viewBox="0 0 200 200">
+          <circle class="ring-bg" cx="100" cy="100" r="88"></circle>
+          <circle class="ring-fg" id="ringFg" cx="100" cy="100" r="88"></circle>
+        </svg>
+        <div class="pct-center">
+          <div class="pct-num" id="pctNum">--<span class="sym">%</span></div>
+          <div class="pct-cap">OFERTA</div>
+        </div>
+      </div>
+
+      <div class="pct-bar"><i id="pctBar"></i></div>
+
+      <div class="deal-offer" id="dealOffer">0 CRÉDITOS<small>OFERTA ATUAL DO MERCADOR</small></div>
+
+      <div class="deal-controls">
+        <button class="btn-wire" id="btnBargain" onclick="bargain()" disabled>🎲 PECHINCHAR</button>
+        <button class="btn-solid" id="btnSell" onclick="sellItem()" disabled>💰 VENDER</button>
+      </div>
+      <div class="deal-tries">TENTATIVAS DE PECHINCHA: <b id="triesCount">0</b>/5</div>
+    </div>
+
+  </div>
+  </div>
+
+  <div class="credits-line">💳 CRÉDITOS NA CARTEIRA ▸ <b id="credits">0</b> <span class="blink">▮</span></div>
+
+</main>
+
+<div class="ov" id="ov"><div class="modal" role="dialog" aria-modal="true">
+  <h2>VENDA PERSONALIZADA</h2>
+  <div class="mf"><label for="cNome">NOME</label><input id="cNome" maxlength="60" placeholder="Ex.: Chip roubado da Militech"></div>
+  <div class="mrow">
+    <div class="mf"><label for="cRar">RARIDADE</label><select id="cRar"><option value="comum">COMUM</option><option value="raro">RARO</option><option value="experimental">EXPERIMENTAL</option><option value="proibido">PROIBIDO</option></select></div>
+    <div class="mf"><label for="cBase">VALOR DE TABELA (CR)</label><input id="cBase" type="number" min="10" max="9999999" value="500"></div>
+  </div>
+  <div class="mf"><label for="cDesc">DESCRIÇÃO</label><textarea id="cDesc" placeholder="O que o mercador vê..."></textarea></div>
+  <div class="m-btns"><button class="btn-wire" id="cCancel" type="button">CANCELAR</button><button class="btn-solid" id="cSave" type="button">SALVAR</button></div>
+</div></div>
+<div class="v-toast" id="vToast" role="status"></div>
+
+<footer>
+  BALCÃO DO MERCADOR © 2088 — <span>ELE COMPRA TUDO. ELE NUNCA VENDE BARATO. ELE NUNCA ERRA O TROCO.</span>
+</footer>
+
+<script>
+/* ============ MERCADOR EM PONTOS E LINHAS ============ */
+var MERCHANT = [
+"__________________¶________________¶",
+"_________________¶¶________________¶¶",
+"_______________¶¶¶__________________¶¶¶",
+"_____________¶¶¶¶____________________¶¶¶¶",
+"____________¶¶¶¶¶____________________¶¶¶¶¶",
+"___________¶¶¶¶¶______________________¶¶¶¶¶",
+"__________¶¶¶¶¶¶______________________¶¶¶¶¶¶",
+"__________¶¶¶¶¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶¶¶¶¶",
+"__________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶",
+"___________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶",
+"____________¶¶¶¶¶¶¶¶____¶¶¶¶¶¶____¶¶¶¶¶¶¶¶",
+"___¶________¶¶¶¶¶¶¶______¶¶¶¶______¶¶¶¶¶¶¶",
+"___¶_______¶¶¶¶¶¶¶¶___O_¶¶¶¶¶__O__¶¶¶¶¶¶¶¶",
+"__¶¶¶______¶¶¶¶¶¶¶¶¶____¶¶¶¶¶¶____¶¶¶¶¶¶¶¶¶",
+"__¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶",
+"_¶¶¶¶¶____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶",
+"_¶¶¶¶¶____¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶",
+"___¶¶_____¶¶¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶__¶¶¶",
+"___¶¶______¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶_____¶¶",
+"____¶¶______¶¶________¶¶¶¶¶¶¶¶¶¶_______¶¶",
+"_____¶¶______¶¶¶_______________________¶",
+"_____¶¶________¶¶____¶¶¶¶¶¶¶¶¶¶¶______¶",
+"______¶¶________¶¶¶_____¶¶¶¶¶¶¶¶¶¶¶__¶",
+"_______¶___________¶¶¶_____¶¶¶¶¶¶¶¶¶¶",
+"_________¶¶___________¶¶¶¶¶__¶¶¶¶¶¶¶¶¶",
+"_____________________________¶¶¶¶¶¶¶¶¶¶",
+"______________________________¶¶¶¶¶¶¶¶¶",
+"_______________________________¶¶¶¶¶¶¶"
+];
+document.getElementById('merchantArt').textContent = MERCHANT.join('\n');
+
+/* ============ MERCADORIAS (venda) ============ */
+var SELL_ITEMS = [
+  {cat:'SUCATA', tag:'comum', items:[
+    {name:'Fio de Cobre "Nobre"', base:50, desc:'Um novelo de fio arrancado de uma parede. O mercador garante que "conduz até sentimentos".'},
+    {name:'Lote de Chips Queimados', base:120, desc:'Um punhado de chips carbonizados. "Um deles ainda funciona", diz ele, sem apontar qual.'},
+    {name:'Prótese de Dedo Usada', base:150, desc:'Modelo antigo, ainda com o anel do dono anterior. Ele não veio buscar. Você não pergunta.'},
+    {name:'Bateria de Chrome Chovida', base:200, desc:'Caiu do céu junto com uma chuva ácida. Segura carga por 3 horas ou até a próxima tempestade.'}
+  ]},
+  {cat:'USADO', tag:'comum', items:[
+    {name:'DataJack "Marca Branca"', base:900, desc:'Importado, sem manual, com instruções em 3 idiomas (nenhum é o seu).'},
+    {name:'Deck Cipher One Riscado', base:700, desc:'Funciona, mas o cooler chia uma música que ninguém reconhece.'},
+    {name:'Jaqueta Placa-A "Seminova"', base:1100, desc:'Só tem 3 furos de bala e um cheiro de estático. "Dá pra desamassar", jura ele.'}
+  ]},
+  {cat:'CAÍDO DE CAMINHÃO', tag:'raro', items:[
+    {name:'NeuroBoost Mk-I', base:1400, desc:'Ainda na embalagem! (Amassada, molhada e com uma pegada misteriosa.)'},
+    {name:'KINETIC CORE Remanufaturado', base:1400, desc:'Revisado no beco, sem garantia. 30% mais barato que o novo — na compra. Na venda, ele risca mais 30%.'},
+    {name:'GHOST-EYE "Sem Nota Fiscal"', base:900, desc:'Zoom, visão noturna e um arranhão em formato de raio no visor. Estética inclusa.'}
+  ]},
+  {cat:'SEM PROCEDÊNCIA', tag:'raro', items:[
+    {name:'Espada Mono-Molecular "Só 2 Usos"', base:2900, desc:'"O dono anterior não precisa mais." Ele não explica por quê. A lâmina está limpa.'},
+    {name:'Chip de Memória Fria', base:2100, desc:'Guarda os últimos 10 minutos de alguém importante. O mercador farejou duas vezes antes de avaliar.'}
+  ]}
+];
+
+var state = { sel:null, offer:0, tries:0, credits:0 };
+var CIRC = 2*Math.PI*88;
+var ringFg = document.getElementById('ringFg');
+ringFg.style.strokeDasharray = CIRC;
+ringFg.style.strokeDashoffset = CIRC;
+
+function fmt(n){ return Math.round(n).toLocaleString('pt-BR'); }
+/* Sorteia o ajuste como % do preço de tabela, com "faixas de sorte" (mais parecido com jogo) */
+function randAdjust(base){
+  var roll = Math.random();
+  var min, max;
+  if (roll < 0.45)      { min = 0.05; max = 0.12; } // 45% — ajuste leve
+  else if (roll < 0.80) { min = 0.12; max = 0.22; } // 35% — ajuste moderado
+  else if (roll < 0.95) { min = 0.22; max = 0.35; } // 15% — ajuste forte
+  else                  { min = 0.35; max = 0.50; } //  5% — ajuste extremo (raro)
+  var pct = min + Math.random() * (max - min);
+  return Math.max(10, Math.round(base * pct));
+}
+
+/* Trava a oferta entre 20% e 160% do valor de tabela — evita valor absurdo */
+function clampOffer(v, base){
+  var floor = base ? base * 0.2 : 10;
+  var ceil  = base ? base * 1.6 : Infinity;
+  return Math.max(Math.round(floor), Math.min(Math.round(ceil), Math.round(v)));
+}
+function variationPct() {
+  if(!state.sel) return 0;
+  return Math.max(-100, Math.min(100, Math.round(((state.offer-state.sel.base)/state.sel.base)*100)));
+}
+function setMerchantSay(html, mood){
+  var el = document.getElementById('merchantSay');
+  el.innerHTML = html; el.classList.remove('angry','happy');
+  if(mood) el.classList.add(mood);
+}
+
+/* ============ SELECT (mesmo sistema da loja) ============ */
+var RECOMPRA = 0.5; /* tabela do mercador = % do preço da loja (0.5 = metade) */
+
+function newOfferFrom(base){
+  var amount = randAdjust(base);
+  var sign = Math.random() < .5 ? -1 : 1;
+  return { offer:clampOffer(base + sign*amount, base), sign:sign, amount:amount };
+}
+
+function loadSellItem(it, g){
+  state.sel = it; state.selCustom = !!g.custom; state.tries = 0;
+  document.getElementById('triesCount').textContent = '0';
+
+  var from = state.offer || it.base;
+  state.offer = it.base; /* ao selecionar, a oferta é o valor de tabela — só muda ao clicar em PECHINCHAR */
+
+  var tag = document.getElementById('sellTag');
+  tag.textContent = g.cat; tag.className = 'tag ' + (it.tag||g.tag);
+  document.getElementById('sellName').textContent = it.name;
+  document.getElementById('sellDesc').textContent = it.desc;
+  document.getElementById('sellBase').textContent = fmt(it.base)+' CRÉDITOS';
+  document.getElementById('btnBargain').disabled = false;
+  document.getElementById('btnSell').disabled = false;
+  setMerchantSay('"Tabela em <b>'+fmt(it.base)+' cr</b>. Quer pechinchar ou fechar assim?"', '');
+  animateOffer(from, state.offer, 500);
+}
+
+function updateOfferDisplay(value, variation){
+  var p = Math.max(-100, Math.min(100, variation));
+  var fill = (p + 100) / 2; /* -100..100 vira 0..100 para anel/barra */
+  document.getElementById('pctNum').innerHTML = fmt(value)+'<span class="sym">CR</span>';
+  document.getElementById('dealOffer').innerHTML = fmt(value)+' CRÉDITOS<small>OFERTA ATUAL DO MERCADOR</small>';
+  ringFg.style.strokeDashoffset = CIRC * (1 - fill/100);
+  document.getElementById('pctBar').style.width = fill+'%';
+}
+
+function animateOffer(from, to, dur, done){
+  var start = null;
+  function step(ts){
+    if(!start) start = ts;
+    var t = Math.min((ts-start)/dur, 1);
+    var ease = 1 - Math.pow(1-t, 3);
+    var v = Math.round(from + (to-from)*ease);
+    updateOfferDisplay(v, state.sel ? ((v-state.sel.base)/state.sel.base)*100 : 0);
+    if(t<1) requestAnimationFrame(step);
+    else if(done) done();
+  }
+  requestAnimationFrame(step);
+}
+
+/* ============ PECHINCHAR — sorteia +500–800 ou -500–800 ============ */
+function bargain(){
+  if(!state.sel || state.tries>=5) return;
+  state.tries++;
+  document.getElementById('triesCount').textContent = state.tries;
+
+  var base = state.sel.base;
+  var amount = randAdjust(base);
+  var sign = Math.random() < .5 ? -1 : 1;
+  var old = state.offer;
+  var next = clampOffer(old + sign*amount, base);
+  state.offer = next;
+
+  var numEl = document.getElementById('pctNum');
+  var barEl = document.getElementById('pctBar');
+  var card = document.getElementById('dealCard');
+  numEl.classList.remove('bump-up','bump-down');
+  ringFg.classList.remove('up','down');
+  barEl.classList.remove('up','down');
+  void numEl.offsetWidth;
+  if(sign > 0){
+    numEl.classList.add('bump-up');
+    ringFg.classList.add('up');
+    barEl.classList.add('up');
+  }else{
+    numEl.classList.add('bump-down');
+    ringFg.classList.add('down');
+    barEl.classList.add('down');
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+  }
+
+  animateOffer(old, next, 700, function(){
+    ringFg.classList.remove('up','down');
+    barEl.classList.remove('up','down');
+    if(sign > 0) setMerchantSay('"Tá bom, TÁ BOM. Aumento <b>+'+fmt(amount)+' cr</b>. Agora são <b>'+fmt(next)+' cr</b>."', 'happy');
+    else setMerchantSay('"Você me quebra o galho e ainda quer desconto? Tiro <b>-'+fmt(amount)+' cr</b>. Ficam <b>'+fmt(next)+' cr</b>."', 'angry');
+  });
+
+  if(state.tries>=5){
+    setTimeout(function(){
+      setMerchantSay('"Chega. Última oferta: <b>'+fmt(state.offer)+' cr</b>. Aceita ou some."', 'angry');
+      document.getElementById('btnBargain').disabled = true;
+    }, 800);
+  }
+}
+
+/* ============ VENDER ============ */
+function sellItem(){
+  if(!state.sel) return;
+  var gain = state.offer;
+  state.credits += gain;
+  if(state.selCustom){ CUSTOM = CUSTOM.filter(function(c){return c!==state.sel;}); saveCustom(); } else if(state.sel.inv){ removeInv(state.sel); selectedItem = null; } else if(!state.sel.shop) state.sel.sold = true;
+  document.getElementById('credits').textContent = fmt(state.credits);
+  setMerchantSay('"Prazer negociando. O pontinho sempre paga... em silêncio."', 'happy');
+  var old = state.offer;
+  state.sel = null; state.offer = 0;
+  renderPicker();
+  document.getElementById('sellTag').textContent = 'VENDIDO';
+  document.getElementById('sellName').textContent = 'Item despachado. Escolha outro.';
+  document.getElementById('sellDesc').textContent = 'O mercador guardou a mercadoria no cofre dele. O cofre é maior por dentro.';
+  document.getElementById('sellBase').textContent = '—';
+  document.getElementById('btnBargain').disabled = true;
+  document.getElementById('btnSell').disabled = true;
+  document.getElementById('triesCount').textContent = '0';
+  animateOffer(old, 0, 600);
+}
+</script>
+<script>
+/* ============ SELETOR + VENDA PERSONALIZADA ============ */
+var CUSTOM_KEY = 's7_venda_custom';
+var SEC_NAMES = {armas:'ARSENAL',cura:'MÉDICO',sanidade:'SANIDADE',armadura:'ARMADURA',hacker:'HACKER',implantes:'IMPLANTES',comida:'COMIDA'};
+var RARC = {comum:'#22e6d2',raro:'#8b5bff',experimental:'#ffb300',proibido:'#ff3355'};
+function loadCustom(){ try{ var c = JSON.parse(localStorage.getItem(CUSTOM_KEY)||'[]'); return Array.isArray(c)?c:[]; }catch(e){ return []; } }
+function saveCustom(){ try{ localStorage.setItem(CUSTOM_KEY, JSON.stringify(CUSTOM)); }catch(e){} }
+var CUSTOM = loadCustom(), pk = {q:'', g:'all'}, selectedItem = null;
+function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+var vt; function vToast(m){ var e=document.getElementById('vToast'); e.textContent=m; e.classList.add('on'); clearTimeout(vt); vt=setTimeout(function(){e.classList.remove('on');},2200); }
+
+/* ---- só o que está no INVENTÁRIO pode ser vendido ---- */
+var INV_FALLBACK = {comum:100, raro:500, experimental:1500, proibido:3000, custom:300}; /* valor de tabela p/ item sem preço (criado à mão) */
+function catPrice(nome){ var c = (window.S7CATALOGO||[]).filter(function(x){ return x.nome===nome; })[0]; return c ? c.preco : 0; }
+function ownerName(id){ var f = S7INV.fichas().filter(function(x){ return x.id===id; })[0]; return f ? f.nome : ''; }
+function sameIt(a,b){ return !!(a && b && (a===b || (a.id && a.id===b.id))); }
+function allGroups(){
+  var D = S7INV.load(), g = [];
+  Object.keys(S7INV.CATS).forEach(function(k){
+    var C = S7INV.CATS[k], items = [];
+    D.items.forEach(function(it){
+      if(it.cat!==k) return;
+      var cheio = it.preco>0 ? it.preco : (catPrice(it.nome) || INV_FALLBACK[it.raridade] || 100);
+      var dono = it.owner ? ownerName(it.owner) : '';
+      items.push({id:it.id, inv:true, name:it.nome, label:it.nome + (it.qtd>1 ? ' ×'+it.qtd : ''),
+        base:Math.max(10, Math.round(cheio*RECOMPRA)), tag:(it.raridade==='custom' ? 'comum' : it.raridade),
+        desc:(it.desc||'Sem descrição.') + (it.efeito ? ' ['+it.efeito+']' : '') + (dono ? ' — equipado por '+dono : '') + (it.qtd>1 ? ' (você tem '+it.qtd+', vende 1 por vez)' : '')});
+    });
+    if(items.length) g.push({id:'i'+k, cat:C.ico+' '+C.n, tag:'comum', items:items});
+  });
+  return g;
+}
+/* tira 1 unidade (ou o item inteiro) do inventário depois da venda */
+function removeInv(it){
+  var D = S7INV.load(), i = D.items.findIndex(function(x){ return x.id===it.id; });
+  if(i<0) return;
+  if(D.items[i].qtd>1) D.items[i].qtd--; else D.items.splice(i,1);
+  S7INV.save(D);
+}
+function renderPicker(){
+  var G = allGroups(), q = pk.q.trim().toLowerCase();
+  if(pk.g!=='all' && !G.some(function(x){return x.id===pk.g;})) pk.g = 'all';
+  document.getElementById('catCount').textContent = ('0'+G.length).slice(-2);
+  document.getElementById('pkChips').innerHTML = '<button class="pk-chip'+(pk.g==='all'?' on':'')+'" data-g="all" type="button">TUDO</button>' +
+    G.map(function(x){ return '<button class="pk-chip'+(pk.g===x.id?' on':'')+'" data-g="'+x.id+'" type="button">'+esc(x.cat)+'</button>'; }).join('');
+  var rows = [], n = 0;
+  G.forEach(function(g){
+    if(pk.g!=='all' && pk.g!==g.id) return;
+    g.items.forEach(function(it, i){
+      if(it.sold || (q && it.name.toLowerCase().indexOf(q)<0) || n>=120) return;
+      n++; rows.push({g:g, it:it});
+    });
+  });
+  var box = document.getElementById('pkList');
+  box.innerHTML = rows.length ? rows.map(function(r,i){
+    return '<div class="pk-row'+(sameIt(r.it,selectedItem)?' on':'')+'" role="button" tabindex="0" data-i="'+i+'" style="--rc:'+(RARC[r.it.tag||r.g.tag]||'var(--wire)')+'"><span class="n">'+esc(r.it.label||r.it.name)+'</span><span class="p">'+fmt(r.it.base)+' cr</span>'+
+      (r.g.custom ? '<button class="x" type="button" data-del="'+i+'" aria-label="Apagar">✕</button>' : '')+'</div>';
+  }).join('') : (G.length ? '<div class="pk-empty">Nada encontrado.</div>' : '<div class="pk-empty">Seu inventário está vazio.<br>Compre itens na <a href="ARMA-ZENADS.html" style="color:var(--wire)">LOJA</a> para ter o que vender.</div>');
+  box._rows = rows;
+}
+document.getElementById('pkQ').addEventListener('input', function(){ pk.q = this.value; renderPicker(); });
+document.getElementById('pkChips').addEventListener('click', function(e){ var b=e.target.closest('.pk-chip'); if(b){ pk.g=b.dataset.g; renderPicker(); } });
+function pickRow(el){
+  var r = document.getElementById('pkList')._rows[+el.dataset.i]; if(!r) return;
+  selectedItem = r.it; loadSellItem(r.it, r.g); renderPicker();
+}
+document.getElementById('pkList').addEventListener('click', function(e){
+  var d = e.target.closest('[data-del]');
+  if(d){ e.stopPropagation(); var r = this._rows[+d.dataset.del];
+    if(r && confirm('Apagar "'+r.it.name+'"?')){ CUSTOM = CUSTOM.filter(function(c){return c!==r.it;}); saveCustom(); if(state.sel===r.it){ state.sel=null; document.getElementById('btnBargain').disabled=true; document.getElementById('btnSell').disabled=true; } renderPicker(); }
+    return; }
+  var row = e.target.closest('.pk-row'); if(row) pickRow(row);
+});
+document.getElementById('pkList').addEventListener('keydown', function(e){ var row=e.target.closest('.pk-row'); if(row && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); pickRow(row); } });
+
+/* modal */
+function openModal(){ document.getElementById('cNome').value=''; document.getElementById('cDesc').value=''; document.getElementById('cBase').value=500; document.getElementById('cRar').value='comum';
+  document.getElementById('ov').classList.add('on'); setTimeout(function(){document.getElementById('cNome').focus();},30); }
+function closeModal(){ document.getElementById('ov').classList.remove('on'); }
+document.getElementById('pkAdd').onclick = openModal;
+document.getElementById('cCancel').onclick = closeModal;
+document.getElementById('ov').addEventListener('mousedown', function(e){ if(e.target===this) closeModal(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+document.getElementById('cSave').onclick = function(){
+  var nome = document.getElementById('cNome').value.trim();
+  if(!nome){ document.getElementById('cNome').focus(); return vToast('Dê um nome à mercadoria'); }
+  var base = Math.max(10, Math.min(9999999, parseInt(document.getElementById('cBase').value,10) || 10));
+  var it = {name:nome, base:base, tag:document.getElementById('cRar').value, desc:document.getElementById('cDesc').value.trim() || 'Mercadoria sem histórico. O mercador não pergunta.'};
+  CUSTOM.push(it); saveCustom(); closeModal(); pk.g='custom'; pk.q=''; document.getElementById('pkQ').value='';
+  selectedItem = it; loadSellItem(it, {custom:true, cat:'PERSONALIZADA', tag:'comum'}); renderPicker(); vToast(nome+' adicionado ao balcão');
+};
+renderPicker();
+window.addEventListener('focus', function(){ renderPicker(); });
+window.addEventListener('storage', function(e){ if(e.key===S7INV.KEY) renderPicker(); });
+</script>
+<script>
+function toggleNav(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('menuToggle');
+  nav.classList.toggle('menu-open');
+  btn.setAttribute('aria-expanded', nav.classList.contains('menu-open'));
+}
+function toggleShortcuts(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('shortcutsToggle');
+  nav.classList.toggle('shortcuts-collapsed');
+  btn.setAttribute('aria-expanded', !nav.classList.contains('shortcuts-collapsed'));
+}
+</script>
+</body>
+</html>

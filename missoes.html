@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MISSÕES // QUADRO DE CONTRATOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<style>
+  /* ============ TEMA MILITECH — wireframe neon estático ============ */
+  :root{
+    --wire:#e8f500;
+    --wire-dim:rgba(var(--p-rgb),.28);
+    --wire-glow:rgba(var(--p-rgb),.16);
+  }
+  body{
+    background-image:
+      radial-gradient(1200px 500px at 50% -10%, rgba(var(--p-rgb),.05), transparent 60%),
+      radial-gradient(900px 600px at 100% 100%, rgba(var(--p-rgb),.04), transparent 60%);
+  }
+  main{max-width:1000px;margin:auto;padding:30px 5% 60px;}
+
+  /* ---------- Wordmark gigante estilo chip MILITECH ---------- */
+  .chip-frame{
+    position:relative;margin:20px auto 8px;max-width:640px;
+    padding:64px 30px;
+    border:3px solid var(--wire);
+    clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px));
+    box-shadow:0 0 24px var(--wire-glow), inset 0 0 34px rgba(var(--p-rgb),.05);
+    background:rgba(var(--p-rgb),.02);
+    text-align:center;
+  }
+  .chip-frame .strip{
+    position:absolute;left:10px;right:10px;overflow:hidden;white-space:nowrap;
+    font-size:.62rem;letter-spacing:.18em;color:var(--wire);
+    text-shadow:0 0 6px var(--wire-glow);opacity:.9;user-select:none;
+  }
+  .chip-frame .strip-top{top:7px;}
+  .chip-frame .strip-bot{bottom:7px;}
+  .chip-frame .strip .logo{
+    display:inline-block;background:var(--wire);color:#07040a;font-weight:700;
+    padding:0 6px;margin:0 8px;letter-spacing:0;
+  }
+  .chip-frame .strip .lit{opacity:1;text-shadow:0 0 8px var(--wire);}
+  .chip-frame .dashes{position:absolute;top:34px;bottom:34px;width:10px;opacity:.8;}
+  .chip-frame .dashes.l{left:12px;border-left:2px dashed var(--wire-dim);}
+  .chip-frame .dashes.r{right:12px;border-right:2px dashed var(--wire-dim);}
+  .chip-word{
+    font-family:var(--hud);font-weight:700;font-size:clamp(2.6rem,8vw,4.6rem);
+    letter-spacing:.18em;color:var(--wire);
+    text-shadow:0 0 6px rgba(var(--p-rgb),.8),0 0 22px rgba(var(--p-rgb),.45),0 0 60px rgba(var(--p-rgb),.25);
+    animation:flicker 6s infinite;
+  }
+  .chip-sub{
+    margin-top:10px;font-size:.72rem;letter-spacing:.35em;color:var(--dim);
+  }
+  @keyframes flicker{
+    0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:.55} 94%{opacity:1} 96%{opacity:.7} 97%{opacity:1}
+  }
+
+  /* ---------- Barra de status ---------- */
+  .board-status{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    margin:26px 0 18px;padding:10px 14px;
+    border:1px solid var(--wire-dim);border-left:4px solid var(--wire);
+    font-size:.7rem;letter-spacing:.2em;color:var(--wire);
+    background:rgba(var(--p-rgb),.03);
+  }
+  .board-status .blink{animation:blink 1.2s steps(2) infinite;}
+  @keyframes blink{50%{opacity:.15}}
+
+  /* ---------- Grade de contratos ---------- */
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;}
+  .contract{
+    position:relative;background:rgba(var(--p-rgb),.015);
+    border:2px solid var(--wire);
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+    box-shadow:0 0 14px var(--wire-glow);
+    transition:transform .18s ease, box-shadow .18s ease;
+    animation:boot .35s ease both;
+  }
+  .contract:hover{transform:translateY(-4px);box-shadow:0 0 26px rgba(var(--p-rgb),.3);}
+  @keyframes boot{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .contract .strip{
+    position:absolute;left:8px;right:8px;overflow:hidden;white-space:nowrap;
+    font-size:.52rem;letter-spacing:.14em;color:var(--wire);opacity:.75;user-select:none;
+  }
+  .contract .strip-top{top:4px;}
+  .contract .strip-bot{bottom:4px;}
+  .contract .strip .logo{display:inline-block;background:var(--wire);color:#07040a;padding:0 4px;margin:0 5px;}
+  .contract .strip .lit{text-shadow:0 0 7px var(--wire);}
+  .contract .ticks{position:absolute;top:22px;bottom:22px;width:8px;opacity:.7;}
+  .contract .ticks.l{left:8px;border-left:2px dashed var(--wire-dim);}
+  .contract .ticks.r{right:8px;border-right:2px dashed var(--wire-dim);}
+
+  .contract .inner{padding:26px 24px 26px;}
+  .c-code{font-size:.62rem;letter-spacing:.3em;color:var(--dim);}
+  .c-code b{color:var(--wire);}
+  .c-skulls{font-size:.78rem;letter-spacing:.25em;color:var(--wire);margin:6px 0 2px;text-shadow:0 0 8px var(--wire-glow);}
+  .c-skulls .off{color:#3a4030;text-shadow:none;}
+  .contract h3{
+    font-family:var(--hud);font-size:1.25rem;letter-spacing:.12em;color:var(--txt);
+    margin:4px 0 10px;text-transform:uppercase;
+  }
+  .contract p{font-size:.78rem;line-height:1.7;color:#b8bfa0;min-height:66px;}
+  .c-reward{
+    margin-top:12px;padding:9px 12px;font-size:.72rem;letter-spacing:.06em;
+    border:1px dashed var(--wire-dim);color:var(--wire);
+    background:rgba(var(--p-rgb),.04);
+  }
+
+  /* ---------- Botão de novo quadro ---------- */
+  .reroll-wrap{text-align:center;margin:34px 0 10px;}
+  .reroll-btn{
+    font-family:var(--hud);font-weight:700;letter-spacing:.3em;font-size:.85rem;
+    background:var(--wire);color:#07040a;border:none;cursor:pointer;
+    padding:14px 34px;
+    clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
+    box-shadow:0 0 18px rgba(var(--p-rgb),.35);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .reroll-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(var(--p-rgb),.55);}
+  .reroll-btn:active{transform:scale(.97);}
+  .reroll-hint{margin-top:10px;font-size:.62rem;letter-spacing:.25em;color:var(--dim);}
+
+  /* ---------- Recompensas especiais ---------- */
+  .loot-title{
+    font-family:var(--hud);letter-spacing:.25em;font-size:1rem;margin:56px 0 14px;
+    border-left:4px solid var(--wire);padding-left:12px;color:var(--txt);text-transform:uppercase;
+  }
+  .loot-grid{display:flex;flex-wrap:wrap;gap:10px;}
+  .loot-chip{
+    border:1px solid var(--wire-dim);padding:8px 14px;font-size:.72rem;color:#cfd6a8;
+    background:rgba(var(--p-rgb),.03);letter-spacing:.05em;
+    clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+  }
+  .loot-chip b{color:var(--wire);}
+
+  @media(max-width:560px){
+    .chip-frame{padding:48px 16px;}
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // QUADRO_DE_CONTRATOS_v1 // CANAL SEGURO</div>
+  <h1><span class="mk">MISSÕES</span></h1>
+  <p>// CONTRATOS DISPONÍVEIS — <span class="mk-line">SETOR 7</span> //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 ATENÇÃO OPERATIVOS: 5 CONTRATOS NOVOS POR QUADRO // 💳 PAGAMENTO SÓ APÓS CONFIRMAÇÃO DE CONCLUSÃO // ⚡ A REDE ESTÁ OUVINDO — USEM CANAL CRIPTOGRAFADO // 📢 MISSÕES ÍCARO PAGAM O DOBLO, MAS NINGUÉM VOLTA INALTERADO //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+  <a href="venda.html">🎲 VENDA</a>
+  <a href="regras_do_setor_7.html">📜 REGRAS</a>
+  <a href="base_de_comando.html">🏚️ BASE</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+  
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+
+  <!-- Wordmark estilo chip -->
+  <div class="chip-frame">
+    <div class="strip strip-top">ARMA-ZENADS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲<span class="logo">AZ</span>▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ EST. 2088</div>
+    <div class="dashes l"></div><div class="dashes r"></div>
+    <div class="chip-word">MISSÕES</div>
+    <div class="chip-sub">// QUADRO DE CONTRATOS — SELEÇÃO ALEATÓRIA //</div>
+    <div class="strip strip-bot">▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯<span class="lit">▮</span>▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯</div>
+  </div>
+
+  <div class="reroll-wrap" style="margin:6px 0 0">
+    <a href="mapa.html" class="reroll-btn" style="text-decoration:none;display:inline-block;background:var(--purple);color:#fff;box-shadow:0 0 18px var(--purple-glow)">🧭 MAPA DE MISSÃO</a>
+    <div class="reroll-hint">// GERE A PLANTA DA INSTALAÇÃO DO CONTRATO //</div>
+  </div>
+
+  <div class="board-status">
+    <span>▸ CONTRATOS ATIVOS: <b id="board-count">05</b></span>
+    <span>▸ CANAL: CRIPTOGRAFADO</span>
+    <span class="blink">▸ AGUARDANDO ACEITE...</span>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <div class="reroll-wrap">
+    <button class="reroll-btn" onclick="renderBoard(true)">⟳ GERAR NOVO QUADRO</button>
+    <div class="reroll-hint">// O QUADRO SORTEIA 5 CONTRATOS ALEATÓRIOS DO BANCO DE DADOS //</div>
+  </div>
+
+  <h2 class="loot-title">🎁 <span>RECOMPENSAS ESPECIAIS</span></h2>
+  <div class="loot-grid">
+    <span class="loot-chip">🧬 <b>Implantes únicos</b></span>
+    <span class="loot-chip">🔑 <b>Chaves de instalações secretas</b></span>
+    <span class="loot-chip">🧠 <b>Melhorias permanentes de processamento</b></span>
+    <span class="loot-chip">🤝 <b>Novos aliados</b></span>
+    <span class="loot-chip">🏙️ <b>Acesso a áreas restritas</b></span>
+    <span class="loot-chip">💾 <b>Informações sobre os Nexus</b></span>
+    <span class="loot-chip">🚀 <b>Equipamentos experimentais</b></span>
+    <span class="loot-chip">⭐ <b>Aumento de reputação da ARMA-ZENADS</b></span>
+  </div>
+
+</main>
+
+<footer>
+  QUADRO DE CONTRATOS © 2088 — <span>ACEITOU? NÃO HÁ VOLTA. CONCLUIU? NÃO HÁ TESTEMUNHAS.</span>
+</footer>
+
+<script>
+/* ============ BANCO DE CONTRATOS ============ */
+var CONTRACTS = [
+  {name:'Sinal Fantasma', obj:'Invadir uma antena e descobrir quem está transmitindo um código misterioso.', reward:'💳 2.500 créditos + acesso a uma frequência secreta', skulls:3},
+  {name:'Olho da Cidade', obj:'Roubar um módulo de vigilância de uma corporação.', reward:'👁️ Implante Visão Tática', skulls:4},
+  {name:'Mercado Negro', obj:'Recuperar uma carga tecnológica antes que outra gangue a encontre.', reward:'🔧 3 peças de tecnologia rara', skulls:3},
+  {name:'Distrito Zero', obj:'Entrar em uma área abandonada e recuperar dados sobre os Nexus.', reward:'🧠 +5% de processamento mental', skulls:4},
+  {name:'Caçador de Dívidas', obj:'Localizar um criminoso que desapareceu na Cidade Baixa.', reward:'💳 4.000 créditos + reputação', skulls:2},
+  {name:'Código Ícaro', obj:'Encontrar um fragmento perdido dos arquivos do Projeto Ícaro.', reward:'🔑 Fragmento da Chave Ícaro', skulls:5},
+  {name:'Corrida Neon', obj:'Participar de uma corrida ilegal pelas ruas da Cidade Alta.', reward:'🏎️ Implante Reflexo Rápido + 1.500 créditos', skulls:3},
+  {name:'Fantasma Corporativo', obj:'Descobrir quem dentro de uma megacorporação está vendendo informações secretas.', reward:'🕶️ Camuflagem Óptica por tempo limitado', skulls:4},
+  {name:'Último Sobrevivente', obj:'Investigar uma instalação onde todos os funcionários desapareceram.', reward:'⚡ Núcleo de Energia Experimental', skulls:5},
+  {name:'A Porta 3057', obj:'Encontrar uma porta misteriosa que aparece em diferentes pontos da cidade.', reward:'🔮 Acesso a uma área secreta + 10.000 créditos', skulls:5},
+  {name:'Torre Sem Sombra', obj:'Escalar uma torre corporativa por dentro, andar por andar, e apagar o servidor mestre sem disparar o alarme.', reward:'💳 12.000 créditos + Deck Fantasma', skulls:5},
+  {name:'Nexus Adormecido', obj:'Invadir um bunker onde um Nexus dorme e copiar seu núcleo antes que ele acorde e reescreva as defesas.', reward:'🧠 +10% de processamento mental + Implante único', skulls:5},
+  {name:'Carne de Laboratório', obj:'Resgatar operativos cobaia de um laboratório clandestino cheio de ciborgues em ciberpsicose.', reward:'🤝 Aliado veterano + 6.000 créditos', skulls:4},
+  {name:'Leilão Sangrento', obj:'Infiltrar um leilão de peças proibidas, roubar o lote principal e escapar de 3 gangues ao mesmo tempo.', reward:'🚀 Equipamento experimental PROIBIDO', skulls:5},
+  {name:'Protocolo Ícaro: Queda', obj:'Descer ao nível mais fundo do Projeto Ícaro, enfrentar o guardião e decidir o destino do arquivo final.', reward:'🔑 Chave Ícaro completa + 20.000 créditos', skulls:5}
+];
+
+function shuffle(a){
+  a = a.slice();
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+
+function skullBar(n){
+  var s='';
+  for(var i=1;i<=5;i++){ s += i<=n ? '☠' : '<span class="off">☠</span>'; }
+  return s;
+}
+
+function renderBoard(animate){
+  var board = document.getElementById('board');
+  board.innerHTML='';
+  var picks = shuffle(CONTRACTS).slice(0,5);
+  picks.forEach(function(c, idx){
+    var code = 'OP-' + (Math.floor(Math.random()*900)+100);
+    var card = document.createElement('div');
+    card.className='contract';
+    card.style.animationDelay = (idx*0.08)+'s';
+    card.innerHTML =
+      '<div class="strip strip-top">ARMA-ZENADS ▲▲▲▲▲▲▲▲▲▲▲▲<span class="logo">AZ</span>▲▲▲▲▲▲▲▲▲▲▲▲ SETOR 7</div>'+
+      '<div class="ticks l"></div><div class="ticks r"></div>'+
+      '<div class="inner">'+
+        '<div class="c-code">CONTRATO <b>'+code+'</b> // CONFIDENCIAL</div>'+
+        '<div class="c-skulls">'+skullBar(c.skulls)+'</div>'+
+        '<h3>'+c.name+'</h3>'+
+        '<p>'+c.obj+'</p>'+
+        '<div class="c-reward">RECOMPENSA ▸ '+c.reward+'</div>'+
+      '</div>'+
+      '<div class="strip strip-bot">▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯<span class="lit">▮</span>▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯</div>';
+    board.appendChild(card);
+  });
+  document.getElementById('board-count').textContent = '0' + picks.length;
+}
+renderBoard();
+</script>
+<script>
+function toggleNav(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('menuToggle');
+  nav.classList.toggle('menu-open');
+  btn.setAttribute('aria-expanded', nav.classList.contains('menu-open'));
+}
+function toggleShortcuts(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('shortcutsToggle');
+  nav.classList.toggle('shortcuts-collapsed');
+  btn.setAttribute('aria-expanded', !nav.classList.contains('shortcuts-collapsed'));
+}
+</script>
+</body>
+</html>
