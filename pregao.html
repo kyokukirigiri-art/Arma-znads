@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PREGÃO-DO-BECO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<style>
+  main{max-width:900px;margin:auto;padding:30px 5% 50px;}
+  h2.t{font-family:var(--hud);letter-spacing:.22em;border-left:4px solid var(--red);padding-left:12px;margin:10px 0 12px;font-size:1.05rem;}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+  .bar button,.btn2{background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:8px 14px;font-family:var(--hud);font-size:.72rem;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;}
+  .bar button:hover,.btn2:hover{border-color:var(--cyan);color:var(--cyan);}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;}
+  .ev{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--dim);padding:14px 16px;font-size:.78rem;line-height:1.6;}
+  .ev.on{border-left-color:var(--yellow);box-shadow:0 0 14px rgba(var(--p-rgb),.25);}
+  .ev h3{font-family:var(--hud);letter-spacing:.14em;font-size:.9rem;margin:0 0 6px;display:flex;justify-content:space-between;gap:8px;}
+  .ev .st{font-size:.6rem;letter-spacing:.2em;color:var(--dim);} .ev.on .st{color:var(--yellow);}
+  .fx{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0;}
+  .fx span{font-size:.64rem;padding:2px 8px;border-radius:99px;border:1px solid;letter-spacing:.06em;}
+  .up{color:#ff9a3d;border-color:#ff9a3d;} .dn{color:#46ff7a;border-color:#46ff7a;}
+  .dim{color:var(--dim);font-size:.74rem;line-height:1.6;margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // PROTOCOLO_SETOR_7_v1 // DOCUMENTO CLANDESTINO</div>
+  <h1><span class="mk">PROTOCOLO SETOR 7</span></h1>
+  <p>// SISTEMA SIMPLES DE RPG CYBERPUNK — D20 — <span class="mk-line">VERSÃO 1.0</span> //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 REGRA Nº0: O MESTRE SEMPRE TEM RAZÃO // 🎲 D20 RESOLVE TUDO // ⚡ MANTENHA SEU ÍNDICE BAIXO // 📢 VOLTE PARA A LOJA E GASTE SEUS CRÉDITOS //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="loja.html">🛒 LOJA</a>
+  <a href="venda.html">🎲 VENDA</a>
+  <a href="missoes.html">🎯 MISSÕES</a>
+  <a href="loja.html#sobrecarga">⚠ SOBRECARGA</a>
+  <a href="base_de_comando.html">🏚️ BASE</a>
+  <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">⚔️ HACK_AREA</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="loja.html">LOJA</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+  
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+<h2 class="t">📢 PREGÃO DO BECO</h2>
+<div class="dim" style="margin-top:0">Eventos que mexem nos preços. Valem para a <b>LOJA</b> (o que você paga) e para a <b>VENDA</b> (o que o mercador paga), por categoria. Até <b>3 eventos</b> ao mesmo tempo: ligar um quarto encerra o mais antigo.</div>
+<div class="bar"><button onclick="S7PREGAO.sortear();draw()">🎲 SORTEAR EVENTO</button><button onclick="S7PREGAO.limpar();draw()">⏹ ENCERRAR TODOS</button></div>
+<div class="grid" id="g"></div>
+<div class="dim" id="res"></div>
+</main>
+<footer>PROTOCOLO SETOR 7 © 2088 — <span>O MERCADO NÃO PERDOA QUEM ESTÁ DESATENTO.</span></footer>
+<script>
+var P=S7PREGAO;
+function draw(){
+  var at=P.load().ativos;
+  document.getElementById('g').innerHTML=P.EVENTOS.map(function(e){
+    var on=at.indexOf(e.id)>=0;
+    var fx=Object.keys(e.m).map(function(k){var v=e.m[k];return '<span class="'+(v>0?'up':'dn')+'">'+(v>0?'▲ +':'▼ ')+v+'% '+P.CATN[k]+'</span>';}).join('');
+    return '<div class="ev'+(on?' on':'')+'"><h3><span>'+e.i+' '+e.n+'</span><span class="st">'+(on?'ATIVO':'PARADO')+'</span></h3>'+e.d+'<div class="fx">'+fx+'</div><button class="btn2" onclick="P.liga(\''+e.id+'\');draw()">'+(on?'Encerrar':'Ativar')+'</button></div>';
+  }).join('');
+  var cats=Object.keys(P.CATN).filter(function(k){return k!=='*';}), l=[];
+  cats.forEach(function(k){var m=Math.round(P.mod(k)*100);if(m)l.push(P.CATN[k]+' '+(m>0?'+':'')+m+'%');});
+  document.getElementById('res').innerHTML=l.length?'<b>Ajuste atual por categoria:</b> '+l.join(' · '):'Mercado estável: nenhum ajuste ativo.';
+}
+draw();
+</script>
+<script>
+function toggleNav(){var n=document.getElementById('navShell'),b=document.getElementById('menuToggle');n.classList.toggle('menu-open');b.setAttribute('aria-expanded',n.classList.contains('menu-open'));}
+function toggleShortcuts(){var n=document.getElementById('navShell'),b=document.getElementById('shortcutsToggle');n.classList.toggle('shortcuts-collapsed');b.setAttribute('aria-expanded',!n.classList.contains('shortcuts-collapsed'));}
+</script>
+</body>
+</html>

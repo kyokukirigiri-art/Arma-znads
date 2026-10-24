@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REPUTAÇÃO-E-PROCURADO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<style>
+  main{max-width:1020px;margin:auto;padding:24px 4% 50px;}
+  .dos{--fc:var(--cyan);}
+  .tg{display:flex;justify-content:space-between;align-items:center;margin:2px 0 8px;font-family:var(--hud);font-size:.8rem;letter-spacing:.32em;color:var(--txt);}
+  .sl{font-family:var(--mono,monospace);letter-spacing:.3em;color:var(--fc);font-size:1.1rem;}
+  .fr{border:2px solid var(--fc);background:rgba(0,0,0,.3);position:relative;min-width:0;}
+  .cap{font-size:.52rem;letter-spacing:.2em;color:var(--dim);padding:5px 9px;text-transform:uppercase;border-top:1px solid color-mix(in srgb,var(--fc) 35%,transparent);line-height:1.5;}
+  .hd{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 18px;flex-wrap:wrap;}
+  .hd .big{display:flex;align-items:center;gap:12px;font-family:var(--hud);font-weight:700;font-size:clamp(1.7rem,6vw,2.8rem);letter-spacing:.12em;color:var(--fc);line-height:1;}
+  .hd .big svg{width:clamp(34px,7vw,52px);flex:none;}
+  .hd .id{font-family:var(--mono,monospace);letter-spacing:.14em;font-size:clamp(.78rem,2vw,1rem);color:var(--txt);}
+  .hd .id b{color:var(--yellow);font-weight:400;}
+  .gr{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:10px;margin-top:10px;}
+  .lc{display:grid;gap:10px;align-content:start;min-width:0;}
+  .r1{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:10px;}
+  .r2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;}
+  .por{display:flex;flex-direction:column;}
+  .pv{position:relative;flex:1;min-height:220px;display:grid;place-items:end center;overflow:hidden;color:var(--fc);
+      background:linear-gradient(color-mix(in srgb,var(--fc) 9%,transparent) 1px,transparent 1px) 0 0/100% 4px,radial-gradient(110% 100% at 50% 30%,color-mix(in srgb,var(--fc) 22%,transparent),rgba(6,6,12,.95) 75%);}
+  .pv svg{width:74%;display:block;margin-bottom:26px;}
+  .pv .t1{position:absolute;left:10px;top:9px;font-size:.55rem;letter-spacing:.22em;}
+  .pv .t2{position:absolute;left:10px;right:10px;bottom:8px;display:flex;justify-content:space-between;gap:8px;font-size:.62rem;letter-spacing:.14em;color:var(--txt);}
+  .pv .t2 b{color:#ffe62a;text-shadow:0 0 8px rgba(255,230,42,.5);letter-spacing:.2em;font-weight:700;}
+  .bdg{display:flex;gap:5px;padding:7px 8px;border-top:1px solid color-mix(in srgb,var(--fc) 35%,transparent);flex-wrap:wrap;justify-content:center;}
+  .bdg span{font-size:.58rem;letter-spacing:.1em;padding:2px 6px;border:1px solid currentColor;font-weight:700;}
+  .rad{padding:6px;color:var(--fc);}
+  .rad svg,.chr svg,.sq svg{width:100%;display:block;}
+  svg .rl{fill:var(--txt);font-size:10px;font-family:var(--hud);letter-spacing:.05em;}
+  svg .rv{fill:var(--dim);font-size:9px;font-family:var(--hud);}
+  .tb .rw{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-bottom:1px solid color-mix(in srgb,var(--fc) 40%,transparent);font-size:.74rem;}
+  .tb .rw:last-child{border-bottom:0;}
+  .tb .rw span:first-child{color:var(--dim);letter-spacing:.1em;font-size:.64rem;text-transform:uppercase;align-self:center;}
+  .tb .rw b{text-align:right;font-weight:700;}
+  .txt{padding:14px 16px;font-family:var(--mono,monospace);font-size:.74rem;line-height:1.85;letter-spacing:.08em;text-transform:uppercase;color:var(--txt);}
+  .chn{font-size:.58rem;letter-spacing:.2em;color:var(--dim);padding:8px 12px 0;text-transform:uppercase;}
+  .chr{padding:6px 10px 2px;color:var(--fc);}
+  .rc{display:grid;gap:10px;align-content:start;}
+  .sq{color:var(--fc);}
+  .sq .in{padding:14px;}
+  .box00{width:54px;height:18px;border:2px solid var(--fc);background:repeating-linear-gradient(135deg,var(--fc) 0 3px,transparent 3px 7px);}
+  .sec{font-size:.68rem;letter-spacing:.3em;padding:8px 14px;color:var(--fc);border-bottom:1px solid color-mix(in srgb,var(--fc) 40%,transparent);display:flex;justify-content:space-between;gap:10px;}
+  .sec span:last-child{color:var(--dim);letter-spacing:.14em;}
+  .bd{padding:12px 14px;}
+  .bar{height:10px;background:var(--bg);border:1px solid var(--line);margin:8px 0;position:relative;}
+  .bar b{position:absolute;top:0;bottom:0;background:var(--c);}
+  .bar u{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--dim);}
+  .btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .btns button{background:var(--panel2,var(--panel));border:1px solid var(--line);color:var(--txt);padding:6px 12px;font-family:var(--hud);font-size:.7rem;letter-spacing:.08em;cursor:pointer;}
+  .btns button:hover{border-color:var(--cyan);color:var(--cyan);}
+  .fcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+  .fcell{border:1px solid var(--line);border-left:4px solid var(--c);padding:10px 12px;background:var(--panel);}
+  .fh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.78rem;}
+  .fh span:first-child{color:var(--c);font-weight:700;letter-spacing:.12em;}
+  .dim{color:var(--dim);font-size:.74rem;line-height:1.6;}
+  #enc{min-height:48px;font-size:.84rem;line-height:1.6;color:var(--yellow);}
+  .gap{margin-top:10px;}
+  @media(max-width:780px){
+    .gr,.r1,.r2{grid-template-columns:1fr;}
+    .rc{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .sq .in{padding:6px;}
+    .pv{min-height:240px;}
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // PROTOCOLO_SETOR_7_v1 // DOCUMENTO CLANDESTINO</div>
+  <h1><span class="mk">PROTOCOLO SETOR 7</span></h1>
+  <p>// SISTEMA SIMPLES DE RPG CYBERPUNK — D20 — <span class="mk-line">VERSÃO 1.0</span> //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 REGRA Nº0: O MESTRE SEMPRE TEM RAZÃO // 🎲 D20 RESOLVE TUDO // ⚡ MANTENHA SEU ÍNDICE BAIXO // 📢 VOLTE PARA A LOJA E GASTE SEUS CRÉDITOS //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="loja.html">🛒 LOJA</a>
+  <a href="venda.html">🎲 VENDA</a>
+  <a href="missoes.html">🎯 MISSÕES</a>
+  <a href="loja.html#sobrecarga">⚠ SOBRECARGA</a>
+  <a href="base_de_comando.html">🏚️ BASE</a>
+  <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">⚔️ HACK_AREA</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="loja.html">LOJA</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+  
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+<div class="dos">
+<div class="tg"><span>SETOR 7 // DOSSIÊ DE ALVO</span><span class="sl">/ / / / / /</span></div>
+
+<div class="fr hd">
+  <div class="big"><svg viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><ellipse cx="30" cy="20" rx="26" ry="15"/><circle cx="30" cy="20" r="8"/></svg>PROCURADO</div>
+  <div class="id">ARQUIVO Nº <b id="aid">000-00</b></div>
+</div>
+
+<div class="gr">
+  <div class="lc">
+    <div class="r1">
+      <div class="fr por">
+        <div class="pv">
+          <span class="t1">ALVO // SEM ROSTO</span>
+          <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 200 Q28 142 100 132 Q172 142 178 200"/>
+            <ellipse cx="100" cy="78" rx="36" ry="44"/>
+            <path d="M64 66 Q100 36 136 66" opacity=".6"/>
+            <path d="M78 82 H92 M108 82 H122"/>
+            <path d="M88 108 Q100 114 112 108" opacity=".7"/>
+            <path d="M66 118 L52 150 M134 118 L148 150" opacity=".45"/>
+          </svg>
+          <div class="t2"><span id="pn">LIMPO</span><b id="ps">☆☆☆☆☆</b></div>
+        </div>
+        <div class="bdg" id="bdg"></div>
+      </div>
+      <div class="fr">
+        <div class="rad" id="rad"></div>
+        <div class="cap">Reputação por facção · centro = inimigo · anel tracejado = neutro</div>
+      </div>
+    </div>
+
+    <div class="r2">
+      <div class="fr tb" id="tb"></div>
+      <div class="fr txt" id="txt"></div>
+    </div>
+
+    <div class="fr">
+      <div class="chn">Evolução do procurado</div>
+      <div class="chr" id="chr"></div>
+      <div class="cap" id="chc"></div>
+    </div>
+  </div>
+
+  <div class="rc">
+    <div class="fr sq"><div class="in" id="sqA"></div><div class="cap">Alerta</div></div>
+    <div class="fr sq"><div class="in" id="sqB"></div><div class="cap">Rastro</div></div>
+    <div class="fr sq">
+      <div class="in">
+        <svg viewBox="0 0 200 220" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 220 Q22 140 62 104 Q72 28 100 24 Q128 28 138 104 Q178 140 180 220"/>
+          <path d="M66 220 Q66 150 100 126 Q134 150 134 220" opacity=".55"/>
+          <path d="M72 100 Q100 116 128 100" opacity=".45"/>
+          <text x="100" y="178" text-anchor="middle" fill="currentColor" stroke="none" font-family="Chakra Petch,monospace" font-weight="700" font-size="30" letter-spacing="3">S7</text>
+        </svg>
+      </div>
+      <div class="cap">Identificação</div>
+    </div>
+  </div>
+</div>
+
+<div class="fr gap">
+  <div class="sec"><span>CONTROLES // PROCURADO</span><span id="hv"></span></div>
+  <div class="bd">
+    <div class="bar" id="hbar" style="--c:#ffe62a"><b></b></div>
+    <div class="dim" id="hfx"></div>
+    <div class="btns">
+      <button data-h="5">+5 CONFUSÃO</button><button data-h="10">+10 ESCÂNDALO</button>
+      <button data-h="-10">−10 SE ESCONDEU</button><button data-h="-15">−15 PASSOU UM DIA</button><button data-h="-100">ZERAR</button>
+    </div>
+    <div class="dim" style="margin-top:10px">Sobe sozinho: <b>+2</b> por item saqueado e <b>+1</b> a cada 6 linhas de combate. Cada estrela deixa a loja <b>5% mais cara</b>.</div>
+  </div>
+</div>
+
+<div class="fr gap">
+  <div class="sec"><span>FACÇÕES</span><span>−100 … +100</span></div>
+  <div class="bd">
+    <div class="fcs" id="facs"></div>
+    <div class="dim" style="margin-top:12px">A reputação com a <b>ARMA-ZENADS</b> muda o preço da loja: Aliado −15% · Confiável −8% · Hostil +10% · Inimigo +25%. Nas missões, cumprir um contrato dá <b>+10</b> com a facção, e abandonar tira <b>5</b>. Nas outras facções, o mestre decide como as pessoas reagem.</div>
+  </div>
+</div>
+
+<div class="fr gap">
+  <div class="sec"><span>ENCONTRO</span><span>ALEATÓRIO</span></div>
+  <div class="bd">
+    <div id="enc" class="dim">Role para ver o que a cidade joga na sua cara, conforme as estrelas e as facções inimigas.</div>
+    <div class="btns"><button onclick="rola()">ROLAR ENCONTRO</button></div>
+  </div>
+</div>
+
+<div class="tg" style="margin:12px 0 0"><span class="box00"></span><span class="sl">/ / / / / /</span></div>
+</div>
+</main>
+<footer>PROTOCOLO SETOR 7 © 2088 — <span>A CIDADE NÃO ESQUECE.</span></footer>
+<script>
+var R=S7REP, KS=Object.keys(R.FAC), CX=190, CY=150, RR=95;
+var DOSSIE=[
+  'A cidade ainda não sabe o seu nome. Você circula como mais um rosto na chuva ácida e ninguém pergunta o que leva na maleta. Cada saque e cada tiro deixam rastro.',
+  'Já existe um arquivo com o seu nome, ainda fino. Drones registram seu rosto de longe e os guardas passaram a olhar duas vezes. Um deslize e o arquivo engorda.',
+  'Você está sendo observado. Patrulhas anotam por onde passa e os informantes já têm preço pelo que sabem. Passar despercebido deixou de ser opção e virou necessidade.',
+  'Seu rosto está em painéis de procurados e a cidade começa a reagir. Caçadores de recompensa estudam a sua rotina e cada contato conhecido é um risco.',
+  'A cidade fechou o cerco. Esquadrões táticos e drones de combate varrem os blocos, e os antigos aliados pensam duas vezes antes de atender o canal.',
+  'Alvo prioritário. Há um contrato aberto pela sua cabeça e unidades de elite foram enviadas só para você. Ninguém ajuda, ninguém esconde. Sumir é o único plano.'
+];
+function pad(n,l){ n=String(n); while(n.length<l) n='0'+n; return n; }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function sg(v){ return (v>0?'+':'')+v; }
+function pt(i,r){ var a=-Math.PI/2+i*2*Math.PI/KS.length; return [+(CX+r*Math.cos(a)).toFixed(1), +(CY+r*Math.sin(a)).toFixed(1)]; }
+function hex(r){ return KS.map(function(k,i){ return pt(i,r).join(','); }).join(' '); }
+function star(cx,cy,Ro,ri){ var p=[],i; for(i=0;i<10;i++){ var a=-Math.PI/2+i*Math.PI/5, q=i%2?ri:Ro; p.push((cx+q*Math.cos(a)).toFixed(1)+','+(cy+q*Math.sin(a)).toFixed(1)); } return p.join(' '); }
+function fdate(t){ return new Date(t).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}); }
+
+function radar(d){
+  var s='<svg viewBox="-30 0 440 300" role="img" aria-label="Reputação por facção">';
+  [.25,.5,.75,1].forEach(function(f){ s+='<polygon points="'+hex(RR*f)+'" fill="none" stroke="currentColor" stroke-opacity="'+(f===.5?.75:.28)+'"'+(f===.5?' stroke-dasharray="4 3"':'')+'/>'; });
+  KS.forEach(function(k,i){ var p=pt(i,RR); s+='<line x1="'+CX+'" y1="'+CY+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="currentColor" stroke-opacity=".3"/>'; });
+  s+='<polygon points="'+KS.map(function(k,i){ return pt(i,(d.fac[k]+100)/200*RR).join(','); }).join(' ')+'" fill="currentColor" fill-opacity=".22" stroke="currentColor" stroke-width="2"/>';
+  KS.forEach(function(k,i){
+    var v=d.fac[k], t=R.tier(v), p=pt(i,(v+100)/200*RR), l=pt(i,110), anc=l[0]<CX-10?'end':l[0]>CX+10?'start':'middle', dy=i===0?-12:(l[1]>CY+40?4:-2);
+    s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+t.c+'"/>';
+    s+='<text x="'+l[0]+'" y="'+(l[1]+dy)+'" text-anchor="'+anc+'" class="rl">'+esc(R.FAC[k][0])+'</text>';
+    s+='<text x="'+l[0]+'" y="'+(l[1]+dy+11)+'" text-anchor="'+anc+'" class="rv" style="fill:'+t.c+'">'+esc(t.n)+' '+sg(v)+'</text>';
+  });
+  return s+'</svg>';
+}
+
+function chart(d){
+  var H=(d.hist||[]).map(function(x){ return x.h; }), flat=H.length<2;
+  if(flat) H=[d.heat,d.heat];
+  var X0=34, X1=410, Y0=10, Y1=118, n=H.length, s='<svg viewBox="0 0 420 140" role="img" aria-label="Evolução do procurado">';
+  [0,20,40,60,80,100].forEach(function(v){ var y=Y1-(Y1-Y0)*v/100;
+    s+='<line x1="'+X0+'" x2="'+X1+'" y1="'+y+'" y2="'+y+'" stroke="currentColor" stroke-opacity=".25"/><text x="'+(X0-6)+'" y="'+(y+3)+'" text-anchor="end" class="rl">'+v+'</text>'; });
+  var pts=H.map(function(h,i){ return [(X0+(X1-X0)*i/(n-1)).toFixed(1),(Y1-(Y1-Y0)*h/100).toFixed(1)]; });
+  s+='<polyline fill="none" stroke="currentColor" stroke-width="2" points="'+pts.map(function(p){ return p.join(','); }).join(' ')+'"/>';
+  if(!flat) pts.forEach(function(p){ s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.5" fill="currentColor"/>'; });
+  else s+='<circle cx="'+pts[1][0]+'" cy="'+pts[1][1]+'" r="3" fill="currentColor"/>';
+  if(!flat){ var h0=d.hist[0].t, h1=d.hist[d.hist.length-1].t;
+    s+='<text x="'+X0+'" y="134" class="rv">'+fdate(h0)+'</text><text x="'+X1+'" y="134" text-anchor="end" class="rv">'+fdate(h1)+'</text>'; }
+  return s+'</svg>';
+}
+
+function draw(){
+  var d=R.load(), n=R.estrelas(d.heat), m=R.mult(), pc=Math.round((m-1)*100), i;
+  var $=function(id){ return document.getElementById(id); };
+
+  $('aid').textContent=pad(d.heat,3)+'-'+pad(n,2);
+  $('pn').textContent=R.STAR_N[n];
+  $('ps').textContent='★'.repeat(n)+'☆'.repeat(5-n);
+  $('bdg').innerHTML=KS.map(function(k){ var t=R.tier(d.fac[k]); return '<span style="color:'+t.c+'" title="'+esc(R.FAC[k][0]+' · '+t.n)+'">'+k.toUpperCase()+'</span>'; }).join('');
+  $('rad').innerHTML=radar(d);
+
+  var best=KS.slice().sort(function(a,b){ return d.fac[b]-d.fac[a]; })[0], worst=KS.slice().sort(function(a,b){ return d.fac[a]-d.fac[b]; })[0];
+  var allz=KS.every(function(k){ return d.fac[k]===0; });
+  function fv(k){ return esc(R.FAC[k][0])+' ('+sg(d.fac[k])+')'; }
+  var az=R.tier(d.fac.az);
+  var rows=[['Estrelas','<span style="color:#ffe62a">'+'★'.repeat(n)+'</span>'+'☆'.repeat(5-n)],['Situação',R.STAR_N[n]],['Procurado',d.heat+' / 100'],
+    ['Preço da loja',sg(pc)+'%'],['ARMA-ZENADS','<span style="color:'+az.c+'">'+az.n+'</span> · '+sg(d.fac.az)],
+    ['Melhor relação',allz?'—':fv(best)],['Pior relação',allz?'—':fv(worst)]];
+  $('tb').innerHTML=rows.map(function(r){ return '<div class="rw"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>'; }).join('');
+
+  $('txt').textContent=DOSSIE[n]+(allz?' Nenhuma facção formou opinião sobre você.':' Melhor relação: '+R.FAC[best][0]+' ('+R.tier(d.fac[best]).n+'). Pior: '+R.FAC[worst][0]+' ('+R.tier(d.fac[worst]).n+').');
+
+  $('chr').innerHTML=chart(d);
+  var h=d.hist||[];
+  $('chc').textContent=h.length<2?'Sem histórico ainda · o gráfico enche conforme o Procurado muda':h.length+' registros · de '+fdate(h[0].t)+' a '+fdate(h[h.length-1].t);
+
+  var sa='<svg viewBox="0 0 250 64" aria-hidden="true">';
+  for(i=0;i<5;i++) sa+='<polygon points="'+star(25+50*i,34,22,9)+'" '+(i<n?'fill="#ffe62a" stroke="#ffe62a" stroke-width="2" stroke-linejoin="round"':'fill="none" stroke="currentColor" stroke-opacity=".4" stroke-width="2" stroke-linejoin="round"')+'/>';
+  $('sqA').innerHTML=sa+'</svg>';
+
+  var lit=Math.round(d.heat/10), DA=['40 7','22 5 10 5','60 9','30 4 14 6','50 6','18 6','44 8 12 4','26 5','56 7','34 6'];
+  var fp='<svg viewBox="0 0 160 190" fill="none" stroke-width="3" stroke-linecap="round" aria-hidden="true">';
+  for(i=0;i<10;i++) fp+='<ellipse cx="80" cy="95" rx="'+(7+i*7)+'" ry="'+(10+i*8.5)+'" stroke="currentColor" stroke-dasharray="'+DA[i]+'" opacity="'+(i<lit?1:.16)+'"/>';
+  $('sqB').innerHTML=fp+'</svg>';
+
+  $('hv').textContent=d.heat+' / 100';
+  document.querySelector('#hbar b').style.cssText='left:0;width:'+d.heat+'%';
+  $('hfx').textContent='Preço atual da loja: '+sg(pc)+'% sobre a tabela (reputação ARMA-ZENADS + estrelas).';
+
+  $('facs').innerHTML=KS.map(function(k){
+    var v=d.fac[k], t=R.tier(v), F=R.FAC[k], l=v<0?(v+100)/2:50, w=Math.abs(v)/2;
+    return '<div class="fcell" style="--c:'+F[1]+'"><div class="fh"><span>'+F[0]+'</span><span style="color:'+t.c+'">'+t.n+' · '+sg(v)+'</span></div>'+
+      '<div class="bar" style="--c:'+t.c+'"><u></u><b style="left:'+l+'%;width:'+w+'%"></b></div>'+
+      '<div class="btns">'+[-10,-5,5,10].map(function(x){ return '<button data-f="'+k+'" data-v="'+x+'">'+sg(x)+'</button>'; }).join('')+'</div></div>';
+  }).join('');
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.h){ var h=+b.dataset.h; R.heat(h<=-100?-100:h); draw(); }
+  else if(b.dataset.f){ R.rep(b.dataset.f,+b.dataset.v); draw(); }
+});
+function rola(){ var t=R.encontro(), e=document.getElementById('enc'); e.className=''; e.textContent=t; }
+draw();
+</script>
+<script>
+function toggleNav(){var n=document.getElementById('navShell'),b=document.getElementById('menuToggle');n.classList.toggle('menu-open');b.setAttribute('aria-expanded',n.classList.contains('menu-open'));}
+function toggleShortcuts(){var n=document.getElementById('navShell'),b=document.getElementById('shortcutsToggle');n.classList.toggle('shortcuts-collapsed');b.setAttribute('aria-expanded',!n.classList.contains('shortcuts-collapsed'));}
+</script>
+</body>
+</html>

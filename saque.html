@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAQUEAR // CORPO ENCONTRADO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&family=Anton&family=Permanent+Marker&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="catalogo.js"></script>
+<script src="inventario.js"></script>
+<style>
+header{padding:26px 5% 2px;}
+header .hud-tag{margin-bottom:8px;}
+header h1{font-size:clamp(1.9rem,5.2vw,3.2rem);}
+header p{margin-top:8px;}
+main{max-width:1180px;margin:auto;padding:24px 3% 56px;}
+
+.stage2{display:grid;grid-template-columns:minmax(320px,440px) minmax(0,1fr);gap:30px;align-items:start;}
+@media(max-width:860px){.stage2{grid-template-columns:1fr;}}
+
+/* ---------- o corpo ---------- */
+.bodybox{background:var(--panel);border:1px solid var(--line);}
+.bb-top{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);font:600 .6rem var(--hud);letter-spacing:.18em;color:var(--dim);}
+.bb-top b{color:var(--txt);font-weight:700;}
+.bb-top .st{color:var(--cyan);text-align:right;}
+/* palco: scanner cyberpunk */
+.bb-stage{position:relative;overflow:hidden;padding:22px 14px 12px;background:
+  radial-gradient(ellipse at 50% 44%,rgba(150,10,24,.24),transparent 62%),
+  linear-gradient(rgba(var(--p-rgb),.10) 1px,transparent 1px) 0 0/16px 16px,
+  linear-gradient(90deg,rgba(var(--p-rgb),.10) 1px,transparent 1px) 0 0/16px 16px,#06030b;}
+.bb-stage::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);}
+.bb-stage::after{content:"";position:absolute;left:0;right:0;top:-20%;height:20%;pointer-events:none;z-index:3;
+  background:linear-gradient(180deg,transparent,rgba(34,230,210,.13),transparent);animation:scan 5s linear infinite;}
+@keyframes scan{to{top:110%;}}
+@media(prefers-reduced-motion:reduce){.bb-stage::after{animation:none;display:none;}}
+.paper{position:relative;max-width:392px;margin:0 auto;padding:12px;}
+.paper::before,.paper::after{content:"";position:absolute;width:22px;height:22px;border:2px solid var(--cyan);pointer-events:none;}
+.paper::before{left:0;top:0;border-right:0;border-bottom:0;}
+.paper::after{right:0;bottom:0;border-left:0;border-top:0;}
+#body{filter:drop-shadow(0 0 5px rgba(var(--p-rgb),.35));}
+.bb-wrap{position:relative;max-width:380px;margin:auto;}
+.bb-wrap svg{display:block;width:100%;height:auto;overflow:visible;}
+.bb-wrap svg.deco{position:absolute;left:0;top:0;height:100%;pointer-events:none;}
+.deco .lb{fill:#05030a;stroke:var(--cyan);stroke-width:1.2;}
+.deco text{font:400 13px 'Share Tech Mono','Chakra Petch',monospace;letter-spacing:.1em;fill:var(--cyan);}
+.deco .ld path{fill:none;stroke:var(--cyan);stroke-width:1.2;stroke-linecap:round;stroke-dasharray:3 3;opacity:.8;}
+.deco .ld circle{fill:var(--cyan);filter:drop-shadow(0 0 3px var(--cyan));}
+.bb-wrap #fx{position:absolute;left:0;top:0;height:100%;pointer-events:none;}
+.bb-legend{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;padding:8px 12px 12px;font-size:.62rem;letter-spacing:.14em;color:var(--dim);}
+.bb-legend span{display:inline-flex;align-items:center;gap:7px;}
+.sw{display:inline-block;width:12px;height:12px;border:1.5px solid var(--red);background:color-mix(in srgb,var(--red) 12%,var(--panel2));}
+.sw.bio{border-color:var(--cyan);background:color-mix(in srgb,var(--cyan) 12%,var(--panel2));}
+.sw.ms{border:1.5px dashed var(--dim);background:none;}
+.bb-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);font-size:.7rem;letter-spacing:.06em;color:var(--dim);}
+.bb-foot b{color:var(--txt);}
+.bb-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.pill:disabled{opacity:.35;cursor:default;pointer-events:none;}
+.hud-quote .li{display:flex;align-items:baseline;gap:9px;}
+.hud-quote .li i{flex:none;font-style:normal;font-size:.7rem;}
+.hud-quote .li small{margin-left:auto;padding-left:10px;font-size:.7rem;color:var(--dim);white-space:nowrap;}
+
+/* partes clicáveis */
+.part{--pc0:var(--red);--bf:#e8e4da;--be:#2a1418;outline:none;}
+.part.bio{--pc0:var(--cyan);--bf:#8fe3ec;--be:#06343a;}
+.part .mv{transition:transform .7s cubic-bezier(.2,1.35,.35,1),filter .2s;transform-box:view-box;}
+.part.pend .mv,.part.done .mv{transform:var(--off);}
+.part.pre .mv{transition:none!important;transform:none!important;}
+.part .hit{fill:transparent;stroke:none;}
+.part .bo{fill:none;stroke:var(--be);stroke-linecap:round;}
+.part .bn{fill:none;stroke:var(--bf);stroke-linecap:round;}
+.part .sp{stroke-linecap:butt;stroke-dasharray:8 2.5;}
+.part .bf{fill:var(--bf);stroke:var(--be);stroke-width:1.6;stroke-linejoin:round;}
+.part .hl{fill:#120408;stroke:var(--be);stroke-width:1;}
+.part .th{fill:none;stroke:var(--be);stroke-width:3;stroke-dasharray:2.5 1.5;}
+.part .mu{fill:url(#gm);stroke:#3a0508;stroke-width:1.4;}
+.part .st{fill:none;stroke:#3a0508;stroke-width:1;opacity:.6;stroke-linecap:round;}
+.part .bk{fill:var(--be);stroke:none;}
+.part .b0{fill:var(--bf);stroke:none;}
+.part .hx{fill:none;stroke:var(--be);stroke-width:1;opacity:.32;stroke-linecap:round;}
+.part.org .bn.rd,.part.org .b0.rd{stroke:#c0141f;}
+.part.org .b0.rd,.part.org .bf.rd{fill:#c0141f;}
+.part .vn{fill:none;stroke:#6a55e0;stroke-width:1.7;stroke-linecap:round;}
+.part .lg{fill:#6d4aa3;stroke:#2c1450;stroke-width:1.2;}
+.part .ht{fill:#c4121f;stroke:#4a050b;stroke-width:1.2;}
+.part .gl{fill:var(--cyan);filter:drop-shadow(0 0 4px var(--cyan));}
+.part.org .gl,.part.bio .fl{display:none;}
+.part .ckt{fill:none;stroke:var(--cyan);stroke-width:1.5;opacity:.9;pointer-events:none;}
+.part .ckt-dot{fill:var(--cyan);pointer-events:none;}
+.part.ok,.part.pend,.part.done{cursor:pointer;}
+.part.ok:hover .mv,.part.ok:focus-visible .mv{filter:brightness(1.22) drop-shadow(0 0 6px var(--pc0));}
+.part.pend{--pc0:var(--pc,var(--red));}
+.part.pend .mv{filter:drop-shadow(0 0 8px var(--pc0)) drop-shadow(0 0 2px var(--pc0));}
+.part.done .mv{filter:grayscale(.85) brightness(.62);}
+.part.done:hover .mv,.part.done:focus-visible .mv{filter:grayscale(.5) brightness(.85);}
+.part.sel .mv{filter:drop-shadow(0 0 10px var(--pc0)) brightness(1.12);}
+.ghost{fill:none;stroke:var(--cyan);stroke-width:1.2;stroke-dasharray:4 5;opacity:.28;pointer-events:none;}
+.ghost.miss{opacity:.55;}
+/* feridas / sangue */
+.wd .w0{fill:url(#gw);}
+.wd .w1{fill:#2a0206;opacity:.85;}
+.wd .sn,.wd .dd{fill:#a50f1a;}
+.wd .dr{fill:none;stroke:#b10f1c;stroke-linecap:round;}
+.wd.dry .w0{fill:#3b0a10;}
+.wd.dry .sn,.wd.dry .dd{fill:#4a0c13;}
+.wd.dry .dr{stroke:#4a0c13;}
+.wd.new .w0{transform-box:fill-box;transform-origin:center;animation:wpulse .9s ease-out;}
+.wd.new .dr{stroke-dasharray:70;animation:drip 2s ease-out both;}
+.wd.new .dd{animation:ddrop 2s ease-in both;}
+@keyframes wpulse{0%{transform:scale(.2);opacity:0}60%{transform:scale(1.25)}100%{transform:scale(1);opacity:1}}
+@keyframes drip{from{stroke-dashoffset:70}to{stroke-dashoffset:0}}
+@keyframes ddrop{from{opacity:0}65%{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.part .mv{transition:none;}.wd.new *,.bb-stage.shake,.bflash.go{animation:none!important;}}
+
+/* ---------- botões ---------- */
+.pill{appearance:none;cursor:pointer;display:inline-block;text-decoration:none;text-align:center;padding:9px 18px;font:600 .64rem var(--hud);letter-spacing:.28em;text-transform:uppercase;
+  color:var(--txt);background:none;border:1px solid var(--txt);border-radius:999px;transition:.15s;}
+.pill:hover{background:var(--txt);color:var(--bg);}
+.pill.main{background:var(--tc,var(--red));border-color:var(--tc,var(--red));color:#060308;}
+.pill.main:hover{filter:brightness(1.15);background:var(--tc,var(--red));color:#060308;}
+.pill:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+.pill.hot{border-color:var(--red);color:var(--red);}
+.pill.hot:hover{background:var(--red);color:#060308;}
+
+/* ---------- HUD de descrição do item ---------- */
+.hud{--tc:var(--cyan);position:sticky;top:76px;}
+@media(max-width:860px){.hud{position:static;}}
+.hud-lab{margin:0 0 9px 2px;font-size:.6rem;letter-spacing:.2em;color:var(--dim);}
+.hud-row{display:flex;gap:22px;align-items:flex-start;}
+.hud-ico{position:relative;flex:none;width:168px;height:168px;display:grid;place-items:center;overflow:hidden;color:var(--tc);
+  background:color-mix(in srgb,var(--tc) 7%,#05030a);border:1px solid color-mix(in srgb,var(--tc) 32%,transparent);}
+.hud-ico .c{position:absolute;width:14px;height:14px;border:2px solid var(--tc);}
+.hud-ico .tl{left:0;top:0;border-right:0;border-bottom:0;}
+.hud-ico .tr{right:0;top:0;border-left:0;border-bottom:0;}
+.hud-ico .bl{left:0;bottom:0;border-right:0;border-top:0;}
+.hud-ico .br{right:0;bottom:0;border-left:0;border-top:0;}
+.ico-in{display:grid;place-items:center;font-size:4.2rem;line-height:1;}
+.ico-in svg{width:4.4rem;height:4.4rem;stroke-width:1.4;}
+.ico-in .emo{width:4.4rem;height:4.4rem;}
+.hud-info{flex:1;min-width:0;}
+.hud-title{padding:2px 0 10px;border-bottom:1px solid var(--tc);}
+.hud-title b{font:700 clamp(1.3rem,3vw,1.85rem)/1.1 var(--hud);letter-spacing:.06em;text-transform:uppercase;color:var(--txt);overflow-wrap:anywhere;}
+.hud-quote{margin-top:12px;padding:14px 16px;min-height:112px;font-size:.92rem;line-height:1.55;color:var(--txt);
+  background:rgba(0,0,0,.35);border:1px solid color-mix(in srgb,var(--tc) 38%,transparent);}
+.hud-quote p+p{margin-top:2px;}
+.hud-quote .dots,.hud-quote .fl{color:var(--dim);}
+.hud-quote .fl{font-style:italic;}
+.hud-eff{display:flex;margin-top:16px;font-size:.78rem;background:rgba(0,0,0,.3);border:1px solid color-mix(in srgb,var(--tc) 38%,transparent);}
+.hud-eff .el{flex:none;display:flex;align-items:center;padding:12px 18px;letter-spacing:.14em;color:var(--dim);border-right:1px solid color-mix(in srgb,var(--tc) 38%,transparent);}
+.hud-eff .ec{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;padding:10px 16px;}
+.hud-eff .ec span{display:inline-flex;align-items:center;gap:7px;}
+.hud-eff .ec .cr{color:var(--tc);font-weight:700;}
+.hud-eff .rd{width:9px;height:9px;border-radius:50%;background:var(--tc);}
+.hud-eff .gr{display:inline-grid;gap:2px;}
+.hud-eff .gr i{width:7px;height:7px;background:var(--tc);opacity:.85;}
+.hud-act{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;}
+.hud-note{font-size:.72rem;letter-spacing:.1em;color:var(--dim);}
+.hud-note b{color:var(--tc);}
+@media(max-width:560px){
+  .hud-row{flex-direction:column;}
+  .hud-ico{width:120px;height:120px;}
+  .ico-in{font-size:3.2rem;}.ico-in svg,.ico-in .emo{width:3.4rem;height:3.4rem;}
+  .hud-info{width:100%;}
+}
+
+/* o momento do sorteio: o quadro do ícone pisca na cor da raridade */
+.hud.fresh .hud-ico{animation:flash .8s ease-out;}
+.hud.fresh .hud-ico::after{content:"";position:absolute;left:0;right:0;top:-30%;height:30%;pointer-events:none;
+  background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--tc) 55%,transparent),transparent);animation:sweep .6s ease-out;}
+.hud.fresh .hud-info{animation:slide .45s ease-out;}
+@keyframes flash{0%{background:var(--tc);box-shadow:0 0 0 0 var(--tc);}40%{box-shadow:0 0 30px 2px color-mix(in srgb,var(--tc) 70%,transparent);}100%{box-shadow:0 0 0 0 transparent;}}
+@keyframes sweep{to{top:110%;}}
+@keyframes slide{from{opacity:0;transform:translateX(-8px);}}
+@media(prefers-reduced-motion:reduce){.hud.fresh .hud-ico,.hud.fresh .hud-ico::after,.hud.fresh .hud-info{animation:none;}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // NECRO_SCAN_v1 // CORPO DETECTADO</div>
+  <h1><span class="mk">SAQUEAR</span></h1>
+  <p>// VASCULHE O CORPO — CADA PARTE GUARDA UMA SURPRESA //</p>
+</header>
+
+<div class="ad-marquee"><span>🦴 SAQUEIE COM CALMA: CADA PARTE SÓ PODE SER REVISTADA UMA VEZ // 🦾 PARTE BIÔNICA RENDE MAIS SUCATA, PARTE ORGÂNICA RENDE MAIS CARNE // 💊 ÀS VEZES O MORTO CARREGA COISA DA LOJA: CURA, COMIDA, GRANADA... // 💰 O MERCADOR PAGA POR TUDO ISSO, SEM PERGUNTAS // 🦴 SAQUEIE COM CALMA: CADA PARTE SÓ PODE SER REVISTADA UMA VEZ //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="loja.html">🛒 LOJA</a>
+  <a href="venda.html">🎲 VENDA</a>
+  <a href="missoes.html">🎯 MISSÕES</a>
+  <a href="regras_do_setor_7.html">📜 REGRAS</a>
+  <a href="base_de_comando.html">🏚️ BASE</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="loja.html">LOJA</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+  <div class="stage2">
+    <div class="bodybox">
+      <div class="bb-top"><b id="bId">CADÁVER_----</b><span class="st" id="bState">—</span></div>
+      <div class="bb-stage" id="stage">
+        <div class="paper"><div class="bb-wrap">
+          <svg class="deco" viewBox="-20 -34 400 534" aria-hidden="true">
+            <g class="ld"><path d="M80,-14Q120,0 150,34"/><circle cx="150" cy="34" r="2.6"/>
+              <path d="M270,56Q240,70 208,104"/><circle cx="208" cy="104" r="2.6"/>
+              <path d="M60,176Q80,190 94,198"/><circle cx="94" cy="198" r="2.6"/>
+              <path d="M320,146Q300,190 276,236"/><circle cx="276" cy="236" r="2.6"/>
+              <path d="M78,344Q110,346 142,336"/><circle cx="142" cy="336" r="2.6"/>
+              <path d="M278,426Q250,430 226,424"/><circle cx="226" cy="424" r="2.6"/></g>
+            <g><rect class="lb" x="-14" y="-30" width="94" height="26"/><text x="-7" y="-11" textLength="80" lengthAdjust="spacingAndGlyphs">CRÂNIO</text></g>
+            <g><rect class="lb" x="270" y="46" width="108" height="26"/><text x="277" y="65" textLength="94" lengthAdjust="spacingAndGlyphs">CLAVÍCULA</text></g>
+            <g><rect class="lb" x="-14" y="150" width="94" height="26"/><text x="-7" y="169" textLength="80" lengthAdjust="spacingAndGlyphs">FRATURAS</text></g>
+            <g><rect class="lb" x="292" y="120" width="86" height="26"/><text x="299" y="139" textLength="72" lengthAdjust="spacingAndGlyphs">NERVOS</text></g>
+            <g><rect class="lb" x="-14" y="330" width="92" height="26"/><text x="-7" y="349" textLength="78" lengthAdjust="spacingAndGlyphs">FÊMUR</text></g>
+            <g><rect class="lb" x="278" y="410" width="96" height="26"/><text x="285" y="429" textLength="82" lengthAdjust="spacingAndGlyphs">TÍBIA</text></g>
+          </svg>
+          <svg id="body" viewBox="-20 -34 400 534" role="group" aria-label="Corpo para saquear"></svg><svg id="fx" viewBox="-20 -34 400 534" aria-hidden="true"></svg></div></div>
+        <div class="bflash" id="bflash"></div>
+      </div>
+      <div class="bb-legend"><span><i class="sw"></i>ORGÂNICA</span><span><i class="sw bio"></i>BIÔNICA</span><span><i class="sw ms"></i>AUSENTE</span></div>
+      <div class="bb-foot">
+        <span id="bInfo">—</span>
+        <span class="bb-btns"><button class="pill main" id="bAll" type="button" style="--tc:var(--cyan)">Pegar tudo</button><button class="pill" id="bNew" type="button">Novo corpo</button></span>
+      </div>
+    </div>
+
+    <div class="hud" id="hud" aria-live="polite"></div>
+  </div>
+</main>
+
+<script>
+(function(){
+'use strict';
+var I = window.S7INV, KEY = 's7_saque';
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function fmt(v){ return Number(v).toLocaleString('pt-BR'); }
+
+/* partes do corpo (desenhadas de frente: o braço da esquerda da tela é o direito do corpo)
+   g = silhueta/área de clique · w = ferida [x,y,rx,ry] · dir = direção do jato de sangue · off = deslocamento ao saquear */
+function mx(p){ return p.split(' ').map(function(q){ var a = q.split(','); return (360 - a[0]) + ',' + a[1]; }).join(' '); }
+var ARM_G = '222,102 246,106 276,184 306,258 318,312 290,318 268,274 242,208 214,130';
+var LEG_G = '182,270 226,270 234,330 230,372 232,462 246,486 200,488 198,462 196,380 186,330';
+var PARTS = [
+  {k:'head',  n:'Cabeça',          cx:180, cy:50,  w:[180,96,22,8],   dir:[0,-1], off:'translate(0px,-44px) rotate(-9deg)',   o:'180px 96px',  g:'152,16 208,16 220,40 214,70 206,96 154,96 146,70 140,40'},
+  {k:'torso', n:'Tronco',          cx:180, cy:182, w:[180,190,52,98], dir:[0,0],  off:'translate(0px,-10px) scale(1.12) rotate(3deg)', o:'180px 190px', g:'138,100 222,100 234,126 222,232 232,268 226,298 134,298 128,268 138,232 126,126'},
+  {k:'armL',  n:'Braço direito',   cx:64,  cy:222, w:[138,116,12,14], dir:[-1,.2],off:'translate(-48px,10px) rotate(15deg)',  o:'138px 114px', g:mx(ARM_G)},
+  {k:'armR',  n:'Braço esquerdo',  cx:296, cy:222, w:[222,116,12,14], dir:[1,.2], off:'translate(48px,10px) rotate(-15deg)',  o:'222px 114px', g:ARM_G},
+  {k:'legL',  n:'Perna direita',   cx:142, cy:372, w:[156,280,16,10], dir:[-1,.7],off:'translate(-34px,8px) rotate(13deg)',   o:'156px 276px', g:mx(LEG_G)},
+  {k:'legR',  n:'Perna esquerda',  cx:218, cy:372, w:[204,280,16,10], dir:[1,.7], off:'translate(34px,8px) rotate(-13deg)',   o:'204px 276px', g:LEG_G}
+];
+var fxSet = {};
+var WHOLE_CHANCE = 0.30, MISS_CHANCE = 0.40, BIO_CHANCE = 0.25;
+/* chance de o saque render um item da LOJA em vez de lixo/orgânico. Armas, próteses e implantes nunca saem. */
+var SHOP_CHANCE = 0.30;
+var SHOP_BAN = {arma:1, corpo:1, protese:1, implante:1};
+/* item caro da loja quase nunca sai: até PRECO_BASE cr o peso é cheio; acima disso cai com o quadrado do preço
+   (600 cr ≈ 25%, 1.200 cr ≈ 6%, 2.800 cr ≈ 1%, 7.000 cr ≈ 0,2% do peso de um item barato). Aumente PRECO_EXP para ficar ainda mais raro. */
+var PRECO_BASE = 300, PRECO_EXP = 2;
+function pesoPreco(it){ return Math.pow(PRECO_BASE / Math.max(it.valor, PRECO_BASE), PRECO_EXP); }
+
+/* chance de cada raridade (dividida entre os itens da raridade) e bônus de grupo por tipo de parte */
+var RW = {comum:62, raro:29, experimental:5, proibido:4, custom:10};
+var GBONUS = {org:'PARTES DE CORPO', bio:'SUCATA DE PRÓTESES'};
+var FLAV_CAT = {
+  cura:['A embalagem está violada, mas o lacre interno parece intacto.','Alguém guardou isso para uma emergência que não deu tempo.'],
+  sanidade:['Metade do blister já foi usado. A outra metade não faz falta ao dono.','O rótulo está riscado com algo que parece uma data.'],
+  armadura:['Dobrado por baixo da roupa, quase sem uso.','Tem um furo de bala. O resto aguenta.'],
+  hacker:['Carcaça arranhada, mas ainda liga.','O histórico de uso foi apagado. Por quem?'],
+  comida:['Lacrada. Provavelmente está boa.','A validade é um palpite.'],
+  outro:['Escondido no cinto, bem à mão.','Parece que o dono ia usar quando foi pego.']
+};
+var FLAV = {
+  'PARTES DE CORPO':['Ainda está morno.','O corte é limpo. Quem fez isso sabia o que fazia.','Ninguém vai sentir falta. Ninguém vai saber.'],
+  'SUCATA DE PRÓTESES':['Cheira a ozônio e óleo queimado.','As peças ainda estalam quando você mexe.','O número de série foi raspado.'],
+  'ACHADOS EM CADÁVERES':['Estava escondido por dentro da roupa.','O dono não vai reclamar.','Alguém ainda procura por isso.']
+};
+
+var S = null, current = null, hudTimer = 0, RK = ['comum','raro','experimental','proibido'];
+
+/* ---------- itens (lista LIXO do inventario.js) ---------- */
+function toItem(r){ return {fonte:'lixo', cat:'lixo', efeito:'', grupo:r[0], nome:r[1], icone:r[2], valor:r[3], raridade:r[4], w:r[5], h:r[6], desc:r[7], part:r[8]}; }
+/* ---------- drops por parte do corpo ----------
+   grupos: head (cabeça) · torso (tronco) · arms (braços) · legs (pernas)
+   Itens do LIXO (inventario.js) de PARTES DE CORPO / SUCATA DE PRÓTESES só caem na parte certa:
+   o grupo é descoberto pelo nome (dente, dedo, pé...) ou pelo 9º campo da linha ['head'|'torso'|'arms'|'legs'].
+   Itens de outros grupos (ACHADOS EM CADÁVERES etc.) podem cair em qualquer parte, com chance menor. */
+var GRP = {head:'head', torso:'torso', armL:'arms', armR:'arms', legL:'legs', legR:'legs'};
+var BODY = {'PARTES DE CORPO':1, 'SUCATA DE PRÓTESES':1};
+var EXTRA = [
+  /* cabeça */
+  ['PARTES DE CORPO','Dente','lucide:bone',8,'comum',1,1,'Um dente solto, ainda com raiz.','head'],
+  ['PARTES DE CORPO','Dente de ouro','lucide:bone',90,'raro',1,1,'Obturação de ouro. Alguém pagou caro por isso.','head'],
+  ['PARTES DE CORPO','Olho','lucide:eye',35,'comum',1,1,'Um olho, ainda úmido.','head'],
+  ['PARTES DE CORPO','Orelha','lucide:ear',12,'comum',1,1,'Orelha com um brinco barato.','head'],
+  ['PARTES DE CORPO','Cérebro','lucide:brain',260,'experimental',2,2,'Intacto. Os laboratórios pagam bem.','head'],
+  ['SUCATA DE PRÓTESES','Olho cibernético','lucide:scan-eye',120,'raro',1,1,'A lente ainda acende.','head'],
+  ['SUCATA DE PRÓTESES','Chip craniano','lucide:cpu',150,'raro',1,1,'Retirado da base do crânio.','head'],
+  ['SUCATA DE PRÓTESES','Mandíbula de titânio','lucide:cog',60,'comum',2,1,'Dobra um pouco, mas é metal bom.','head'],
+  ['SUCATA DE PRÓTESES','Implante neural','lucide:zap',300,'experimental',1,1,'Sem número de série. Sem perguntas.','head'],
+  /* tronco */
+  ['PARTES DE CORPO','Costela','lucide:bone',15,'comum',1,2,'Uma costela lascada.','torso'],
+  ['PARTES DE CORPO','Coração','lucide:heart',220,'raro',2,2,'Ainda bom para transplante.','torso'],
+  ['PARTES DE CORPO','Pulmão','lucide:activity',150,'raro',2,2,'Pouco usado. O dono não fumava.','torso'],
+  ['PARTES DE CORPO','Rim','lucide:drumstick',110,'raro',1,2,'Um rim em bom estado.','torso'],
+  ['PARTES DE CORPO','Fígado','lucide:drumstick',70,'comum',2,2,'Escuro, mas funcional.','torso'],
+  ['SUCATA DE PRÓTESES','Placa peitoral','lucide:shield',55,'comum',2,2,'Blindagem subcutânea amassada.','torso'],
+  ['SUCATA DE PRÓTESES','Núcleo de energia','lucide:battery-charging',240,'experimental',1,1,'Ainda guarda carga.','torso'],
+  ['SUCATA DE PRÓTESES','Coração sintético','lucide:heart',200,'raro',2,2,'Bate sozinho por alguns segundos.','torso'],
+  ['SUCATA DE PRÓTESES','Fiação torácica','lucide:cable',30,'comum',1,1,'Cabos arrancados do peito.','torso'],
+  /* braços */
+  ['PARTES DE CORPO','Dedo','lucide:hand',10,'comum',1,1,'Um dedo, cortado rente.','arms'],
+  ['PARTES DE CORPO','Dedo com anel','lucide:hand',85,'raro',1,1,'O anel não sai. O dedo vai junto.','arms'],
+  ['PARTES DE CORPO','Unha','lucide:hand',4,'comum',1,1,'Unha postiça pintada de neon.','arms'],
+  ['PARTES DE CORPO','Mão','lucide:hand',60,'raro',2,2,'Impressões digitais ainda legíveis.','arms'],
+  ['PARTES DE CORPO','Osso do antebraço','lucide:bone',18,'comum',1,2,'Rachado ao meio.','arms'],
+  ['SUCATA DE PRÓTESES','Dedo mecânico','lucide:wrench',25,'comum',1,1,'Articulação travada.','arms'],
+  ['SUCATA DE PRÓTESES','Servo de punho','lucide:cog',70,'raro',1,1,'Motor minúsculo e caro.','arms'],
+  ['SUCATA DE PRÓTESES','Mão biônica','lucide:hand',210,'experimental',2,2,'Ainda fecha o punho.','arms'],
+  ['SUCATA DE PRÓTESES','Cabo hidráulico','lucide:cable',28,'comum',1,2,'Vaza óleo.','arms'],
+  /* pernas */
+  ['PARTES DE CORPO','Dedo do pé','lucide:footprints',6,'comum',1,1,'Um dedo do pé. Ninguém vai sentir falta.','legs'],
+  ['PARTES DE CORPO','Pé','lucide:footprints',50,'raro',2,2,'Ainda dentro da meia.','legs'],
+  ['PARTES DE CORPO','Fêmur','lucide:bone',30,'comum',1,3,'Osso longo e pesado.','legs'],
+  ['PARTES DE CORPO','Joelho','lucide:bone',45,'comum',2,1,'Rótula intacta.','legs'],
+  ['PARTES DE CORPO','Tendão','lucide:activity',20,'comum',1,2,'Resistente. Dá uma corda boa.','legs'],
+  ['SUCATA DE PRÓTESES','Servo de joelho','lucide:cog',75,'raro',1,1,'Articulação com ajuste fino.','legs'],
+  ['SUCATA DE PRÓTESES','Pistão de perna','lucide:wrench',35,'comum',1,3,'Torto, mas serve de peça.','legs'],
+  ['SUCATA DE PRÓTESES','Pé hidráulico','lucide:footprints',130,'raro',2,2,'Amortecedor ainda macio.','legs'],
+  ['SUCATA DE PRÓTESES','Atuador de tornozelo','lucide:zap',190,'experimental',1,1,'Salta como mola nova.','legs']
+];
+function norm(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
+var RE_LEGS = /\b(pe|pes|dedo do pe|joelho|perna|pernas|femur|tibia|canela|coxa|calcanhar|tornozelo|artelho|tendao|panturrilha)\b/;
+var RE_ARMS = /\b(dedo|dedos|mao|maos|unha|punho|antebraco|braco|cotovelo|ombro|palma|polegar)\b/;
+var RE_HEAD = /\b(dente|dentes|olho|olhos|orelha|cerebro|craniano|cranio|lingua|nariz|mandibula|cabeca|neural|ocular|auricular|maxilar|cabelo|face|rosto)\b/;
+var RE_TORSO = /\b(coracao|pulmao|pulmoes|rim|rins|figado|costela|costelas|estomago|intestino|torax|toracica|toracico|peitoral|coluna|espinha|nucleo|reator|orgao|baco|pancreas)\b/;
+function partOf(it){
+  if(it.part) return it.part;
+  if(!BODY[it.grupo]) return 'any';
+  var n = norm(it.nome);
+  if(RE_LEGS.test(n)) return 'legs';
+  if(RE_ARMS.test(n)) return 'arms';
+  if(RE_HEAD.test(n)) return 'head';
+  if(RE_TORSO.test(n)) return 'torso';
+  return 'none'; /* peça de corpo sem parte definida: não cai de lugar nenhum (use o 9º campo da linha) */
+}
+var _pool = null;
+function pool(){
+  if(_pool) return _pool;
+  var l = (I && I.LIXO) ? I.LIXO.map(toItem) : [], have = {};
+  l.forEach(function(it){ have[it.nome] = 1; });
+  EXTRA.forEach(function(r){ if(!have[r[1]]) l.push(toItem(r)); });
+  l.forEach(function(it){ it.part = partOf(it); });
+  return (_pool = l);
+}
+function partPool(k){
+  var g = GRP[k];
+  return pool().filter(function(it){ return it.part === g || it.part === 'any'; });
+}
+/* itens da loja (catalogo.js), sem armas, próteses e implantes */
+var _shop = null;
+function shopItem(c){
+  var cat = I.guessCat(c.nome, c.sec, c.tag, c.melee);
+  if(SHOP_BAN[cat] || c.sec === 'sobrecarga') return null;
+  var C = I.CATS[cat], sp = I.spec(c.nome);
+  return {fonte:'loja', cat:cat, grupo:C.n, nome:c.nome, icone:(sp && sp.icone) || ('lucide:'+C.lu), valor:c.preco,
+          raridade:I.RAR[c.raridade] ? c.raridade : 'comum', w:sp ? sp.w : C.w, h:sp ? sp.h : C.h,
+          desc:c.desc || '', efeito:c.efeito || ''};
+}
+function shopPool(){
+  if(_shop) return _shop;
+  _shop = (window.S7CATALOGO || []).map(shopItem).filter(Boolean);
+  return _shop;
+}
+function byName(nome){
+  var l = pool(), i;
+  for(i=0;i<l.length;i++) if(l[i].nome===nome) return l[i];
+  l = shopPool();
+  for(i=0;i<l.length;i++) if(l[i].nome===nome) return l[i];
+  return null;
+}
+function rar(it){ return (I.RAR[it.raridade] || I.RAR.comum); }
+
+function pickW(l, bonus){
+  var cnt = {}; l.forEach(function(it){ cnt[it.raridade] = (cnt[it.raridade]||0) + 1; });
+  var w = l.map(function(it){ return (RW[it.raridade] || RW.custom) / cnt[it.raridade] * bonus(it); });
+  var tot = w.reduce(function(a,b){ return a+b; }, 0), r = Math.random() * tot;
+  for(var i=0;i<l.length;i++){ r -= w[i]; if(r <= 0) return l[i]; }
+  return l[l.length-1];
+}
+function roll(tipo,k){
+  var shop = shopPool();
+  if(shop.length && Math.random() < SHOP_CHANCE) return pickW(shop, pesoPreco);
+  var l = partPool(k); if(!l.length) return shop.length ? pickW(shop, pesoPreco) : null;
+  return pickW(l, function(it){ return it.grupo === GBONUS[tipo] ? 3 : (BODY[it.grupo] ? 1 : .5); });
+}
+function flav(it){
+  var l = (it.fonte === 'loja' ? FLAV_CAT[it.cat] : FLAV[it.grupo]) || ['Sem perguntas.'], h = 0;
+  for(var i=0;i<it.nome.length;i++) h = (h*31 + it.nome.charCodeAt(i)) >>> 0;
+  return l[h % l.length];
+}
+
+/* ---------- estado do corpo (fica salvo: atualizar a página não sorteia de novo) ---------- */
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function load(){
+  var s; try{ s = JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ s = null; }
+  if(!s || !s.id || !s.parts) return null;
+  for(var i=0;i<PARTS.length;i++){
+    var p = s.parts[PARTS[i].k];
+    if(!p || ['ok','miss','pend','done'].indexOf(p.st) < 0) return null;
+    if(p.tipo !== 'bio') p.tipo = 'org';
+  }
+  return s;
+}
+function spawn(){
+  var whole = Math.random() < WHOLE_CHANCE, parts = {}, present = 0;
+  PARTS.forEach(function(p){
+    var miss = !whole && Math.random() < MISS_CHANCE;
+    parts[p.k] = {st: miss ? 'miss' : 'ok', tipo: Math.random() < BIO_CHANCE ? 'bio' : 'org'};
+    if(!miss) present++;
+  });
+  if(!present) parts[PARTS[Math.floor(Math.random()*PARTS.length)].k].st = 'ok';
+  S = {id:'CADÁVER_' + ('000' + Math.floor(Math.random()*65536).toString(16).toUpperCase()).slice(-4), parts:parts};
+  save(); current = null; render(); showEmpty();
+}
+
+/* ---------- desenho do corpo (esqueleto + carne, lado esquerdo da tela com músculos) ---------- */
+var DEFS = '<defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c8262e"/><stop offset="1" stop-color="#6e0c14"/></linearGradient>'+
+  '<radialGradient id="gw"><stop offset="0" stop-color="#e0182a"/><stop offset=".65" stop-color="#8e0c18"/><stop offset="1" stop-color="#4a060c" stop-opacity="0"/></radialGradient>'+
+  '<clipPath id="cl"><rect x="-20" y="-60" width="200" height="620"/></clipPath></defs>';
+function cv(d,w,x){ x = x||''; return '<path class="bo'+x+'" d="'+d+'" stroke-width="'+(w+3)+'"/><path class="bn'+x+'" d="'+d+'" stroke-width="'+w+'"/>'; }
+function ln(a,b,c,d,w,x){ return cv('M'+a+','+b+'L'+c+','+d, w, x); }
+function pa(c,d){ return '<path class="'+c+'" d="'+d+'"/>'; }
+function jt(x,y,r,x2){ return '<circle class="bf'+(x2||'')+'" cx="'+x+'" cy="'+y+'" r="'+r+'"/>'; }
+function dot(x,y,r,c){ return '<circle class="'+c+'" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r.toFixed(1)+'"/>'; }
+function vt(cx,y,w,h){ return '<rect class="bf" x="'+(cx-w/2).toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h+'" rx="2.6"/>'; }
+function mir(t){ return '<g transform="translate(360,0) scale(-1,1)">'+t+'</g>'; }
+function fl(t){ return '<g class="fl">'+t+'</g>'; }
+function flL(t){ return '<g class="fl" clip-path="url(#cl)">'+t+'</g>'; }
+/* mancha de sangue irregular (rasgada) */
+function blot(cx,cy,r,s){
+  var n = 11, p = [], i, a, k;
+  for(i=0;i<n;i++){ a = i/n*6.2832; k = (i%2 ? .55 : 1) * (.85 + ((s*(i+3))%7)/20); p.push((cx+Math.cos(a)*r*k).toFixed(1)+','+(cy+Math.sin(a)*r*k*1.5).toFixed(1)); }
+  return pa('mu', 'M'+p.join('L')+'Z');
+}
+/* osso longo: diáfise + duas epífises (côndilos), contorno em uma passada e preenchimento em outra */
+function bone(x1,y1,x2,y2,w,k,x){
+  x = x||'';
+  var dx = x2-x1, dy = y2-y1, l = Math.sqrt(dx*dx+dy*dy), px = -dy/l, py = dx/l, s = k*.42, r = k*.74, h = w*.26,
+      d = 'M'+x1+','+y1+'L'+x2+','+y2, o = '', f = '';
+  [[x1,y1],[x2,y2]].forEach(function(e){ [1,-1].forEach(function(g){
+    o += dot(e[0]+px*s*g, e[1]+py*s*g, r+1.6, 'bk'); f += dot(e[0]+px*s*g, e[1]+py*s*g, r, 'b0'+x);
+  }); });
+  return o + '<path class="bo" d="'+d+'" stroke-width="'+(w+3)+'"/>' + f + '<path class="bn'+x+'" d="'+d+'" stroke-width="'+w+'"/>' +
+    '<path class="hx" d="M'+(x1+px*h).toFixed(1)+','+(y1+py*h).toFixed(1)+'L'+(x2+px*h).toFixed(1)+','+(y2+py*h).toFixed(1)+'"/>';
+}
+/* mão: carpo, metacarpos e falanges (desenhada apontando para baixo e girada) */
+function hand(x,y,rot,red){
+  var s = '<ellipse class="bf'+red+'" cx="0" cy="6" rx="10" ry="6.5"/>',
+      F = [[-9,-16,[15,11,8]],[-3,-5,[19,13,9]],[3,5,[18,13,9]],[9,16,[14,10,7]]];
+  F.forEach(function(f){
+    var a = f[1]*Math.PI/180, px = f[0]*1.2 + Math.sin(a)*3, py = 27, i, L, nx, ny;
+    s += ln(f[0]*.5, 8, px, py, 3.2, red);
+    for(i=0;i<3;i++){
+      L = f[2][i]; nx = px + Math.sin(a)*L; ny = py + Math.cos(a)*L;
+      s += ln(px, py, nx, ny, 2.7 - i*.2, red) + jt(px.toFixed(1), py.toFixed(1), 2.7-i*.2, red);
+      px = nx; py = ny;
+    }
+  });
+  s += ln(7,8,17,19,3.4,red)+jt(17,19,2.8,red)+ln(17,19,24,28,2.8,red)+jt(24,28,2.4,red)+ln(24,28,27,35,2.4,red);
+  return '<g transform="translate('+x+','+y+') rotate('+rot+') scale(.8)">'+s+'</g>';
+}
+function arm(f){
+  var x = f ? ' rd' : '', b = '';
+  if(f) b += fl(blot(244,158,17,1) + blot(279,236,11,2));
+  b += pa('bf'+x, 'M207,108Q225,100 241,111L237,121Q226,113 215,118Z') + jt(222,116,10.5,x) +
+    bone(225,124,261,194,8.5,9.5,x) + bone(259,202,283,268,4.4,6.2,x) + bone(269,200,293,264,4.2,5.4,x) +
+    hand(290,268,-20,x) + '<circle class="gl" cx="262" cy="198" r="3.6"/>';
+  return b;
+}
+function leg(f){
+  var x = f ? ' rd' : '', b = '', i, bx = [206,211,216,221,226], tx = [200,208,217,226,235];
+  if(f) b += fl(blot(213,330,19,3) + blot(215,422,13,5));
+  b += jt(197,277,9.5,x) + cv('M198,278L209,287',6,x) + jt(210,288,6.5,x) +
+    bone(211,294,213,366,9,8.5,x) +
+    '<ellipse class="bf" cx="213" cy="383" rx="13.5" ry="5.2"/>' +
+    bone(212,388,215,452,6.4,6.2,x) + bone(222,388,221,452,3.2,3.8,x) +
+    '<ellipse class="bf" cx="214" cy="370" rx="6.4" ry="7.4"/>' +
+    jt(214,459,5.4,x) + '<ellipse class="bf" cx="214" cy="469" rx="12" ry="7.5"/>';
+  for(i=0;i<5;i++) b += ln(bx[i],472,tx[i],483,2.8,x) + jt(tx[i],485,2.2,x);
+  b += '<circle class="gl" cx="213" cy="378" r="3.6"/>';
+  return b;
+}
+var ART = {
+  head: function(){
+    var neck = '', i;
+    for(i=0;i<3;i++) neck += vt(180, 92+i*7.5, 11+i*.6, 6);
+    return neck +
+      pa('bf','M180,13C158,13 148,29 149,47C150,58 154,65 160,70L161,80C162,85 166,87 170,87L190,87C194,87 198,85 199,80L200,70C206,65 210,58 211,47C212,29 202,13 180,13Z') +
+      flL(pa('mu','M180,13C158,13 148,29 149,47C150,55 153,60 156,64L167,57L162,46L171,38L167,27L180,25Z') + pa('st','M171,38L178,46L174,56')) +
+      pa('st','M164,24Q180,17 196,24') + pa('st','M156,58Q159,69 167,71') + pa('st','M204,58Q201,69 193,71') +
+      '<ellipse class="hl" cx="168" cy="49" rx="8" ry="8.5"/><ellipse class="hl" cx="192" cy="49" rx="8" ry="8.5"/>' + pa('hl','M180,58L174.5,72H185.5Z') +
+      pa('bf','M160,84H200L198,93Q180,103 162,93Z') + pa('th','M166,80H194') + pa('th','M168,88H192') +
+      '<circle class="gl" cx="192" cy="49" r="3.4"/>';
+  },
+  torso: function(){
+    var sp = '', r = '', i, y, ex, up, W = [27,36,43,47,49,49,47,43,37,30];
+    for(i=0;i<12;i++) sp += vt(180, 108+i*8, 11+i*.35, 7);
+    for(i=0;i<5;i++) sp += vt(180, 207+i*9.6, 17.5+i*.3, 8.6);
+    for(i=0;i<10;i++){
+      y = 112 + i*9.5; ex = 180 + W[i]; up = i < 7;
+      r += cv('M187,'+y+'C'+(187+(ex-187)*.4).toFixed(1)+','+(y-9)+' '+(ex-4)+','+(y-4)+' '+ex+','+(y+8)+
+        'C'+(ex+1)+','+(y+17)+' '+(up?204:ex-6)+','+(y+(up?20:19))+' '+(up?186:ex-15)+','+(y+(up?20:24)), 3.6, ' rd');
+    }
+    r += cv('M185,107C197,101 211,103 220,112', 5, ' rd');
+    return flL('<ellipse class="lg" cx="152" cy="150" rx="17" ry="30"/>' + pa('vn','M168,168L170,140') +
+        pa('ht','M168,170C160,159 147,166 152,181C156,191 165,197 168,203C174,195 180,188 178,178C177,168 170,163 168,170Z') +
+        blot(156,230,14,4) + pa('vn','M140,116C132,160 140,210 150,248')) +
+      sp + pa('bf','M172,105H188L187,122H184.5V176L181,192H179L175.5,176V122H173Z') + mir(r) + r +
+      pa('bf','M142,258C130,262 127,282 137,293C149,301 167,296 173,284L180,277L187,284C193,296 211,301 223,293C233,282 230,262 218,258C206,254 192,257 180,263C168,257 154,254 142,258Z') +
+      pa('bf','M171,258H189L184,284H176Z') + '<ellipse class="hl" cx="163" cy="284" rx="5" ry="7.5"/><ellipse class="hl" cx="197" cy="284" rx="5" ry="7.5"/>' +
+      pa('hx','M146,265Q158,259 172,265') + pa('hx','M214,265Q202,259 188,265') +
+      '<circle class="gl" cx="180" cy="170" r="7"/>';
+  },
+  armR: function(){ return arm(false); },
+  armL: function(){ return mir(arm(true)); },
+  legR: function(){ return leg(false); },
+  legL: function(){ return mir(leg(true)); }
+};
+function circuit(p){
+  var x = p.cx, y = p.cy;
+  return '<path class="ckt" d="M'+(x-12)+','+(y-26)+' H'+(x+4)+' V'+(y-10)+' H'+(x+14)+' M'+(x-8)+','+(y+8)+' V'+(y+24)+' H'+(x+10)+'"/>'+
+         '<circle class="ckt-dot" cx="'+(x+14)+'" cy="'+(y-10)+'" r="2.5"/><circle class="ckt-dot" cx="'+(x+10)+'" cy="'+(y+24)+'" r="2.5"/>';
+}
+function woundHTML(p){
+  var s = S.parts[p.k]; if(s.st === 'ok') return '';
+  var w = p.w, x = w[0], y = w[1], rx = w[2], ry = w[3], seed = 0, i, a, j, len, dx, h;
+  for(i=0;i<p.k.length;i++) seed += p.k.charCodeAt(i) * (i+3);
+  h = '<g class="wd '+(s.st === 'miss' ? 'dry' : 'wet')+(fxSet[p.k] ? ' new' : '')+'">'+
+      '<ellipse class="w0" cx="'+x+'" cy="'+y+'" rx="'+rx+'" ry="'+ry+'"/><ellipse class="w1" cx="'+x+'" cy="'+y+'" rx="'+(rx*.55)+'" ry="'+(ry*.55)+'"/>';
+  for(i=0;i<9;i++){
+    a = (seed*(i+2)) % 628 / 100; j = (seed*(i+5)) % 16;
+    h += '<circle class="sn" cx="'+(x+Math.cos(a)*(rx+6+j)).toFixed(1)+'" cy="'+(y+Math.sin(a)*(ry+6+j)).toFixed(1)+'" r="'+(1+(seed+i*7)%3)+'"/>';
+  }
+  [-.5,0,.45].forEach(function(f,n){
+    dx = x + rx*f; len = 22 + (seed*(n+1)) % 30;
+    h += '<path class="dr" stroke-width="'+(2.4+n*.4)+'" d="M'+dx+','+(y+ry*.6)+'V'+(y+ry*.6+len)+'"/><circle class="dd" cx="'+dx+'" cy="'+(y+ry*.6+len)+'" r="'+(2.6+n*.3)+'"/>';
+  });
+  return h + '</g>';
+}
+function ghostHTML(p){ var st = S.parts[p.k].st; return '<polygon class="ghost'+(st === 'miss' ? ' miss' : '')+'" points="'+p.g+'"/>'; }
+function partHTML(p){
+  var s = S.parts[p.k]; if(s.st === 'miss') return '';
+  var cls = 'part ' + s.tipo + ' ' + s.st + (current === p.k ? ' sel' : ''), label, it = s.item ? byName(s.item) : null;
+  var tipoN = s.tipo === 'bio' ? 'biônica' : 'orgânica';
+  if(s.st === 'ok') label = p.n + ', ' + tipoN + ': saquear';
+  else if(s.st === 'pend') label = p.n + ': item sorteado, ver detalhes';
+  else label = p.n + ': já saqueada, ver o que tinha';
+  var style = '--off:'+p.off+';' + (s.st === 'pend' && it ? '--pc:'+rar(it).c+';' : '');
+  return '<g class="'+cls+'" data-k="'+p.k+'" aria-label="'+esc(label)+'" style="'+style+'" tabindex="0" role="button">'+
+    '<g class="mv" style="transform-origin:'+p.o+'"><polygon class="hit" points="'+p.g+'"/>'+ART[p.k]()+(s.tipo === 'bio' ? circuit(p) : '')+'</g></g>';
+}
+function partBy(k){ return PARTS.filter(function(p){ return p.k === k; })[0]; }
+/* jato de sangue: partículas num SVG por cima do corpo */
+function burst(p){
+  var fx = $('fx'), st = $('stage'), fh = $('bflash');
+  if(!fx || !fx.animate) return;
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var NS = 'http://www.w3.org/2000/svg', cols = ['#d3121f','#a30d18','#ff2a36','#6e0810'], rnd = Math.random, i, c, a, v, dx, dy, an;
+  function add(r, fill, kf, dur){
+    c = document.createElementNS(NS,'circle');
+    c.setAttribute('cx', p.w[0] + (rnd()-.5)*p.w[2]); c.setAttribute('cy', p.w[1] + (rnd()-.5)*p.w[3]);
+    c.setAttribute('r', r.toFixed(1)); c.setAttribute('fill', fill);
+    c.style.transformBox = 'fill-box'; c.style.transformOrigin = 'center';
+    fx.appendChild(c);
+    an = c.animate(kf, {duration:dur, easing:'cubic-bezier(.2,.6,.4,1)'});
+    an.onfinish = (function(e){ return function(){ e.remove(); }; })(c);
+  }
+  for(i=0;i<34;i++){
+    a = (p.dir[0] || p.dir[1]) ? Math.atan2(p.dir[1], p.dir[0]) + (rnd()-.5)*2.4 : rnd()*6.283;
+    v = 24 + rnd()*80; dx = Math.cos(a)*v; dy = Math.sin(a)*v;
+    add(1.2 + rnd()*3.4, cols[i%4], [
+      {transform:'translate(0px,0px) scale(1)', opacity:1},
+      {transform:'translate('+dx*.6+'px,'+(dy*.6-18)+'px) scale(1.1)', opacity:1, offset:.45},
+      {transform:'translate('+dx+'px,'+(dy+48+rnd()*40)+'px) scale(.3)', opacity:0}], 650 + rnd()*600);
+  }
+  for(i=0;i<5;i++){
+    a = rnd()*6.283;
+    add(8 + rnd()*8, 'rgba(190,12,26,.55)', [
+      {transform:'translate(0px,0px) scale(.3)', opacity:.75},
+      {transform:'translate('+Math.cos(a)*18+'px,'+Math.sin(a)*18+'px) scale(2.4)', opacity:0}], 750);
+  }
+  st.classList.remove('shake'); fh.classList.remove('go'); void st.offsetWidth; st.classList.add('shake'); fh.classList.add('go');
+}
+function burstSet(){
+  var ks = Object.keys(fxSet);
+  ks.forEach(function(k,i){ setTimeout(function(){ burst(partBy(k)); }, i*110); });
+  setTimeout(function(){ fxSet = {}; }, 60);
+}
+function lixoNaMaleta(){
+  var n = 0;
+  try{ I.load().items.forEach(function(it){ if(it.cat === 'lixo') n += it.qtd; }); }catch(e){}
+  return n;
+}
+function render(focusK){
+  var svg = $('body'), present = 0, looted = 0, whole = true;
+  function out(k){ var t = S.parts[k].st; return (t === 'pend' || t === 'done') ? 1 : 0; }
+  var order = PARTS.slice().sort(function(a,b){ return out(a.k) - out(b.k); });
+  svg.innerHTML = DEFS + PARTS.map(ghostHTML).join('') + PARTS.map(woundHTML).join('') + order.map(partHTML).join('');
+  Object.keys(fxSet).forEach(function(k){
+    var el = svg.querySelector('.part[data-k="'+k+'"]'); if(!el) return;
+    el.classList.add('pre'); void getComputedStyle(el.querySelector('.mv')).transform; el.classList.remove('pre');
+  });
+  PARTS.forEach(function(p){
+    var st = S.parts[p.k].st;
+    if(st === 'miss') whole = false; else { present++; if(st === 'pend' || st === 'done') looted++; }
+  });
+  $('bId').textContent = S.id;
+  $('bState').textContent = (whole ? 'INTEIRO' : 'INCOMPLETO · ' + present + '/' + PARTS.length + ' PARTES') + ' · SAQUEADO ' + looted + '/' + present;
+  var vazio = looted === present;
+  $('bInfo').innerHTML = vazio ? 'Nada mais por aqui. <b>Procure outro corpo.</b>' : 'LIXO NA MALETA: <b>' + lixoNaMaleta() + '</b>';
+  $('bNew').className = 'pill' + (vazio ? ' hot' : '');
+  $('bAll').disabled = vazio;
+  if(focusK){ var el2 = svg.querySelector('[data-k="'+focusK+'"]'); if(el2) el2.focus(); }
+}
+
+/* ---------- HUD de descrição ---------- */
+function setIcon(box, icone, cat){
+  cat = cat || 'lixo';
+  if(window.S7EMO && S7EMO.is(icone)){
+    box.innerHTML = I.fb ? I.iconHTML(I.fb(icone, cat), cat) : I.catIcon(cat);
+    S7EMO.look(String(icone).trim().slice(1,-1), function(u){ box.innerHTML = '<img class="emo" alt="" src="'+esc(u)+'">'; }, function(){});
+  } else box.innerHTML = I.iconHTML(icone, cat);
+  if(window.lucide) lucide.createIcons();
+}
+function sizeGrid(w,h){
+  var c = Math.min(w,6), s = '<span class="gr" style="grid-template-columns:repeat('+c+',7px)">';
+  for(var i=0;i<c*Math.min(h,4);i++) s += '<i></i>';
+  return s + '</span>';
+}
+function hudFrame(tc, icone, title, quote, eff, act, fresh, cat){
+  var h = $('hud');
+  h.style.setProperty('--tc', tc);
+  h.className = 'hud' + (fresh ? ' fresh' : '');
+  h.innerHTML =
+    '<div class="hud-lab">D.DETALHE // DESCRIÇÃO</div>'+
+    '<div class="hud-row"><div class="hud-ico"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i><div class="ico-in" id="hudIco"></div></div>'+
+    '<div class="hud-info"><div class="hud-title"><b>'+esc(title)+'</b></div><div class="hud-quote">'+quote+'</div></div></div>'+
+    '<div class="hud-eff"><span class="el">VALOR</span><span class="ec">'+eff+'</span></div>'+
+    '<div class="hud-act">'+act+'</div>';
+  setIcon($('hudIco'), icone, cat);
+  clearTimeout(hudTimer);
+  if(fresh) hudTimer = setTimeout(function(){ h.classList.remove('fresh'); }, 900);
+}
+function showEmpty(){
+  hudFrame('var(--dim)', 'lucide:scan-line', 'Aguardando scan',
+    '<p>Clique numa parte do corpo para vasculhar.</p><p class="dots">...</p><p class="fl">Partes tracejadas já não existem.</p>',
+    '<span>—</span>', '', false);
+}
+function showCard(k, fresh){
+  var s = S.parts[k], it = s && s.item ? byName(s.item) : null;
+  current = k; render();
+  if(!it){ showEmpty(); return; }
+  var R = rar(it), P = PARTS.filter(function(p){ return p.k === k; })[0];
+  var quote = '<p>“'+esc(it.desc)+'”</p><p class="dots">...</p><p class="fl">'+esc(flav(it))+'</p>';
+  var eff = (it.efeito ? '<span class="cr">'+esc(it.efeito)+'</span>' : '')+'<span'+(it.efeito ? '' : ' class="cr"')+'>¢ '+fmt(it.valor)+' CR</span><span><i class="rd"></i>'+esc(R.n)+'</span><span>'+sizeGrid(it.w,it.h)+it.w+'×'+it.h+'</span><span>'+esc(it.grupo)+'</span>';
+  var act;
+  if(s.st === 'pend') act = '<button class="pill main" type="button" data-a="take">Pegar</button><button class="pill" type="button" data-a="leave">Deixar</button>';
+  else if(s.taken) act = '<span class="hud-note"><b>✓ NA MALETA</b> · '+esc(P.n.toUpperCase())+'</span><a class="pill" href="inventario.html">Abrir inventário</a>';
+  else act = '<span class="hud-note"><b>✕ DEIXADO NO CORPO</b> · '+esc(P.n.toUpperCase())+'</span>';
+  hudFrame(R.c, it.icone, it.nome, quote, eff, act, !!fresh, it.cat);
+  if(window.innerWidth <= 860) $('hud').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ---------- ações ---------- */
+function act(k){
+  var s = S.parts[k]; if(!s || s.st === 'miss') return;
+  if(s.st === 'ok'){
+    var it = roll(s.tipo, k);
+    if(!it){ current = k; hudFrame('var(--red)', 'lucide:triangle-alert', 'Sem itens', '<p>Nenhum item de LIXO / ORGÂNICOS no inventario.js e nenhum item da loja no catalogo.js.</p>', '<span>—</span>', '', false); return; }
+    s.st = 'pend'; s.item = it.nome; save(); fxSet = {}; fxSet[k] = 1; showCard(k, true); render(k); burstSet();
+  } else { showCard(k, false); render(k); }
+}
+function toBag(d, it){
+  if(window.S7LOG) S7LOG.add('saque','Saqueou '+it.nome);
+  I.add(d, {nome:it.nome, cat:it.cat, raridade:it.raridade, icone:it.icone, desc:it.desc, efeito:it.efeito, qtd:1, w:it.w, h:it.h, preco:it.valor, origem:'saque'});
+}
+/* sorteia o que falta e leva tudo para a maleta de uma vez */
+function takeAll(){
+  var d = I.load(), got = []; fxSet = {};
+  PARTS.forEach(function(p){
+    var s = S.parts[p.k], it;
+    if(s.st === 'ok'){ it = roll(s.tipo, p.k); if(!it) return; s.st = 'pend'; s.item = it.nome; fxSet[p.k] = 1; }
+    if(s.st === 'pend'){
+      it = byName(s.item); if(!it) return;
+      toBag(d, it); s.st = 'done'; s.taken = true; got.push(it);
+    }
+  });
+  if(!got.length) return;
+  I.save(d); save(); current = null; render(); burstSet();
+  var best = got.slice().sort(function(a,b){ return RK.indexOf(b.raridade) - RK.indexOf(a.raridade); })[0], total = 0;
+  var list = got.map(function(it){
+    total += it.valor;
+    return '<p class="li"><i style="color:'+rar(it).c+'">●</i><span>'+esc(it.nome)+'</span><small>'+fmt(it.valor)+' cr</small></p>';
+  }).join('');
+  hudFrame(rar(best).c, 'lucide:package-check', got.length === 1 ? '1 item na maleta' : got.length + ' itens na maleta',
+    list,
+    '<span class="cr">¢ '+fmt(total)+' CR</span><span>'+got.length+' '+(got.length === 1 ? 'item' : 'itens')+'</span>',
+    '<a class="pill" href="inventario.html">Abrir inventário</a>', true, 'lixo');
+}
+function resolve(k, take){
+  var s = S.parts[k], it = s && s.item ? byName(s.item) : null;
+  if(!s || s.st !== 'pend' || !it) return;
+  if(take){
+    var d = I.load();
+    toBag(d, it);
+    I.save(d);
+  }
+  s.st = 'done'; s.taken = !!take; save(); showCard(k, false); render(k);
+}
+
+$('body').addEventListener('click', function(e){
+  var g = e.target.closest ? e.target.closest('.part') : null;
+  if(g) act(g.getAttribute('data-k'));
+});
+$('body').addEventListener('keydown', function(e){
+  if(e.key !== 'Enter' && e.key !== ' ') return;
+  var g = e.target.closest ? e.target.closest('.part') : null;
+  if(g){ e.preventDefault(); act(g.getAttribute('data-k')); }
+});
+$('hud').addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('[data-a]') : null;
+  if(!b || !current) return;
+  resolve(current, b.getAttribute('data-a') === 'take');
+});
+$('bAll').addEventListener('click', takeAll);
+$('bNew').addEventListener('click', function(){
+  var pend = PARTS.some(function(p){ return S.parts[p.k].st === 'pend'; });
+  if(pend && !confirm('Há itens sorteados que você ainda não pegou. Eles serão perdidos. Procurar outro corpo?')) return;
+  spawn();
+});
+window.addEventListener('storage', function(e){ if(e.key === (I && I.KEY)) render(); });
+
+/* ---------- início ---------- */
+S = load();
+if(S){ render(); showEmpty(); } else spawn();
+if(window.lucide) lucide.createIcons();
+})();
+
+function toggleNav(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('menuToggle');
+  nav.classList.toggle('menu-open');
+  btn.setAttribute('aria-expanded', nav.classList.contains('menu-open'));
+}
+function toggleShortcuts(){
+  const nav=document.getElementById('navShell');
+  const btn=document.getElementById('shortcutsToggle');
+  nav.classList.toggle('shortcuts-collapsed');
+  btn.setAttribute('aria-expanded', !nav.classList.contains('shortcuts-collapsed'));
+}
+</script>
+</body>
+</html>

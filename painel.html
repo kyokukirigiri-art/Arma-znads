@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAINEL-DO-MESTRE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<script src="party.js"></script>
+<script src="ameacas.js"></script>
+<style>
+  main{max-width:1000px;margin:auto;padding:24px 4% 50px;}
+  h2.t{font-family:var(--hud);letter-spacing:.22em;border-left:4px solid var(--red);padding-left:12px;margin:6px 0 10px;font-size:1.05rem;}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0;}
+  .bar button,.bar select,.bar input,.cb button,.cb select,.cb input{background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:6px 11px;font-family:var(--hud);font-size:.7rem;letter-spacing:.08em;}
+  .bar button,.cb button{cursor:pointer;text-transform:uppercase;} .bar button:hover,.cb button:hover{border-color:var(--cyan);color:var(--cyan);}
+  .bar .go{border-color:var(--yellow);color:var(--yellow);} .rod{margin-left:auto;font-family:var(--hud);letter-spacing:.18em;color:var(--yellow);}
+  .cb{display:flex;gap:12px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--dim);padding:10px 12px;margin:8px 0;align-items:stretch;}
+  .cb.p{border-left-color:var(--cyan);} .cb.e{border-left-color:var(--red);}
+  .cb.now{box-shadow:0 0 0 1px var(--yellow),0 0 18px rgba(var(--p-rgb),.3);background:var(--panel2,var(--panel));}
+  .cb.off{opacity:.45;}
+  .pf{flex:0 0 48px;height:66px;overflow:hidden;position:relative;background:#000;}
+  .pf .pt-frame{width:100%;height:100%;aspect-ratio:auto;}
+  .mid{flex:1;min-width:0;font-size:.78rem;}
+  .nm{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;} .nm b{font-family:var(--hud);letter-spacing:.06em;font-size:.9rem;} .nm i{font-style:normal;color:var(--dim);font-size:.66rem;letter-spacing:.12em;}
+  .hp{height:9px;background:var(--bg);border:1px solid var(--line);margin:5px 0 3px;} .hp b{display:block;height:100%;background:var(--g,#46ff7a);}
+  .ctl,.chs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:5px;}
+  .ctl input{width:64px;}
+  .chs .ec{cursor:pointer;font-size:.62rem;padding:2px 8px;border:1px solid var(--ec);color:var(--ec);border-radius:99px;letter-spacing:.06em;}
+  .ini{flex:0 0 74px;display:flex;flex-direction:column;gap:5px;align-items:stretch;text-align:center;font-size:.6rem;color:var(--dim);letter-spacing:.14em;}
+  .ini input{width:100%;text-align:center;font-size:1rem;font-weight:700;}
+  .log{background:var(--panel);border:1px solid var(--line);padding:10px 14px;font-size:.72rem;line-height:1.7;color:var(--dim);margin-top:16px;max-height:200px;overflow:auto;}
+  .vz{color:var(--dim);text-align:center;padding:30px;font-size:.8rem;}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // PROTOCOLO_SETOR_7_v1 // DOCUMENTO CLANDESTINO</div>
+  <h1><span class="mk">PROTOCOLO SETOR 7</span></h1>
+  <p>// SISTEMA SIMPLES DE RPG CYBERPUNK — D20 — <span class="mk-line">VERSÃO 1.0</span> //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 REGRA Nº0: O MESTRE SEMPRE TEM RAZÃO // 🎲 D20 RESOLVE TUDO // ⚡ MANTENHA SEU ÍNDICE BAIXO // 📢 VOLTE PARA A LOJA E GASTE SEUS CRÉDITOS //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="loja.html">🛒 LOJA</a>
+  <a href="venda.html">🎲 VENDA</a>
+  <a href="missoes.html">🎯 MISSÕES</a>
+  <a href="loja.html#sobrecarga">⚠ SOBRECARGA</a>
+  <a href="base_de_comando.html">🏚️ BASE</a>
+  <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">⚔️ HACK_AREA</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="loja.html">LOJA</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+  
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+<h2 class="t">🧭 PAINEL DO MESTRE</h2>
+<div class="bar">
+  <button onclick="addParty()">+ PARTY</button>
+  <select id="selE"></select><input id="qtd" type="number" min="1" max="20" value="1" style="width:60px" title="quantidade (clona o molde)"><button onclick="addEn()">+ INIMIGO</button>
+</div>
+<div class="bar">
+  <button onclick="rollAll()">🎲 INICIATIVA DE TODOS</button>
+  <button onclick="ordena(true)">↕ ORDENAR</button>
+  <button class="go" id="bGo" onclick="proximo()">▶ COMEÇAR</button>
+  <button onclick="daXp()">⭐ XP À PARTY</button>
+  <button onclick="novo()">✕ NOVO ENCONTRO</button>
+  <span class="rod" id="rod"></span>
+</div>
+<div id="lista"></div>
+<div class="log" id="log">Sem eventos ainda.</div>
+</main>
+<footer>PROTOCOLO SETOR 7 © 2088 — <span>O MESTRE VÊ TUDO.</span></footer>
+<script>
+var P=S7P, A=S7AM, KEY='s7_painel';
+var DOT={queimando:'1d8',envenenado:'1d6',eletrocutado:'1d6'}, SG=['1d6','1d10','1d12+5'], SGN=['LEVE','MODERADO','GRAVE'];
+var DUR={queimando:3,eletrocutado:1,tonto:2,congelado:2,drogado:1}, VELP={tonto:-2,congelado:-3,drogado:-2,imobilizado:-3};
+var S=ld(), LOG=[];
+function ld(){var d;try{d=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){d=null;}if(!d||!Array.isArray(d.comb))d={rodada:1,idx:0,on:false,comb:[]};d.rodada=+d.rodada||1;d.idx=+d.idx||0;return d;}
+function sv(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function rl(n){return 1+Math.floor(Math.random()*n);}
+function rollExpr(s){var tot=0,tx=[];String(s||'').replace(/\s+/g,'').split('+').filter(Boolean).forEach(function(t){var m=/^(\d*)d(\d+)$/i.exec(t);if(m){var n=+(m[1]||1),r=[],i;for(i=0;i<n;i++)r.push(rl(+m[2]));tot+=r.reduce(function(a,b){return a+b;},0);tx.push(t+'['+r.join(',')+']');}else if(/^\d+$/.test(t)){tot+=+t;tx.push(t);}});return {t:tot,tx:tx.join('+')};}
+function log(t){LOG.unshift(t);LOG=LOG.slice(0,40);if(window.S7LOG)S7LOG.add('combate',t);}
+function lookup(c){var l=c.t==='p'?P.fichas():A.fichas();return l.filter(function(f){return f.id===c.id;})[0]||null;}
+function upd(c,fn){var p=c.t==='p',l=p?P.fichas():A.fichas(),f=l.filter(function(x){return x.id===c.id;})[0];if(!f)return false;if(!Array.isArray(f.estados))f.estados=[];fn(f);if(p)P.saveFichas(l);else try{localStorage.setItem(A.KF,JSON.stringify(l));}catch(e){}return true;}
+function dmg(f,delta){var ks=Object.keys(f.partes||{}).sort(function(a,b){var t=function(x){return x==='torso'||x==='corpo'||x==='cabtorso'?0:1;};return t(a)-t(b);}),left=Math.abs(delta);
+  ks.forEach(function(k){var p=f.partes[k];if(!left)return;if(delta<0){var t=Math.min(left,+p.atual||0);p.atual=(+p.atual||0)-t;left-=t;}else{var h=Math.min(left,(+p.max||0)-(+p.atual||0));p.atual=(+p.atual||0)+h;left-=h;}});}
+function hp(c,delta,why){var nm='',res='';
+  upd(c,function(f){var b=P.stats(f).vida;nm=f.nome;dmg(f,delta);var s=P.stats(f);res=s.vida+'/'+s.vidaMax;
+    if(s.vida<=0&&f.estados.indexOf('inconsciente')<0&&f.estados.indexOf('morto')<0){f.estados.push('inconsciente');res+=' → INCONSCIENTE';}
+    if(delta>0&&b<=0&&s.vida>0){var i=f.estados.indexOf('inconsciente');if(i>=0){f.estados.splice(i,1);res+=' → acordou';}}});
+  if(nm)log(nm+': '+(delta<0?'−'+(-delta):'+'+delta)+' de vida'+(why?' ('+why+')':'')+' · '+res);}
+function setSt(c,k,on){var nm='';upd(c,function(f){nm=f.nome;var i=f.estados.indexOf(k);if(on&&i<0)f.estados.push(k);if(!on&&i>=0)f.estados.splice(i,1);});
+  c.dur=c.dur||{};if(on&&DUR[k])c.dur[k]=DUR[k];if(!on)delete c.dur[k];
+  var e=P.ESTADOS.filter(function(x){return x.k===k;})[0];if(nm&&e)log(nm+': '+(on?'ficou ':'saiu de ')+e.n);}
+function rollIni(c){var f=lookup(c);if(!f)return;var a=f.atributos||{},v=(+a.vel||10)-10,ex=rollExpr(f.extra&&f.extra.vel),pen=0,d=rl(20);
+  (f.estados||[]).forEach(function(k){pen+=VELP[k]||0;});c.ini=d+v+ex.t+pen;}
+function out(f){var e=f.estados||[];return e.indexOf('morto')>=0||e.indexOf('inconsciente')>=0;}
+function ordena(draw_){var cur=S.comb[S.idx];S.comb.sort(function(a,b){return (b.ini||0)-(a.ini||0);});var i=S.comb.indexOf(cur);S.idx=i<0?0:i;sv();if(draw_)draw();}
+function inicio(c){var f=lookup(c);if(!f)return;
+  (f.estados||[]).slice().forEach(function(k){var ex=k==='sangrando'?SG[c.sg|0]:DOT[k];if(ex){var r=rollExpr(ex);hp(c,-r.t,(k==='sangrando'?'sangramento '+SGN[c.sg|0].toLowerCase():k)+' '+r.tx);}});
+  c.dur=c.dur||{};Object.keys(c.dur).forEach(function(k){c.dur[k]--;if(c.dur[k]<=0){delete c.dur[k];setSt(c,k,false);}});}
+function proximo(){var n=S.comb.length;if(!n)return;
+  if(!S.on){S.on=true;ordena();S.idx=0;S.rodada=1;log('— RODADA 1 —');}
+  else{var t=0,f;do{S.idx++;if(S.idx>=n){S.idx=0;S.rodada++;log('— RODADA '+S.rodada+' —');}f=lookup(S.comb[S.idx]);t++;}while(t<=n&&(!f||out(f)));}
+  var c=S.comb[S.idx],f2=lookup(c);if(f2)log('Turno de '+f2.nome);inicio(c);sv();draw();}
+function has(t,id){return S.comb.some(function(c){return c.t===t&&c.id===id;});}
+function push(t,id){if(has(t,id))return;var c={t:t,id:id,sg:0,dur:{}};rollIni(c);S.comb.push(c);}
+function addParty(){P.getParty().slots.forEach(function(id){if(id&&P.fichas().some(function(f){return f.id===id;}))push('p',id);});if(S.on)ordena();sv();draw();}
+function addEn(){var id=document.getElementById('selE').value,n=Math.max(1,Math.min(20,+document.getElementById('qtd').value||1));if(!id)return;
+  if(n>1)A.clone(id,n).forEach(function(f){push('e',f.id);});else push('e',id);if(S.on)ordena();sv();draw();}
+function rollAll(){S.comb.forEach(rollIni);ordena();log('Iniciativa rolada para todos.');draw();}
+function daXp(){var q=prompt('Quanto XP dar a cada operativo da party? (negativo tira)','100');if(q===null)return;
+  var n=Math.round(+String(q).replace(',','.'))||0;if(!n)return;
+  var l=P.fichas(),slots=P.getParty().slots,cnt=0,sub=[];
+  slots.forEach(function(id){var f=id&&l.filter(function(x){return x.id===id;})[0];if(!f)return;var r=P.darXp(f,n);cnt++;if(r.para>r.de)sub.push(f.nome+' → nível '+r.para);});
+  if(!cnt){alert('A party está vazia. Monte a party na Base de Comando.');return;}
+  P.saveFichas(l);LOG.unshift('XP '+(n>0?'+':'')+n+' para '+cnt+' operativo(s)'+(sub.length?' · SUBIU: '+sub.join(', '):''));LOG=LOG.slice(0,40);draw();}
+function novo(){if(S.comb.length&&!confirm('Encerrar este encontro?'))return;S={rodada:1,idx:0,on:false,comb:[]};sv();draw();}
+function chip(c,k){var e=P.ESTADOS.filter(function(x){return x.k===k;})[0];if(!e)return '';var d=c.dur&&c.dur[k];return '<span class="ec" style="--ec:'+e.c+'" data-a="rs" data-k="'+k+'" title="clique para remover">'+e.i+' '+e.n+(d?' ('+d+')':'')+'</span>';}
+function card(c,i,F){var f=lookup(c);if(!f)return '';var s=P.stats(f),pct=s.vidaMax?Math.round(s.vida/s.vidaMax*100):0,cl=P.CLASSES.filter(function(x){return x.k===f.classe;})[0],
+  g=pct>50?'#46ff7a':pct>25?'#ffb300':'#ff3355',r=(f.retrato&&f.retrato.img)?f.retrato:(F[f.id]&&F[f.id].retrato),now=S.on&&i===S.idx;
+  var sel='<select data-a="as"><option value="">+ estado</option>'+P.ESTADOS.filter(function(e){return (f.estados||[]).indexOf(e.k)<0;}).map(function(e){return '<option value="'+e.k+'">'+e.i+' '+e.n+'</option>';}).join('')+'</select>';
+  var sg=(f.estados||[]).indexOf('sangrando')>=0?'<select data-a="sg">'+SGN.map(function(n,j){return '<option value="'+j+'"'+((c.sg|0)===j?' selected':'')+'>sangra '+n.toLowerCase()+'</option>';}).join('')+'</select>':'';
+  return '<div class="cb '+c.t+(now?' now':'')+(out(f)?' off':'')+'" data-i="'+i+'"><div class="pf">'+P.portraitHTML(r)+'</div><div class="mid">'+
+   '<div class="nm"><b>'+P.esc(f.nome)+'</b><i>'+(c.t==='p'?'OPERATIVO · NV '+P.nivel(f):'INIMIGO')+(cl?' · '+cl.i+' '+cl.n:'')+(c.t==='p'&&s.sobre?' · SOBRECARGA '+s.sobre+'%':'')+'</i></div>'+
+   '<div class="hp"><b style="width:'+pct+'%;--g:'+g+'"></b></div><small>VIDA '+s.vida+' / '+s.vidaMax+'</small>'+
+   '<div class="ctl"><input type="number" class="amt" value="5" min="1"><button data-a="d">DANO</button><button data-a="h">CURA</button></div>'+
+   '<div class="chs">'+(f.estados||[]).map(function(k){return chip(c,k);}).join('')+sel+sg+'</div></div>'+
+   '<div class="ini">INICIATIVA<input type="number" class="in" value="'+(c.ini||0)+'"><button data-a="r">🎲</button><button data-a="x">✕</button></div></div>';}
+function draw(){var F={};A.faces().forEach(function(f){F[f.id]=f;});
+  S.comb=S.comb.filter(function(c){return lookup(c);});if(S.idx>=S.comb.length)S.idx=0;
+  document.getElementById('lista').innerHTML=S.comb.length?S.comb.map(function(c,i){return card(c,i,F);}).join(''):'<div class="vz">// SEM COMBATENTES — adicione a party e os inimigos acima //</div>';
+  document.getElementById('rod').textContent=S.on?'RODADA '+S.rodada:'PREPARANDO';
+  document.getElementById('bGo').textContent=S.on?'⏭ PRÓXIMO TURNO':'▶ COMEÇAR';
+  var cats=A.cats(),cn=function(id){var c=cats.filter(function(x){return x.id===id;})[0];return c?c.nome:'Sem categoria';};
+  document.getElementById('selE').innerHTML='<option value="">— escolher inimigo —</option>'+A.fichas().filter(function(f){return !f.molde;}).map(function(f){return '<option value="'+f.id+'">'+P.esc(f.nome)+' · '+P.esc(cn(f.cat))+'</option>';}).join('');
+  document.getElementById('log').innerHTML=LOG.length?LOG.map(P.esc).join('<br>'):'Sem eventos ainda.';}
+document.getElementById('lista').addEventListener('click',function(e){var b=e.target.closest('[data-a]');if(!b||b.tagName==='SELECT')return;var el=b.closest('.cb'),i=+el.dataset.i,c=S.comb[i],a=b.dataset.a;if(!c)return;
+  var amt=Math.max(1,Math.abs(+(el.querySelector('.amt')||{}).value||0));
+  if(a==='d')hp(c,-amt);else if(a==='h')hp(c,amt);else if(a==='r'){rollIni(c);if(S.on)ordena();}
+  else if(a==='x'){S.comb.splice(i,1);if(i<S.idx)S.idx--;}else if(a==='rs')setSt(c,b.dataset.k,false);
+  sv();draw();});
+document.getElementById('lista').addEventListener('change',function(e){var b=e.target,el=b.closest('.cb');if(!el)return;var c=S.comb[+el.dataset.i];if(!c)return;
+  if(b.dataset.a==='as'&&b.value)setSt(c,b.value,true);else if(b.dataset.a==='sg')c.sg=+b.value;else if(b.classList.contains('in'))c.ini=+b.value||0;
+  sv();draw();});
+draw();
+</script>
+<script>
+function toggleNav(){var n=document.getElementById('navShell'),b=document.getElementById('menuToggle');n.classList.toggle('menu-open');b.setAttribute('aria-expanded',n.classList.contains('menu-open'));}
+function toggleShortcuts(){var n=document.getElementById('navShell'),b=document.getElementById('shortcutsToggle');n.classList.toggle('shortcuts-collapsed');b.setAttribute('aria-expanded',!n.classList.contains('shortcuts-collapsed'));}
+</script>
+</body>
+</html>

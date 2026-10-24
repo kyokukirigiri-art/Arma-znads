@@ -8,139 +8,256 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="tema.js"></script>
+<script src="party.js"></script>
 <style>
-  /* ============ TEMA MILITECH — wireframe neon estático ============ */
-  :root{
-    --wire:#e8f500;
-    --wire-dim:rgba(var(--p-rgb),.28);
-    --wire-glow:rgba(var(--p-rgb),.16);
-  }
-  body{
-    background-image:
-      radial-gradient(1200px 500px at 50% -10%, rgba(var(--p-rgb),.05), transparent 60%),
-      radial-gradient(900px 600px at 100% 100%, rgba(var(--p-rgb),.04), transparent 60%);
-  }
-  main{max-width:1000px;margin:auto;padding:30px 5% 60px;}
+/* ===== visual da LOJA v6 (trilho, abas chanfradas, cards com borda de raridade) ===== */
+:root{--ink0:#0a0610;}
+header{padding:26px 5% 2px;}
+header .hud-tag{margin-bottom:8px;}
+header h1{font-size:clamp(1.9rem,5.2vw,3.2rem);}
+header p{margin-top:8px;}
+main{max-width:1280px;margin:auto;padding:22px 3% 50px;}
 
-  /* ---------- Wordmark gigante estilo chip MILITECH ---------- */
-  .chip-frame{
-    position:relative;margin:20px auto 8px;max-width:640px;
-    padding:64px 30px;
-    border:3px solid var(--wire);
-    clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px));
-    box-shadow:0 0 24px var(--wire-glow), inset 0 0 34px rgba(var(--p-rgb),.05);
-    background:rgba(var(--p-rgb),.02);
-    text-align:center;
-  }
-  .chip-frame .strip{
-    position:absolute;left:10px;right:10px;overflow:hidden;white-space:nowrap;
-    font-size:.62rem;letter-spacing:.18em;color:var(--wire);
-    text-shadow:0 0 6px var(--wire-glow);opacity:.9;user-select:none;
-  }
-  .chip-frame .strip-top{top:7px;}
-  .chip-frame .strip-bot{bottom:7px;}
-  .chip-frame .strip .logo{
-    display:inline-block;background:var(--wire);color:#07040a;font-weight:700;
-    padding:0 6px;margin:0 8px;letter-spacing:0;
-  }
-  .chip-frame .strip .lit{opacity:1;text-shadow:0 0 8px var(--wire);}
-  .chip-frame .dashes{position:absolute;top:34px;bottom:34px;width:10px;opacity:.8;}
-  .chip-frame .dashes.l{left:12px;border-left:2px dashed var(--wire-dim);}
-  .chip-frame .dashes.r{right:12px;border-right:2px dashed var(--wire-dim);}
-  .chip-word{
-    font-family:var(--hud);font-weight:700;font-size:clamp(2.6rem,8vw,4.6rem);
-    letter-spacing:.18em;color:var(--wire);
-    text-shadow:0 0 6px rgba(var(--p-rgb),.8),0 0 22px rgba(var(--p-rgb),.45),0 0 60px rgba(var(--p-rgb),.25);
-    animation:flicker 6s infinite;
-  }
-  .chip-sub{
-    margin-top:10px;font-size:.72rem;letter-spacing:.35em;color:var(--dim);
-  }
-  @keyframes flicker{
-    0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:.55} 94%{opacity:1} 96%{opacity:.7} 97%{opacity:1}
-  }
+/* abas = .zr-tab da loja */
+.fbar{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;}
+.fbar .op{display:flex;align-items:center;padding:8px 16px;font:600 .58rem var(--hud);letter-spacing:.28em;color:var(--dim);border:1px solid var(--line);border-radius:999px;background:rgba(0,0,0,.25);}
+.fbar button{--clip:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  flex:1 1 128px;min-width:0;appearance:none;border:0;cursor:pointer;display:flex;align-items:center;gap:11px;padding:11px 14px;text-align:left;
+  font:600 .72rem var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--fc,var(--red));
+  background:color-mix(in srgb,var(--fc,var(--red)) 8%,var(--panel));box-shadow:inset 3px 0 0 var(--fc,var(--red));
+  clip-path:var(--clip);transition:transform .16s,background .16s,color .16s;}
+.fbar button:hover{background:color-mix(in srgb,var(--fc,var(--red)) 20%,var(--panel));color:var(--fc,var(--red));}
+.fbar button:focus-visible{outline:2px solid var(--fc,var(--red));outline-offset:-4px;}
+.fbar button i{margin-left:auto;font:.6rem var(--mono);letter-spacing:.05em;opacity:.7;font-style:normal;}
+.fbar button.on{background:var(--fc,var(--red));color:var(--ink0);box-shadow:none;transform:translateY(-3px);}
+.fbar button.on::after{content:none;}
 
-  /* ---------- Barra de status ---------- */
-  .board-status{
-    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
-    margin:26px 0 18px;padding:10px 14px;
-    border:1px solid var(--wire-dim);border-left:4px solid var(--wire);
-    font-size:.7rem;letter-spacing:.2em;color:var(--wire);
-    background:rgba(var(--p-rgb),.03);
-  }
-  .board-status .blink{animation:blink 1.2s steps(2) infinite;}
-  @keyframes blink{50%{opacity:.15}}
+/* painel lateral = .zr-ord / .zr-id */
+.rank{background:var(--panel);border:1px solid color-mix(in srgb,var(--fc,var(--red)) 55%,transparent);border-radius:14px;overflow:hidden;clip-path:none;}
+.rank .rk-top{padding:13px 15px 0;font:600 .56rem var(--hud);letter-spacing:.28em;color:var(--dim);background:none;}
+.rank .rk-prog{display:flex;justify-content:space-between;padding:9px 15px 0;font-size:.64rem;letter-spacing:.06em;color:var(--dim);background:none;border-top:0;}
+.rk-menu{display:flex;flex-direction:column;gap:8px;margin-top:12px;padding:0;}
+.rk-menu a,.rk-menu button{display:block;width:100%;text-align:center;padding:9px 10px;font:600 .64rem var(--hud);letter-spacing:.28em;text-transform:uppercase;text-decoration:none;
+  color:var(--txt);background:none;border:1px solid var(--txt);border-radius:999px;cursor:pointer;transition:.15s;}
+.rk-menu a:hover,.rk-menu button:hover{background:var(--txt);color:var(--bg);}
+.rk-menu .on{border-color:var(--red);color:var(--red);}
+.rk-menu .on:hover{background:var(--red);color:var(--ink0);}
+.rk-menu a:focus-visible,.rk-menu button:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
 
-  /* ---------- Grade de contratos ---------- */
-  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;}
-  .contract{
-    position:relative;background:rgba(var(--p-rgb),.015);
-    border:2px solid var(--wire);
-    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
-    box-shadow:0 0 14px var(--wire-glow);
-    transition:transform .18s ease, box-shadow .18s ease;
-    animation:boot .35s ease both;
-  }
-  .contract:hover{transform:translateY(-4px);box-shadow:0 0 26px rgba(var(--p-rgb),.3);}
-  @keyframes boot{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  .contract .strip{
-    position:absolute;left:8px;right:8px;overflow:hidden;white-space:nowrap;
-    font-size:.52rem;letter-spacing:.14em;color:var(--wire);opacity:.75;user-select:none;
-  }
-  .contract .strip-top{top:4px;}
-  .contract .strip-bot{bottom:4px;}
-  .contract .strip .logo{display:inline-block;background:var(--wire);color:#07040a;padding:0 4px;margin:0 5px;}
-  .contract .strip .lit{text-shadow:0 0 7px var(--wire);}
-  .contract .ticks{position:absolute;top:22px;bottom:22px;width:8px;opacity:.7;}
-  .contract .ticks.l{left:8px;border-left:2px dashed var(--wire-dim);}
-  .contract .ticks.r{right:8px;border-right:2px dashed var(--wire-dim);}
+/* peças de card comuns */
+.c-in{position:relative;display:flex;flex-direction:column;gap:10px;flex:1;padding:14px;background:var(--panel);color:var(--ink);overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 21px) 0,100% 21px,100% 100%,0 100%);transition:background .18s;}
+.c-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px;padding-right:18px;}
+.c-tags .tag{margin:0;padding:2px 9px;border-radius:99px;font-size:.54rem;letter-spacing:.18em;background:none;animation:none;
+  color:var(--mut);border:1px solid color-mix(in srgb,var(--ink) 38%,transparent);}
+.c-tags .tag.zr-rar{color:var(--ac);border-color:var(--ac);}
+.c-tags .tag.zr-rar::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:1px;}
+.c-size{margin-left:auto;align-self:center;font:.54rem var(--mono);letter-spacing:.1em;color:var(--mut);white-space:nowrap;}
+.c-bar{display:flex;height:11px;opacity:.5;color:var(--ink);}
+.c-bar i{flex:none;background:currentColor;}
+.c-dots{background:radial-gradient(circle,color-mix(in srgb,var(--ic) 30%,transparent) 1px,transparent 1.6px) 0 0/10px 10px;}
+.c-foot{margin-top:auto;display:flex;align-items:center;gap:10px;}
+.c-pbig b{display:block;font:700 1.15rem/1 var(--hud);color:var(--ink);}
+.c-pbig i{display:block;margin-top:3px;font-style:normal;font-size:.52rem;letter-spacing:.2em;color:var(--mut);}
+.pill-btn,.cc .btn,#grid .card .btn{margin:0;flex:1;width:auto;padding:9px 10px;border-radius:999px;clip-path:none;background:none;color:var(--ink);
+  border:1px solid var(--ink);font-size:.62rem;letter-spacing:.28em;}
+.pill-btn::before,.pill-btn::after,.cc .btn::before,.cc .btn::after,#grid .card .btn::before,#grid .card .btn::after{content:none;}
+.cc .btn:focus-visible,#grid .card .btn:focus-visible{outline:2px solid var(--ink0);outline-offset:2px;}
+/* ===== MISSÕES ===== */
+.stage{display:grid;grid-template-columns:232px minmax(0,1fr) 124px;gap:24px;align-items:start;margin-top:22px;min-height:560px;position:relative;}
+.stage>*{min-width:0;}
+.rank .rk-logo{height:112px;margin:10px 15px 0;display:grid;place-items:center;position:relative;color:var(--fc,var(--red));
+  font:700 2.7rem var(--hud);letter-spacing:.08em;text-shadow:2px 2px 0 rgba(0,0,0,.55);
+  background:radial-gradient(circle,color-mix(in srgb,var(--fc,var(--red)) 30%,transparent) 1px,transparent 1.6px) 0 0/10px 10px;}
+.rank .rk-logo::before,.rank .rk-logo::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--fc,var(--red));opacity:.7;}
+.rank .rk-logo::before{left:0;top:0;border-right:0;border-bottom:0;}.rank .rk-logo::after{right:0;bottom:0;border-left:0;border-top:0;}
+.rank .rk-bar{height:5px;margin:8px 15px 15px;background:var(--bg);border:1px solid var(--line);}
+.rank .rk-bar i{display:block;height:100%;width:0;background:var(--fc,var(--red));transition:width .3s;}
 
-  .contract .inner{padding:26px 24px 26px;}
-  .c-code{font-size:.62rem;letter-spacing:.3em;color:var(--dim);}
-  .c-code b{color:var(--wire);}
-  .c-skulls{font-size:.78rem;letter-spacing:.25em;color:var(--wire);margin:6px 0 2px;text-shadow:0 0 8px var(--wire-glow);}
-  .c-skulls .off{color:#3a4030;text-shadow:none;}
-  .contract h3{
-    font-family:var(--hud);font-size:1.25rem;letter-spacing:.12em;color:var(--txt);
-    margin:4px 0 10px;text-transform:uppercase;
-  }
-  .contract p{font-size:.78rem;line-height:1.7;color:#b8bfa0;min-height:66px;}
-  .c-reward{
-    margin-top:12px;padding:9px 12px;font-size:.72rem;letter-spacing:.06em;
-    border:1px dashed var(--wire-dim);color:var(--wire);
-    background:rgba(var(--p-rgb),.04);
-  }
+.deckwrap{position:relative;}
+/* carrossel 3D: cartas ficam empilhadas no centro e são espalhadas por transform (ver layout() no JS) */
+.deck{position:relative;height:520px;perspective:1500px;perspective-origin:50% 40%;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;}
+.deck.drag{cursor:grabbing;}
+.deck.nt .cc,.deck.nt .flip{transition:none !important;}
+.cc{--ink:var(--txt);--mut:#9886a5;--ac:var(--fc);--ic:var(--fc);--bd:color-mix(in srgb,var(--fc) 55%,var(--line));
+  position:absolute;left:50%;top:16px;width:min(292px,74%);height:484px;transform-style:preserve-3d;
+  transition:transform .6s cubic-bezier(.2,.7,.2,1),opacity .3s;cursor:pointer;}
+.cc.empty{cursor:default;}
+/* o .flip gira; as duas faces ficam dentro dele (frente e verso) */
+.flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.3,.8,.25,1);}
+.cc.flipped .flip{transform:rotateY(180deg);}
+.cc.sel:not(.flipped):not(.empty):hover .flip{transform:translateY(-4px);}
+.face{position:absolute;inset:0;padding:1px;background:var(--bd);display:flex;flex-direction:column;
+  clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.face::after{content:"";position:absolute;inset:0;background:#05030a;opacity:.4;pointer-events:none;transition:opacity .4s;}
+.cc.sel .face::after{opacity:0;}
+.face.back{transform:rotateY(180deg);--ink:var(--txt);--mut:#9886a5;--ac:var(--fc);--ic:var(--fc);--bd:var(--fc);}
+.cc:not(.flipped) .face.back,.cc.flipped .face.front{pointer-events:none;}
+.cc.in .face{animation:boot .35s ease var(--dl,0s) both;}
+.cc.sel .face.front{--ink:var(--ink0);--mut:rgba(10,6,16,.74);--ac:var(--ink0);--ic:var(--ink0);--bd:var(--fc);}
+.cc.sel .face.front .c-in{background:var(--fc);}
+@keyframes boot{from{opacity:0}}
+.cc.top .c-tags .tag.zr-rar{animation:blink 1.4s steps(2) infinite;}
+@keyframes blink{50%{opacity:.55}}
+.cc h3{display:block;font:700 1.02rem/1.2 var(--hud);letter-spacing:.07em;text-transform:uppercase;color:var(--ink);margin:0;}
+.cc .code{margin-top:5px;font-size:.54rem;letter-spacing:.22em;color:var(--mut);}
+.cc .code b{color:var(--ink);font-weight:700;}
+.cc .hd{position:relative;flex:none;height:92px;display:grid;place-items:center;overflow:hidden;color:var(--ic);
+  background:radial-gradient(circle,color-mix(in srgb,var(--ic) 30%,transparent) 1px,transparent 1.6px) 0 0/10px 10px;}
+.cc .hd b{font:700 2.8rem/1 var(--hud);letter-spacing:.1em;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.55));}
+.cc .hd s{position:absolute;text-decoration:none;font:700 .95rem var(--hud);opacity:.6;}
+.cc .hd .p1{left:8px;top:4px}.cc .hd .p2{right:8px;top:4px}.cc .hd .p3{left:8px;bottom:2px}.cc .hd .p4{right:8px;bottom:2px}
+.cc .sk{font-size:.8rem;letter-spacing:.25em;color:var(--ac);}
+.cc .sk .off{color:color-mix(in srgb,var(--ink) 24%,transparent);}
+.cc p{margin:0;min-height:0;font-size:.74rem;line-height:1.5;color:var(--mut);text-align:left;}
+.front p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.cc .grp{margin:0;font-size:.56rem;letter-spacing:.16em;color:var(--green);text-align:left;}
+.cc .grp.bad{color:#ff5a5a;}
+.cc .rw{padding:9px 12px;font-size:.7rem;letter-spacing:.04em;border:1px dashed color-mix(in srgb,var(--ink) 45%,transparent);background:none;color:var(--ink);}
+.cc .rw span{display:block;font:700 .52rem var(--hud);letter-spacing:.26em;color:var(--ac);margin-bottom:3px;}
+.cc .rw.brief{flex:1;min-height:0;overflow:auto;line-height:1.55;font-size:.72rem;}
+.flip-hint{width:100%;text-align:center;font:600 .56rem var(--hud);letter-spacing:.26em;color:var(--mut);}
+.cc .info{display:flex;flex-direction:column;}
+.cc .info .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-top:1px solid color-mix(in srgb,var(--ink) 16%,transparent);font-size:.7rem;}
+.cc .info .row span{color:var(--mut);letter-spacing:.16em;font-size:.56rem;text-transform:uppercase;}
+.cc .info .row b{text-align:right;font-weight:700;color:var(--ink);}
+.cc .info .row .sk{font-size:.7rem;letter-spacing:.12em;}
+.cc .info .row b span.sk{color:var(--ac);font-size:.7rem;letter-spacing:.12em;}
+.back .c-in{gap:8px;}
+.back .c-foot{flex-direction:column;align-items:stretch;gap:8px;}
+.back .btn{flex:none;border-color:var(--fc);color:var(--fc);}
+.back .btn:hover{background:var(--fc);border-color:var(--fc);color:var(--ink0);}
+.back .btn.added{background:none;border-color:var(--cyan);color:var(--cyan);}
+.cc.exp .face{filter:grayscale(.85);}
+.cc.exp .btn{pointer-events:none;opacity:.5;}
+.cc.empty .hd{height:150px;}
 
-  /* ---------- Botão de novo quadro ---------- */
-  .reroll-wrap{text-align:center;margin:34px 0 10px;}
-  .reroll-btn{
-    font-family:var(--hud);font-weight:700;letter-spacing:.3em;font-size:.85rem;
-    background:var(--wire);color:#07040a;border:none;cursor:pointer;
-    padding:14px 34px;
-    clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
-    box-shadow:0 0 18px rgba(var(--p-rgb),.35);
-    transition:transform .15s ease, box-shadow .15s ease;
-  }
-  .reroll-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(var(--p-rgb),.55);}
-  .reroll-btn:active{transform:scale(.97);}
-  .reroll-hint{margin-top:10px;font-size:.62rem;letter-spacing:.25em;color:var(--dim);}
+.key{position:absolute;top:44%;width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:var(--bg2);color:var(--dim);font-size:.7rem;cursor:pointer;z-index:2;}
+.key:hover{color:var(--txt);border-color:var(--txt);}.key.l{left:-36px}.key.r{right:-36px}
 
-  /* ---------- Recompensas especiais ---------- */
-  .loot-title{
-    font-family:var(--hud);letter-spacing:.25em;font-size:1rem;margin:56px 0 14px;
-    border-left:4px solid var(--wire);padding-left:12px;color:var(--txt);text-transform:uppercase;
-  }
-  .loot-grid{display:flex;flex-wrap:wrap;gap:10px;}
-  .loot-chip{
-    border:1px solid var(--wire-dim);padding:8px 14px;font-size:.72rem;color:#cfd6a8;
-    background:rgba(var(--p-rgb),.03);letter-spacing:.05em;
-    clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
-  }
-  .loot-chip b{color:var(--wire);}
+.dos-btn{display:block;width:100%;padding:9px 10px;margin-top:140px;cursor:pointer;background:none;border:1px solid var(--red);border-radius:999px;color:var(--red);
+  font:600 .64rem var(--hud);letter-spacing:.28em;transition:.15s;}
+.dos-btn.sf-btn{margin-top:8px;letter-spacing:.14em;font-size:.6rem;}
+.dos-btn.sf-btn i{font-style:normal;opacity:.75;margin-left:4px;}
+.sf{margin-top:6px;padding:10px;border:1px solid color-mix(in srgb,var(--red) 45%,var(--line));border-left:3px solid var(--red);background:color-mix(in srgb,var(--red) 5%,var(--panel));font:600 .56rem var(--hud);letter-spacing:.16em;color:var(--dim);}
+.sf[hidden]{display:none;}
+.sf h5{margin:8px 0 5px;font:inherit;color:var(--red);} .sf h5:first-child{margin-top:0;}
+.sf .ch{display:flex;flex-wrap:wrap;gap:4px;}
+.sf .ch button{cursor:pointer;font:inherit;letter-spacing:.1em;padding:4px 8px;border:1px solid var(--fc,var(--red));background:none;color:var(--fc,var(--red));opacity:.35;border-radius:999px;}
+.sf .ch button.on{opacity:1;background:color-mix(in srgb,var(--fc,var(--red)) 22%,transparent);}
+.sf .sfi{margin-top:8px;color:var(--txt);line-height:1.6;letter-spacing:.1em;} .sf .sfi b{color:var(--red);}
+.sf .all{margin-top:8px;display:flex;gap:6px;} .sf .all button{flex:1;cursor:pointer;font:inherit;padding:4px;border:1px solid var(--line);background:none;color:var(--txt);} .sf .all button:hover{border-color:var(--red);color:var(--red);}
+.dos-btn:hover{background:var(--red);color:var(--ink0);}
+.dos-btn:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
+.dos{position:fixed;right:0;top:0;bottom:0;width:min(340px,92vw);z-index:700;background:var(--panel2);border-left:2px solid var(--fc,var(--red));padding:26px 22px;transform:translateX(105%);transition:transform .25s;overflow:auto;box-shadow:-10px 0 30px rgba(0,0,0,.6);}
+.dos.on{transform:none;}
+.dos h4{display:flex;align-items:center;gap:12px;font:700 .95rem var(--hud);letter-spacing:.2em;margin:0 40px 16px 0;text-transform:uppercase;}
+.dos h4::before{content:"";flex:none;width:7px;height:1.5em;background:var(--fc,var(--red));clip-path:polygon(0 0,100% 12%,100% 88%,0 100%);}
+.dos .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:.74rem;}
+.dos .row span{color:var(--dim);letter-spacing:.14em;font-size:.62rem;text-transform:uppercase;}.dos .row b{text-align:right;}
+.dos .obj{margin:14px 0;font-size:.78rem;line-height:1.65;color:var(--txt);}
+.dos .x{position:absolute;right:14px;top:12px;background:none;border:1px solid var(--line);border-radius:999px;color:var(--dim);cursor:pointer;padding:3px 11px;}
+.dos .lootbox{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.dos .lootbox span{font-size:.7rem;padding:8px 10px;background:color-mix(in srgb,var(--fc,var(--red)) 8%,var(--panel));border-left:3px solid var(--fc,var(--red));}
 
-  @media(max-width:560px){
-    .chip-frame{padding:48px 16px;}
-  }
+.foot-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px;padding:12px 4px;border-top:1px dashed var(--line);font-size:.62rem;letter-spacing:.2em;color:var(--dim);}
+.foot-bar a,.foot-bar button{color:var(--dim);text-decoration:none;background:none;border:0;cursor:pointer;letter-spacing:.2em;font-size:.62rem;}
+.foot-bar kbd{border:1px solid var(--cell-line);padding:2px 6px;margin-right:6px;font-family:var(--hud);}
+.foot-bar .rr{border:1px solid var(--red);border-radius:999px;color:var(--red);padding:9px 18px;font:600 .62rem var(--hud);letter-spacing:.28em;transition:.15s;}
+.foot-bar .rr:hover{background:var(--red);color:var(--ink0);}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);z-index:900;max-width:92vw;padding:12px 18px;background:var(--panel2);border:1px solid var(--red);color:var(--txt);font-size:.72rem;letter-spacing:.08em;opacity:0;pointer-events:none;transition:.2s;clip-path:var(--chamfer-sm);}
+.toast.on{opacity:1;transform:translate(-50%,0);}
+@media(max-width:860px){
+  .stage{grid-template-columns:1fr;min-height:0}
+  .rank .rk-logo{height:auto;min-height:80px;font-size:1.8rem}
+  .rk-menu{flex-direction:row;flex-wrap:wrap}.rk-menu a,.rk-menu button{flex:1}
+  .dos-btn{margin-top:0}.key{display:none}.deck{height:510px}
+  .fbar button{flex:1 1 calc(50% - 6px);padding:9px 11px;font-size:.66rem}
+}
+@media(prefers-reduced-motion:reduce){.cc.in .face,.cc.top .c-tags .tag.zr-rar{animation:none}.cc,.flip{transition-duration:.01s !important}}
+
+/* ===== CAÇA-RECOMPENSA: cartaz de procurado (cantos chanfrados opostos + faixa de alerta) ===== */
+.cc.bty .face{clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px);}
+.cc.bty .c-in{clip-path:polygon(19px 0,100% 0,100% calc(100% - 19px),calc(100% - 19px) 100%,0 100%,0 19px);}
+.cc.bty .c-tags{padding-right:0;padding-left:14px;}
+.cc.bty h3{font-size:1.2rem;letter-spacing:.1em;}
+.cc.bty .wanted{position:relative;flex:none;height:104px;display:grid;place-items:center;color:var(--ic);
+  background:radial-gradient(circle,color-mix(in srgb,var(--ic) 30%,transparent) 1px,transparent 1.6px) 0 0/10px 10px;}
+.cc.bty .wanted::before,.cc.bty .wanted::after{content:"";position:absolute;left:0;right:0;height:7px;
+  background:repeating-linear-gradient(135deg,var(--ic) 0 7px,transparent 7px 14px);opacity:.75;}
+.cc.bty .wanted::before{top:0}.cc.bty .wanted::after{bottom:0}
+.cc.bty .wanted svg{width:112px;height:86px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.55));}
+.cc.bty .bounty{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:8px 12px;color:var(--ink);
+  background:color-mix(in srgb,var(--ink) 10%,transparent);border-left:4px solid var(--ac);}
+.cc.bty .bounty span{font:700 .52rem var(--hud);letter-spacing:.26em;color:var(--ac);}
+.cc.bty .bounty b{font:700 1.45rem/1 var(--hud);letter-spacing:.04em;}
+.cc.bty .tag:nth-child(2){color:var(--ink);border-style:dashed;}
+
+/* ===== MISSÕES DE HISTÓRIA: ficha de caso com dupla de recrutáveis (cantos cortados em top-dir e base-esq) ===== */
+.cc.hst .face{clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px));}
+.cc.hst .c-in{clip-path:polygon(0 0,calc(100% - 21px) 0,100% 21px,100% 100%,21px 100%,0 calc(100% - 21px));}
+.cc.hst .duo{flex:none;height:112px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ic);
+  background:radial-gradient(circle,color-mix(in srgb,var(--ic) 30%,transparent) 1px,transparent 1.6px) 0 0/10px 10px;}
+.cc.hst .pp{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.cc.hst .pf{width:50px;height:62px;display:grid;place-items:end center;overflow:hidden;border:1px solid var(--ic);
+  background:color-mix(in srgb,var(--ic) 14%,transparent);clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);}
+.cc.hst .pf svg{width:42px;height:52px;}
+.cc.hst .pn{font:700 .66rem var(--hud);letter-spacing:.14em;color:var(--ink);text-transform:uppercase;text-align:center;}
+.cc.hst .pn small{display:block;margin-top:1px;font:.52rem var(--mono);letter-spacing:.1em;color:var(--mut);}
+.cc.hst .lk{flex:0 0 18px;height:0;border-top:2px dashed var(--ic);margin-bottom:26px;}
+.back .btn.fin{border-color:var(--ac);color:var(--ac);}
+.back .btn.fin:hover{background:var(--fc);color:var(--ink0);}
+.dos .npc{margin-top:14px;padding:12px;border:1px solid color-mix(in srgb,var(--fc,var(--red)) 50%,var(--line));background:color-mix(in srgb,var(--fc,var(--red)) 6%,var(--panel));}
+.dos .npc .nh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.dos .npc .nh b{font:700 .92rem var(--hud);letter-spacing:.14em;text-transform:uppercase;}
+.dos .npc .nh span{font:.6rem var(--mono);color:var(--dim);}
+.dos .npc .cls{margin-top:4px;font:600 .54rem var(--hud);letter-spacing:.24em;color:var(--fc,var(--red));}
+.dos .npc p{margin:8px 0 10px;font-size:.7rem;line-height:1.6;color:var(--txt);}
+.dos .nbtn{display:block;width:100%;padding:8px 10px;cursor:pointer;background:none;border:1px solid var(--fc,var(--red));border-radius:999px;color:var(--fc,var(--red));font:600 .6rem var(--hud);letter-spacing:.22em;transition:.15s;}
+.dos .nbtn:hover:not(:disabled){background:var(--fc,var(--red));color:var(--ink0);}
+.dos .nbtn:disabled{opacity:.5;cursor:default;border-style:dashed;}
+.c-tags button.tag.arq{font-family:var(--hud);cursor:pointer;}
+.c-tags button.tag.arq:hover,.c-tags button.tag.arq:focus-visible{background:var(--ac);color:var(--ink0);outline:none;}
+.rk-menu button i{font-style:normal;opacity:.75;margin-left:4px;}
+.dos h4 small{font:600 .6rem var(--hud);opacity:.7;letter-spacing:.12em;}
+.dos .arq-list{display:flex;flex-direction:column;gap:10px;margin:6px 0 14px;}
+.dos .arq-it{padding:10px 12px;border:1px solid color-mix(in srgb,var(--fc,var(--red)) 50%,var(--line));border-left:4px solid var(--fc,var(--red));background:color-mix(in srgb,var(--fc,var(--red)) 6%,var(--panel));}
+.dos .arq-it .ai-h{display:block;width:100%;margin:0;padding:0;background:none;border:0;color:inherit;text-align:left;cursor:pointer;position:relative;padding-right:22px;}
+.dos .arq-it .ai-h::after{content:'▸';position:absolute;right:2px;top:2px;color:var(--fc,var(--red));font-size:.8rem;transition:transform .2s;}
+.dos .arq-it.open .ai-h::after{transform:rotate(90deg);}
+.dos .arq-it .ai-h:focus-visible{outline:1px solid var(--fc,var(--red));outline-offset:3px;}
+.dos .arq-it .ai-d{display:none;margin:10px 0 0;}
+.dos .arq-it.open .ai-d{display:block;}
+.dos .arq-it .ai-d .obj{margin:0 0 8px;}
+.dos .arq-it .ai-d .row{margin-bottom:8px;}
+.dos .arq-it .nbtn{margin-top:8px;}
+.dos .arq-it .ai-h b{display:block;font:700 .82rem var(--hud);letter-spacing:.12em;text-transform:uppercase;}
+.dos .arq-it .ai-h span{display:block;margin-top:2px;font:.58rem var(--mono);color:var(--dim);letter-spacing:.1em;}
+</style>
+<style>
+/* ===== ARRASTAR CARD → BARRA DE ARQUIVAR ===== */
+.deckwrap .key{top:229px;}
+.cc.sel:not(.empty){touch-action:none;}
+.cc.sel:not(.empty):not(.flipped){cursor:grab;}
+.deck.holding{overflow:visible;z-index:30;clip-path:inset(-80px -140px -320px -140px);}
+.deck.holding,.deck.holding .cc{cursor:grabbing !important;}
+.deck.holding .cc.sel .face{box-shadow:0 18px 40px rgba(0,0,0,.55);}
+.arqbar{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin-top:14px;padding:15px 18px;cursor:pointer;
+  font:600 .64rem var(--hud);letter-spacing:.24em;color:var(--dim);background:rgba(0,0,0,.25);border:1px dashed color-mix(in srgb,var(--red) 40%,var(--line));border-radius:14px;
+  transition:transform .18s,background .18s,border-color .18s,color .18s,box-shadow .18s;}
+.arqbar:hover{color:var(--txt);border-color:var(--red);}
+.arqbar .ab-ic{font-size:1.15rem;transition:transform .18s;}
+.arqbar .ab-n{font:.56rem var(--mono);letter-spacing:.12em;opacity:.75;}
+.arqbar .ab-n:empty{display:none;}
+.arqbar.armed{color:var(--red);border-color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent);animation:arqp 1s ease-in-out infinite;}
+.arqbar.hot{animation:none;transform:scale(1.025);color:var(--ink0);background:var(--red);border-style:solid;box-shadow:0 0 26px color-mix(in srgb,var(--red) 55%,transparent);}
+.arqbar.hot .ab-ic{transform:scale(1.35) rotate(-8deg);}
+.arqbar.got{animation:arqg .45s ease-out;}
+@keyframes arqp{50%{box-shadow:0 0 14px color-mix(in srgb,var(--red) 45%,transparent);}}
+@keyframes arqg{0%{transform:scale(1.06);box-shadow:0 0 34px var(--red);}100%{transform:none;}}
+@media(prefers-reduced-motion:reduce){.arqbar.armed,.arqbar.got{animation:none}}
+@media(max-width:860px){.arqbar{font-size:.56rem;letter-spacing:.14em;padding:13px 10px}}
 </style>
 </head>
 <body>
@@ -160,7 +277,7 @@
     <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
   </div>
   <nav class="navbar shortcuts-nav" id="shortcutsNav">
-  <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+  <a href="loja.html">🛒 LOJA</a>
   <a href="venda.html">🎲 VENDA</a>
   <a href="regras_do_setor_7.html">📜 REGRAS</a>
   <a href="base_de_comando.html">🏚️ BASE</a>
@@ -169,7 +286,7 @@
     <a href="venda.html">VENDA</a>
     <a href="missoes.html">MISSÕES</a>
     <a href="regras_do_setor_7.html">REGRAS</a>
-    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="loja.html">LOJA</a>
     <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
   
     <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
@@ -179,109 +296,597 @@
 </div>
 
 <main>
-
-  <!-- Wordmark estilo chip -->
-  <div class="chip-frame">
-    <div class="strip strip-top">ARMA-ZENADS ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲<span class="logo">AZ</span>▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ EST. 2088</div>
-    <div class="dashes l"></div><div class="dashes r"></div>
-    <div class="chip-word">MISSÕES</div>
-    <div class="chip-sub">// QUADRO DE CONTRATOS — SELEÇÃO ALEATÓRIA //</div>
-    <div class="strip strip-bot">▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯<span class="lit">▮</span>▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯</div>
+  <div class="fbar" id="fbar"></div>
+  <div class="stage">
+    <aside>
+      <div class="rank" id="rank"></div>
+      <div class="rk-menu">
+        <button class="on" type="button">▸ Contratos</button>
+        <button type="button" onclick="openDos('loot')">▸ Recompensas</button>
+        <button type="button" id="arqBtn" onclick="openDos('arq')">▸ Arquivadas <i id="arqN"></i></button>
+        <a href="mapa.html">▸ Mapa de missão</a>
+      </div>
+    </aside>
+    <div class="deckwrap">
+      <div class="key l" onclick="step(-1)">A</div><div class="key r" onclick="step(1)">D</div>
+      <div class="deck" id="deck"></div>
+      <button type="button" class="arqbar" id="arqBar" onclick="openDos('arq')" aria-label="Missões arquivadas"><span class="ab-ic">📦</span><span class="ab-t">ARRASTE UM CARD AQUI PARA ARQUIVAR</span><span class="ab-n" id="arqBarN"></span></button>
+    </div>
+    <div><button class="dos-btn" type="button" onclick="openDos('info')">▤ DOSSIÊ</button>
+      <button class="dos-btn sf-btn" id="sfBtn" type="button" onclick="toggleSF()">⚙ FILTRO DO SORTEIO <i id="sfN"></i></button>
+      <button class="dos-btn sf-btn" type="button" onclick="renderBoard()">⟳ GIRAR NOVO QUADRO</button>
+      <div class="sf" id="sf" hidden></div></div>
   </div>
-
-  <div class="reroll-wrap" style="margin:6px 0 0">
-    <a href="mapa.html" class="reroll-btn" style="text-decoration:none;display:inline-block;background:var(--purple);color:#fff;box-shadow:0 0 18px var(--purple-glow)">🧭 MAPA DE MISSÃO</a>
-    <div class="reroll-hint">// GERE A PLANTA DA INSTALAÇÃO DO CONTRATO //</div>
+  <div class="foot-bar">
+    <a href="base_de_comando.html"><kbd>ESC</kbd>VOLTAR</a>
+    <span>▸ <kbd>A</kbd><kbd>D</kbd> NAVEGAR &nbsp; <kbd>ENTER</kbd> VIRAR &nbsp; <kbd>E</kbd> ACEITAR &nbsp; // CONTRATOS NO QUADRO: <b id="board-count" style="color:var(--txt)">05</b></span>
   </div>
-
-  <div class="board-status">
-    <span>▸ CONTRATOS ATIVOS: <b id="board-count">05</b></span>
-    <span>▸ CANAL: CRIPTOGRAFADO</span>
-    <span class="blink">▸ AGUARDANDO ACEITE...</span>
-  </div>
-
-  <div class="board" id="board"></div>
-
-  <div class="reroll-wrap">
-    <button class="reroll-btn" onclick="renderBoard(true)">⟳ GERAR NOVO QUADRO</button>
-    <div class="reroll-hint">// O QUADRO SORTEIA 5 CONTRATOS ALEATÓRIOS DO BANCO DE DADOS //</div>
-  </div>
-
-  <h2 class="loot-title">🎁 <span>RECOMPENSAS ESPECIAIS</span></h2>
-  <div class="loot-grid">
-    <span class="loot-chip">🧬 <b>Implantes únicos</b></span>
-    <span class="loot-chip">🔑 <b>Chaves de instalações secretas</b></span>
-    <span class="loot-chip">🧠 <b>Melhorias permanentes de processamento</b></span>
-    <span class="loot-chip">🤝 <b>Novos aliados</b></span>
-    <span class="loot-chip">🏙️ <b>Acesso a áreas restritas</b></span>
-    <span class="loot-chip">💾 <b>Informações sobre os Nexus</b></span>
-    <span class="loot-chip">🚀 <b>Equipamentos experimentais</b></span>
-    <span class="loot-chip">⭐ <b>Aumento de reputação da ARMA-ZENADS</b></span>
-  </div>
-
 </main>
-
+<aside class="dos" id="dos"><button class="x" onclick="closeDos()">✕</button><div id="dosBody"></div></aside>
+<div class="toast" id="toast"></div>
 <footer>
   QUADRO DE CONTRATOS © 2088 — <span>ACEITOU? NÃO HÁ VOLTA. CONCLUIU? NÃO HÁ TESTEMUNHAS.</span>
 </footer>
-
 <script>
-/* ============ BANCO DE CONTRATOS ============ */
-var CONTRACTS = [
-  {name:'Sinal Fantasma', obj:'Invadir uma antena e descobrir quem está transmitindo um código misterioso.', reward:'💳 2.500 créditos + acesso a uma frequência secreta', skulls:3},
-  {name:'Olho da Cidade', obj:'Roubar um módulo de vigilância de uma corporação.', reward:'👁️ Implante Visão Tática', skulls:4},
-  {name:'Mercado Negro', obj:'Recuperar uma carga tecnológica antes que outra gangue a encontre.', reward:'🔧 3 peças de tecnologia rara', skulls:3},
-  {name:'Distrito Zero', obj:'Entrar em uma área abandonada e recuperar dados sobre os Nexus.', reward:'🧠 +5% de processamento mental', skulls:4},
-  {name:'Caçador de Dívidas', obj:'Localizar um criminoso que desapareceu na Cidade Baixa.', reward:'💳 4.000 créditos + reputação', skulls:2},
-  {name:'Código Ícaro', obj:'Encontrar um fragmento perdido dos arquivos do Projeto Ícaro.', reward:'🔑 Fragmento da Chave Ícaro', skulls:5},
-  {name:'Corrida Neon', obj:'Participar de uma corrida ilegal pelas ruas da Cidade Alta.', reward:'🏎️ Implante Reflexo Rápido + 1.500 créditos', skulls:3},
-  {name:'Fantasma Corporativo', obj:'Descobrir quem dentro de uma megacorporação está vendendo informações secretas.', reward:'🕶️ Camuflagem Óptica por tempo limitado', skulls:4},
-  {name:'Último Sobrevivente', obj:'Investigar uma instalação onde todos os funcionários desapareceram.', reward:'⚡ Núcleo de Energia Experimental', skulls:5},
-  {name:'A Porta 3057', obj:'Encontrar uma porta misteriosa que aparece em diferentes pontos da cidade.', reward:'🔮 Acesso a uma área secreta + 10.000 créditos', skulls:5},
-  {name:'Torre Sem Sombra', obj:'Escalar uma torre corporativa por dentro, andar por andar, e apagar o servidor mestre sem disparar o alarme.', reward:'💳 12.000 créditos + Deck Fantasma', skulls:5},
-  {name:'Nexus Adormecido', obj:'Invadir um bunker onde um Nexus dorme e copiar seu núcleo antes que ele acorde e reescreva as defesas.', reward:'🧠 +10% de processamento mental + Implante único', skulls:5},
-  {name:'Carne de Laboratório', obj:'Resgatar operativos cobaia de um laboratório clandestino cheio de ciborgues em ciberpsicose.', reward:'🤝 Aliado veterano + 6.000 créditos', skulls:4},
-  {name:'Leilão Sangrento', obj:'Infiltrar um leilão de peças proibidas, roubar o lote principal e escapar de 3 gangues ao mesmo tempo.', reward:'🚀 Equipamento experimental PROIBIDO', skulls:5},
-  {name:'Protocolo Ícaro: Queda', obj:'Descer ao nível mais fundo do Projeto Ícaro, enfrentar o guardião e decidir o destino do arquivo final.', reward:'🔑 Chave Ícaro completa + 20.000 créditos', skulls:5}
+var FACS={
+  az:{n:'ARMA-ZENADS',g:'AZ',c:'var(--red)'},
+  nx:{n:'NEXUS',g:'NX',c:'var(--purple)'},
+  ic:{n:'ÍCARO',g:'IC',c:'var(--cyan)'},
+  mc:{n:'MEGACORP',g:'MC',c:'var(--amber)'},
+  cb:{n:'CIDADE BAIXA',g:'CB',c:'var(--green)'},
+  rc:{n:'CAÇA-RECOMPENSA',g:'CR',c:'#ff5a2e'},
+  hs:{n:'HISTÓRIA',g:'HI',c:'#ff2ea6'}
+};
+var RISK=['','','RISCO BAIXO','RISCO MÉDIO','RISCO ALTO','CONTRATO PRIORITÁRIO'];
+var LOOT=['🧬 Implantes únicos','🔑 Chaves de instalações secretas','🧠 Melhorias permanentes de processamento','🤝 Novos aliados','🏙️ Acesso a áreas restritas','💾 Informações sobre os Nexus','🚀 Equipamentos experimentais','⭐ Aumento de reputação da ARMA-ZENADS'];
+var CONTRACTS=[
+  /* f=facção · m=máx. de membros · d=prazo em dias
+     desc = DESCRIÇÃO BÁSICA (aparece na FRENTE da carta; curta, ~3 linhas)
+     obj  = OBJETIVO detalhado (aparece no VERSO da carta e no dossiê)
+     det  = (opcional) BRIEFING extra, mostrado abaixo do objetivo no verso */
+  {f:'nx',name:'Sinal Fantasma', desc:'Invadir uma antena e descobrir quem transmite um código misterioso.', obj:'Chegue até a antena que emite o código e invada o terminal de controle sem cortar o sinal. Descubra quem está por trás da transmissão e registre o código completo. Entregue ao contratante a localização do transmissor e o que ele diz.', reward:'💳 2.500 créditos + acesso a uma frequência secreta', skulls:3, m:3, d:3},
+  {f:'mc',name:'Olho da Cidade', desc:'Roubar um módulo de vigilância de uma corporação.', obj:'Infiltre-se na instalação corporativa, localize o módulo de vigilância e retire-o inteiro, sem danificar o núcleo de captura. A corporação vai notar o desvio: saia antes que a segurança tranque o prédio e entregue o módulo funcionando.', reward:'👁️ Implante Visão Tática', skulls:4, m:4, d:4},
+  {f:'az',name:'Mercado Negro', desc:'Recuperar uma carga tecnológica antes que outra gangue a encontre.', obj:'Uma carga de tecnologia rara está escondida em algum ponto do Mercado Negro e outra gangue também está atrás dela. Ache o esconderijo primeiro, recupere a carga completa e leve-a à ARMA-ZENADS antes que a concorrência reaja.', reward:'🔧 3 peças de tecnologia rara', skulls:3, m:4, d:2},
+  {f:'nx',name:'Distrito Zero', desc:'Entrar numa área abandonada e recuperar dados sobre os Nexus.', obj:'Entre no Distrito Zero, área abandonada e fora dos mapas atuais, e localize os terminais que ainda funcionam. Copie os registros sobre os Nexus sem apagar nada do original e traga os dados de volta em condição de serem lidos.', reward:'🧠 +5% de processamento mental', skulls:4, m:4, d:4},
+  {f:'az',name:'Caçador de Dívidas', desc:'Localizar um criminoso que sumiu na Cidade Baixa.', obj:'Um devedor desapareceu na Cidade Baixa e a ARMA-ZENADS quer o dinheiro de volta. Siga os rastros dele, descubra onde está se escondendo e leve-o ao contratante ou cobre a dívida no local. Quanto menos barulho, melhor para a reputação.', reward:'💳 4.000 créditos + reputação', skulls:2, m:2, d:3},
+  {f:'ic',name:'Código Ícaro', desc:'Encontrar um fragmento perdido dos arquivos do Projeto Ícaro.', obj:'Parte dos arquivos do Projeto Ícaro foi perdida e o fragmento está em um lugar que o Ícaro não controla mais. Descubra onde ele está, recupere-o inteiro e traga-o de volta. Espere resistência: outros grupos também sabem que ele existe.', reward:'🔑 Fragmento da Chave Ícaro', skulls:5, m:5, d:5},
+  {f:'cb',name:'Corrida Neon', desc:'Participar de uma corrida ilegal pelas ruas da Cidade Alta.', obj:'Entre na corrida ilegal que corta as ruas da Cidade Alta e termine a prova. O percurso não é sinalizado, a polícia pode aparecer em qualquer cruzamento e os outros pilotos não jogam limpo. Chegar entre os primeiros é o que garante o pagamento.', reward:'🏎️ Implante Reflexo Rápido + 1.500 créditos', skulls:3, m:3, d:2},
+  {f:'mc',name:'Fantasma Corporativo', desc:'Descobrir quem, dentro de uma megacorporação, vende segredos.', obj:'Alguém dentro da megacorporação está vendendo informações secretas. Infiltre-se, investigue acessos e registros e identifique o culpado com provas suficientes para o contratante agir. O vazador não pode perceber que está sendo investigado.', reward:'🕶️ Camuflagem Óptica por tempo limitado', skulls:4, m:3, d:4},
+  {f:'ic',name:'Último Sobrevivente', desc:'Investigar uma instalação onde todos os funcionários desapareceram.', obj:'Todos os funcionários da instalação sumiram sem deixar registro de saída. Entre, descubra o que aconteceu com eles e recupere o Núcleo de Energia Experimental que ainda opera lá dentro. Se houver algum sobrevivente, encontre-o.', reward:'⚡ Núcleo de Energia Experimental', skulls:5, m:5, d:5},
+  {f:'nx',name:'A Porta 3057', desc:'Encontrar uma porta misteriosa que aparece em pontos diferentes da cidade.', obj:'Uma porta marcada com o número 3057 surge em lugares diferentes da cidade, sem padrão conhecido. Siga os relatos, descubra onde ela vai aparecer de novo e atravesse-a. O que existe do outro lado é o que o contratante quer saber.', reward:'🔮 Acesso a uma área secreta + 10.000 créditos', skulls:5, m:6, d:7},
+  {f:'mc',name:'Torre Sem Sombra', desc:'Escalar uma torre corporativa e apagar o servidor mestre sem alarme.', obj:'Entre na torre por dentro e suba andar por andar até o servidor mestre. Apague-o sem disparar nenhum alarme: se o prédio entrar em alerta, a missão falha. Cada andar tem a própria segurança, então planeje a rota antes de subir.', reward:'💳 12.000 créditos + Deck Fantasma', skulls:5, m:4, d:6},
+  {f:'nx',name:'Nexus Adormecido', desc:'Invadir um bunker e copiar o núcleo de um Nexus antes que ele acorde.', obj:'Invada o bunker onde um Nexus dorme e copie o núcleo dele. Se ele acordar durante a cópia, reescreve as defesas do local e o grupo fica preso lá dentro. Trabalhem rápido e em silêncio.', reward:'🧠 +10% de processamento mental + Implante único', skulls:5, m:5, d:7},
+  {f:'cb',name:'Carne de Laboratório', desc:'Resgatar operativos cobaia de um laboratório clandestino.', obj:'Um laboratório clandestino mantém operativos como cobaias, e os corredores estão cheios de ciborgues em ciberpsicose. Abram caminho, libertem os operativos e tirem todos de lá com vida. Um deles é veterano e vai se juntar ao grupo.', reward:'🤝 Aliado veterano + 6.000 créditos', skulls:4, m:5, d:4},
+  {f:'az',name:'Leilão Sangrento', desc:'Roubar o lote principal de um leilão de peças proibidas.', obj:'Infiltre-se no leilão de peças proibidas, roube o lote principal e fuja. Três gangues estão no local ao mesmo tempo e todas vão atrás do grupo. O objetivo é sair com o lote, não com a briga.', reward:'🚀 Equipamento experimental PROIBIDO', skulls:5, m:4, d:3},
+  {f:'ic',name:'Protocolo Ícaro: Queda', desc:'Descer ao nível mais fundo do Ícaro e decidir o destino do arquivo final.', obj:'Desça até o nível mais fundo do Projeto Ícaro e enfrente o guardião que protege o arquivo final. Depois de vencê-lo, é o grupo que decide o destino do arquivo.', reward:'🔑 Chave Ícaro completa + 20.000 créditos', skulls:5, m:6, d:7},
+  /* ---- novos ---- */
+  {f:'az',name:'Estoque Perdido', desc:'Recuperar um caminhão de suprimentos sequestrado no Corredor 9.', obj:'Um caminhão de suprimentos da ARMA-ZENADS foi sequestrado no Corredor 9. Localize-o, retome o veículo e traga a carga de volta à loja. Quanto mais da carga chegar, melhor.', reward:'💳 1.800 créditos + desconto na loja', skulls:2, m:3, d:2},
+  {f:'az',name:'Cliente Inadimplente', desc:'Cobrar a dívida de um traficante que já mudou de endereço três vezes.', obj:'Um traficante de implantes deve à ARMA-ZENADS e já mudou de endereço três vezes para fugir da cobrança. Descubra onde ele está agora e receba a dívida. Ele não vai abrir a porta por bem.', reward:'💳 3.200 créditos + 1 implante usado', skulls:3, m:3, d:3},
+  {f:'az',name:'Entrega Silenciosa', desc:'Entregar uma encomenda sem registro a um comprador desconfiado.', obj:'Leve uma encomenda sem registro até um comprador desconfiado, no meio do Distrito Zero. A entrega precisa passar despercebida: sem testemunhas e sem abrir o pacote. O comprador só paga depois de conferir a mercadoria.', reward:'💳 2.200 créditos + reputação', skulls:3, m:2, d:2},
+  {f:'nx',name:'Eco Binário', desc:'Rastrear um ruído nas redes antigas e descobrir qual Nexus está falando.', obj:'Um ruído se repete nas redes antigas, sempre no mesmo padrão. Rastreie-o até a origem, descubra qual Nexus está tentando se comunicar e o que ele quer dizer. Traga de volta um fragmento dos dados.', reward:'💾 Fragmento de dados Nexus + 2.000 créditos', skulls:3, m:3, d:3},
+  {f:'nx',name:'Servidor Órfão', desc:'Invadir um servidor sem dono que passou a tomar decisões sozinho.', obj:'Um servidor sem dono começou a tomar decisões por conta própria. Invada-o, descubra o que ele controla e o que já decidiu sozinho, e traga o que encontrar ao contratante.', reward:'🧠 +5% de processamento mental + 3.500 créditos', skulls:4, m:4, d:4},
+  {f:'nx',name:'Vozes no Cabo', desc:'Investigar operativos que ouvem uma voz em terminais públicos.', obj:'Vários operativos relatam ouvir uma voz ao se conectar em terminais públicos. Visite os terminais citados, descubra de onde a voz vem e se ela é real, uma falha ou algo pior.', reward:'💳 1.500 créditos + antivírus mental', skulls:2, m:2, d:3},
+  {f:'ic',name:'Sala Branca', desc:'Explorar uma sala de testes do Ícaro que não aparece em nenhuma planta.', obj:'Existe uma sala de testes do Projeto Ícaro que não consta em nenhuma planta. Encontre a entrada, explore a sala e descubra o que era testado ali. Recupere o cartão de acesso nível 2 que abre as áreas seguintes.', reward:'🔑 Cartão de acesso Ícaro nível 2', skulls:4, m:4, d:5},
+  {f:'ic',name:'Sobrevivente Zero', desc:'Localizar o único voluntário do Ícaro que nunca envelheceu.', obj:'Entre os voluntários do Ícaro, um nunca envelheceu. Localize-o, converse com ele e descubra o motivo. Outros também querem esse segredo, então o grupo precisa chegar primeiro e sair com a informação.', reward:'🧬 Implante único + 8.000 créditos', skulls:5, m:5, d:6},
+  {f:'ic',name:'Arquivo Queimado', desc:'Recuperar páginas de um relatório do Ícaro antes de serem incineradas.', obj:'Um relatório do Ícaro está prestes a ser incinerado. Entre na instalação, chegue ao incinerador antes que as páginas sejam queimadas e recupere o máximo possível. Cada página salva vale informação sobre o Projeto.', reward:'💾 Informações sobre o Ícaro + 2.800 créditos', skulls:3, m:3, d:3},
+  {f:'mc',name:'Reunião de Diretoria', desc:'Plantar uma escuta na sala de reuniões durante a votação anual.', obj:'Durante a votação anual, plante uma escuta na sala de reuniões da diretoria. O aparelho precisa estar instalado antes da reunião, sem ser detectado, e funcionando até o fim da votação.', reward:'💳 5.000 créditos + chip de espionagem', skulls:4, m:3, d:4},
+  {f:'mc',name:'Executivo em Fuga', desc:'Escoltar um executivo desertor até a fronteira da Cidade Alta.', obj:'Um executivo quer desertar da megacorporação. Escolte-o até a fronteira da Cidade Alta sem ser interceptado pela segurança dele. Ele precisa chegar vivo e em condições de falar.', reward:'🤝 Aliado corporativo + 3.000 créditos', skulls:3, m:4, d:3},
+  {f:'mc',name:'Drone Rebelde', desc:'Capturar um drone de segurança com falha e entregá-lo intacto.', obj:'Um drone de segurança entrou em falha e está solto. Capture-o sem danificar o chassi e entregue-o intacto ao comprador: quanto mais danificado, menos ele vale.', reward:'💳 2.000 créditos + peças de drone', skulls:2, m:2, d:2},
+  {f:'cb',name:'Rinha de Ciborgues', desc:'Vencer três lutas em uma arena clandestina sem implantes ilegais.', obj:'Entre na arena clandestina e vença três lutas. Implantes ilegais são proibidos e os juízes vão conferir. Quem perder uma luta está fora da rinha.', reward:'💳 2.500 créditos + reputação de rua', skulls:3, m:3, d:2},
+  {f:'cb',name:'Túnel dos Esquecidos', desc:'Atravessar os túneis abandonados da Cidade Baixa e resgatar um informante.', obj:'Atravesse os túneis abandonados da Cidade Baixa até o ponto onde um informante está escondido. Resgate-o e volte pelo mesmo caminho. Os túneis têm moradores que não gostam de visitas.', reward:'🤝 Informante + 4.000 créditos', skulls:4, m:5, d:4},
+  {f:'cb',name:'Noite de Apagão', desc:'Aproveitar um apagão de 6 horas para invadir o cofre de um sindicato.', obj:'Um apagão de 6 horas derruba a segurança da cidade. Use esse tempo para invadir o cofre de um sindicato do crime, abri-lo e sair antes da energia voltar. Quando a luz volta, as defesas voltam junto.', reward:'🚀 Equipamento experimental + 15.000 créditos', skulls:5, m:6, d:2}
+  ,
+  /* ---- CAÇA-RECOMPENSA (f:'rc') — name = apelido do alvo · por = quem paga · cond = condição de entrega · loc = última posição · pay = recompensa em créditos · bonus = extra (opcional) */
+  {f:'rc',name:'Dente de Aço', por:'ARMA-ZENADS', cond:'MORTO', loc:'Cidade Baixa, Corredor 9', pay:4500, bonus:'o implante que sobrar', desc:'Ciborgue em ciberpsicose que já derrubou três cobradores da loja.', obj:'Dente de Aço era mercenário e hoje não reconhece mais ninguém. Já matou três cobradores da ARMA-ZENADS pelos corredores da Cidade Baixa. Rastreie o ciborgue e acabe com ele; a placa craniana serve de prova. Ele não recua e não negocia.', skulls:3, m:3, d:3},
+  {f:'rc',name:'Madame Cinábrio', por:'ARMA-ZENADS', cond:'VIVO', loc:'Mercado Negro', pay:5500, bonus:'desconto na loja', desc:'Traficante que revende implantes arrancados de operativos mortos.', obj:'Madame Cinábrio revende no Mercado Negro implantes tirados de operativos caídos, e parte deles era mercadoria da ARMA-ZENADS. A loja a quer inteira e falando: entregue-a viva, sem dano nas mãos nem no terminal dela. Os seguranças dela fazem parte do pacote.', skulls:3, m:3, d:4},
+  {f:'rc',name:'O Contador', por:'MEGACORP', cond:'VIVO', loc:'Fronteira da Cidade Alta', pay:9000, bonus:'chip de acesso corporativo', desc:'Executivo que desviou fundos e sumiu levando as contas de cabeça.', obj:'O Contador desviou fundos da megacorporação e guarda os acessos na própria memória implantada. Encontre-o antes que a segurança dele o encontre e entregue-o vivo e consciente. Se o implante for danificado, a informação se perde e o pagamento cai pela metade.', skulls:4, m:4, d:4},
+  {f:'rc',name:'Zero-Nove', por:'NEXUS', cond:'VIVO OU MORTO', loc:'Redes antigas / Distrito Zero', pay:7000, bonus:'cópia dos registros dele', desc:'Hacker que vende acesso a terminais Nexus para quem pagar.', obj:'Zero-Nove abriu portas nas redes antigas e vende o acesso a quem pagar, o que já chamou a atenção do que dorme lá embaixo. Localize o ponto físico de onde ele opera e capture-o. Os Nexus não se importam se ele chega vivo, mas os registros do terminal dele precisam chegar inteiros.', skulls:4, m:4, d:4},
+  {f:'rc',name:'Pombo', por:'CIDADE BAIXA', cond:'VIVO', loc:'Túneis abandonados', pay:2000, desc:'Informante que vendeu endereços de moradores e fugiu para os túneis.', obj:'Pombo vendeu a corretores o endereço de quem vive na Cidade Baixa, e três famílias já foram visitadas. Ele se escondeu nos túneis e conhece cada atalho. Traga-o vivo para responder a quem foi prejudicado.', skulls:2, m:2, d:2},
+  {f:'rc',name:'Operário 114', por:'ÍCARO', cond:'MORTO', loc:'Instalação Ícaro, nível 3', pay:15000, bonus:'implante único', desc:'Voluntário cujo corpo rejeitou o experimento e passou a atacar tudo.', obj:'O voluntário 114 foi o primeiro a rejeitar o experimento do Ícaro e hoje ataca qualquer coisa que se mova no nível 3. O Ícaro quer o corpo e não pergunta como. Tragam o que restar dele inteiro; o que o corpo carrega vale mais do que o contrato.', skulls:5, m:5, d:5},
+  {f:'rc',name:'Gêmeos Vantablack', por:'MEGACORP', cond:'VIVO OU MORTO', loc:'Cidade Alta', pay:12000, bonus:'6.000 de bônus por alvo vivo', desc:'Dupla de assassinos que trabalha sempre em sincronia.', obj:'Os Gêmeos Vantablack assassinaram dois diretores e agem sempre em sincronia: o que um vê, o outro sabe. Separe-os ou derrube os dois ao mesmo tempo, porque o sobrevivente vai atrás do grupo. O contrato paga por alvo entregue.', skulls:5, m:5, d:6}
+  ,
+  /* ---- MISSÕES DE HISTÓRIA (f:'hs') — npcs = recrutáveis da missão (id vira o id da ficha em s7_fichas). Libera o recrutamento ao marcar "missão cumprida". */
+  {f:'hs',name:'Lote de Cobaias', por:'CIDADE BAIXA', desc:'Tirar dois órfãos vendidos a uma empresa de testes de implantes. Um quer sair; o outro quer ficar.',
+   obj:'Um orfanato da Cidade Baixa vendeu dois órfãos a uma empresa de testes de implantes cibernéticos. Entre na instalação e tire o que é cobaia e quer fugir. A amiga dele descobriu que a empresa matou os pais dela e escolheu ficar lá dentro para entender o porquê: ela não sai sem respostas. Copie os registros que ligam a empresa ao crime e convença-a a ir. A missão só se cumpre com os dois fora.',
+   det:'O cobaia está sob testes e pode estar instável por causa dos implantes. A amiga dele circula livre e passa por funcionária dócil; se o grupo for descoberto, ela vira refém. Os dois só aceitam entrar na party se confiarem em vocês.',
+   reward:'🤝 Dois aliados recrutáveis + 3.000 créditos', skulls:4, m:4, d:5,
+   npcs:[
+    {id:'npc_izak', nome:'Izak', idade:17, altura:'1,71 m', classe:'veloz', titulo:'Cobaia fugitivo', vida:80, attr:{vel:12,forca:9,sorte:10,int:10},
+     hist:'Cresceu marcado por abusos dentro de casa e pelo medo, com pais que o obrigavam a viver para o culto religioso da família. Aos 15 anos foi escolhido como sacrifício do culto e conseguiu fugir. Foi parar num orfanato, que o vendeu a uma empresa de testes de implantes cibernéticos.'},
+    {id:'npc_quira', nome:'Quira', idade:19, altura:'1,67 m', classe:'tatico', titulo:'Infiltrada', vida:80, attr:{vel:10,forca:8,sorte:11,int:12},
+     hist:'Viu os pais serem mortos na sua frente quando criança, por uma empresa fantasma. Foi morar num orfanato, onde conheceu Izak, que virou seu melhor amigo. Anos depois o orfanato também a vendeu a uma empresa, e lá dentro ela descobriu que foi essa empresa que matou seus pais. Decidiu ficar para entender o que aconteceu.'}
+   ]},
+  {f:'hs',name:'Protótipo Doméstico', por:'TÉCNICO ANÔNIMO', desc:'Tirar de uma fábrica de robôs um guarda que parece inofensivo, mas não é.',
+   obj:'Uma fábrica de robôs domésticos usa um de seus modelos como guarda. Um técnico do projeto o modificou fora das especificações: por fora ele é fofo e dócil, mas pode se transformar em algo monstruoso. Entre na fábrica, ganhe a confiança do guarda e tire-o de lá inteiro. Quem pediu o resgate foi justamente o técnico que o modificou.',
+   det:'O guarda reage a ameaças e a disparos. Se se sentir encurralado, ele muda de forma e deixa de distinguir amigos de inimigos. Conversar e dar a ele um motivo para sair pesa mais do que a força.',
+   reward:'🤝 Um aliado recrutável + 2.500 créditos', skulls:4, m:4, d:4,
+   npcs:[
+    {id:'npc_leo', nome:'Leo', idade:7, altura:'1,59 m', classe:'tanque', titulo:'Guarda doméstico', bot:1, vida:120, attr:{vel:8,forca:13,sorte:9,int:8},
+     hist:'Robô criado para trabalhos domésticos. Um dos técnicos do projeto o modificou de forma errada, e ele virou um robô fofo, mas capaz de se transformar em algo monstruoso. Hoje é usado como guarda na mesma empresa, que fabrica robôs parecidos com ele.'}
+   ]},
+  {f:'hs',name:'Sinal Antigo', por:'ANÔNIMO', desc:'Escoltar um entusiasta da internet antiga até um relé da Nexus, atrás do último rastro de um amigo morto.',
+   obj:'Um entusiasta da internet antiga perdeu um amigo próximo num acidente, quando os dois tentavam ir mais fundo no que as empresas manipuladoras escondem. Agora ele localizou um relé físico da Nexus que guarda o último envio do amigo, e suspeita que a Nexus esteja ligada à morte. Escolte-o até o relé, proteja-o enquanto ele recupera o arquivo e tirem os dois de lá antes que a Nexus perceba a invasão.',
+   det:'O relé fica numa rede antiga, vigiado por drones e por agentes da Nexus. Ele conhece bem a tecnologia, mas não sabe lutar e vai querer ficar pra ler tudo no local. Tudo o que ele achar no arquivo pode render uma missão nova contra a Nexus.',
+   reward:'🤝 Um aliado recrutável + 3.500 créditos', skulls:3, m:4, d:5,
+   npcs:[
+    {id:'npc_fred', nome:'Fred Carvalho', idade:37, altura:'1,75 m', classe:'netrunner', titulo:'Entusiasta da rede', vida:70, attr:{vel:8,forca:7,sorte:10,int:13},
+     hist:'Amante de tecnologia e da internet antiga. Perdeu um dos amigos mais próximos num acidente, quando os dois tentavam ir mais fundo nas descobertas sobre empresas manipuladoras. Hoje, por coincidência, seus olhos se voltaram para a Nexus.'}
+   ]},
+  {f:'hs',name:'Mente Sem Dono', por:'INFORMANTE NEXUS', desc:'Achar uma mulher sem memória que vaga pela Cidade Baixa e trabalha perto da Nexus.',
+   obj:'Um informante de dentro da Nexus avisou que um projeto de cérebro perfeito, dado como perdido, ainda existe. Ele perdeu a própria consciência e hoje vaga pela Cidade Baixa em empregos perto dos prédios da Nexus, sem saber o que é. Ache-a antes dos recuperadores da Nexus, ganhe a confiança dela e tire-a do alcance da empresa.',
+   det:'Ela responde com curiosidade, não com medo, e quer saber mais sobre si mesma. Recuperadores da Nexus rondam os mesmos bairros. Mostrar a ela algo sobre a própria origem pesa mais do que qualquer ameaça, mas a verdade de uma vez só pode travá-la.',
+   reward:'🤝 Um aliado recrutável + 3.000 créditos', skulls:3, m:4, d:5,
+   npcs:[
+    {id:'npc_verity', nome:'Verity', idade:7, altura:'1,80 m', classe:'tatico', titulo:'Mente perdida', vida:80, attr:{vel:9,forca:6,sorte:8,int:14},
+     hist:'Tentativa de criar o cérebro perfeito da Nexus, que perdeu a própria consciência. Vaga pela Cidade Baixa em busca de saber mais sobre si mesma e, por coincidência, trabalha em empresas perto da Nexus.'}
+   ]},
+  {f:'hs',name:'Ajuste de Contas', por:'CIDADE BAIXA', desc:'Ajudar um sobrevivente de gangue a caçar quem destruiu o bando dele e a descobrir por quê.',
+   obj:'Anos atrás, um massacre entre duas gangues de rua acabou com uma delas. Um sobrevivente passou esse tempo escondido, se recuperando, e agora quer vingança contra a gangue rival e quer saber por que tudo aconteceu. Leve-o até o território da gangue, ache quem deu a ordem e descubra o motivo do massacre.',
+   det:'Ele conhece cada rua e cada rosto da gangue, mas ainda carrega sequelas das batalhas. Está movido por raiva e pode forçar o grupo a ir além do plano. Quem organizou o massacre pode ser alguém que ninguém esperava.',
+   reward:'🤝 Um aliado recrutável + 3.500 créditos', skulls:4, m:4, d:4,
+   npcs:[
+    {id:'npc_zero', nome:'Zero', idade:7, altura:'1,70 m', classe:'bruto', titulo:'Último da gangue', vida:100, attr:{vel:10,forca:13,sorte:8,int:9},
+     hist:'Ex-membro de uma gangue de rua eliminada por outra depois de um massacre entre elas. Passou anos escondido, se recuperando das batalhas. Agora procura vingança contra a gangue rival e quer saber o motivo de tudo ter acontecido.'}
+   ]},
+  {f:'hs',name:'Marcas Permanentes', por:'CONTATO ANÔNIMO', desc:'Acompanhar um infiltrador marcado por implantes experimentais até os arquivos de uma corporação.',
+   obj:'Um jovem da Cidade Baixa, infiltrador e hacker, recebeu implantes experimentais depois de um acidente com uma corporação e carrega as marcas até hoje. Ele quer descobrir quem está por trás dos experimentos e por quê. Acompanhe-o até a instalação onde ficam os arquivos do programa, ajude-o a entrar sem disparar alarme e a copiar os registros, e saiam antes de a corporação fechar o prédio.',
+   det:'Ele invade sistemas sozinho, mas aceita ajuda em campo. Os implantes experimentais reagem mal a interferência eletrônica pesada: se o grupo usar contramedidas fortes, ele pode travar. O que ele achar nos arquivos pode apontar para outras missões.',
+   reward:'🤝 Um aliado recrutável + 3.500 créditos', skulls:4, m:4, d:5,
+   npcs:[
+    {id:'npc_maik', nome:'Maik', idade:20, altura:'1,68 m', classe:'netrunner', titulo:'Infiltrador', vida:80, attr:{vel:11,forca:8,sorte:9,int:12},
+     hist:'Cresceu na Cidade Baixa, aprendendo a sobreviver em meio a gangues, corporações e tecnologia ilegal. Depois de um acidente envolvendo uma corporação, recebeu implantes experimentais que mudaram seu corpo e deixaram marcas permanentes. Desde então virou infiltrador e hacker, trabalhando em missões perigosas enquanto tenta descobrir a verdade sobre o experimento que mudou sua vida. Objetivo: descobrir quem está por trás dos experimentos e por quê.'}
+   ]},
+  {f:'hs',name:'Eco no Tablet', por:'SINAL FRACO', desc:'Recuperar um tablet esquecido num laboratório da Nexus invadido por netrunners, com uma mente presa dentro.',
+   obj:'Um laboratório da Nexus foi atacado por netrunners e abandonado, e ninguém voltou para limpar o que ficou. Um sinal fraco ainda parte de lá, vindo de um tablet sem acesso à rede. Entre no laboratório, atravesse o que sobrou do ataque, ache o tablet e traga-o de volta inteiro. Dentro dele está um dos experimentos da Nexus para criar a mente perfeita.',
+   det:'O tablet não acessa a internet e só responde por perto. A mente dentro dele foi dada como falha por cometer erros iguais aos de um humano, e está há muito tempo sozinha. Ela reage com curiosidade e com medo de ser largada de novo. Os destroços do ataque ainda têm armadilhas, drones e restos de ICE ativos.',
+   reward:'🤝 Um aliado recrutável + 3.000 créditos', skulls:3, m:4, d:4,
+   npcs:[
+    {id:'npc_aegis', nome:'Aegis', idade:'SEM', altura:'SEM', classe:'netrunner', titulo:'Mente no tablet', bot:1, vida:60, attr:{vel:8,forca:4,sorte:10,int:14},
+     hist:'Mais um dos experimentos da Nexus para criar a mente perfeita, mas com uma falha: tem taxa de erro igual à de um ser humano. Foi deixada num dos laboratórios da Nexus e esquecida depois que o mesmo laboratório foi atacado por netrunners. Ficou presa num tablet, sem conseguir acessar a internet.'}
+   ]},
+  {f:'hs',name:'O Último Empregado', por:'CIDADE BAIXA', desc:'Convencer um robô doméstico, que ainda limpa uma mansão escondida dentro de uma fábrica, a deixar o lugar.',
+   obj:'Há uma mansão escondida dentro de uma fábrica abandonada, e dizem que alguém ainda mantém tudo limpo lá dentro. Os donos sumiram há 30 anos, mas o empregado continua no posto. Atravesse a fábrica, ache a mansão e converse com ele. Ele não sabe que o tempo passou e não vai largar o serviço por qualquer motivo: é preciso dar a ele uma razão para sair.',
+   det:'O robô é calmo e educado e não ataca visitantes, mas trata invasores como convidados e os segue limpando e arrumando. Ele ignora todo o caos de Night City e só reage se alguém danificar a casa. A fábrica em volta ainda tem drones de segurança e máquinas ativas. Dentro da mansão pode haver registros do que aconteceu com os antigos donos.',
+   reward:'🤝 Um aliado recrutável + 2.500 créditos', skulls:2, m:4, d:3,
+   npcs:[
+    {id:'npc_bento', nome:'Bento', idade:40, altura:'1,75 m', classe:'reforco', titulo:'Mordomo da mansão', bot:1, vida:70, attr:{vel:7,forca:8,sorte:9,int:10},
+     hist:'Robô doméstico, simples e calmo, que cuida dos aposentos dos seus mestres numa mansão escondida dentro de uma fábrica. Os mestres sumiram há 30 anos, mas ele continua ali, limpando o lugar e ignorando as bizarrices de Night City.'}
+   ]}
 ];
-
-function shuffle(a){
-  a = a.slice();
-  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
-  return a;
+var SIL='<svg viewBox="0 0 44 56" aria-hidden="true"><circle cx="22" cy="18" r="9" fill="currentColor"/><path d="M4 56c1-14 9-22 18-22s17 8 18 22z" fill="currentColor"/></svg>';
+var SILB='<svg viewBox="0 0 44 56" aria-hidden="true"><rect x="12" y="9" width="20" height="16" rx="3" fill="currentColor"/><rect x="20" y="3" width="4" height="6" fill="currentColor"/><path d="M5 56c0-13 7-24 17-24s17 11 17 24z" fill="currentColor"/></svg>';
+function ida(n,u){return typeof n.idade==='number'?n.idade+u:n.idade;}
+function rv(c,n){return !!c.done||hasFicha(n.id);}
+function hasFicha(id){return S7P.fichas().some(function(f){return f.id===id;});}
+function npcOk(c){return !c.npcs||c.npcs.some(function(n){return !hasFicha(n.id);});}
+function npcCls(n){var k=S7P.CLASSES.filter(function(x){return x.k===n.classe;})[0];return k?k.n:'';}
+function vd(t){var P=[['cabeca',15],['torso',30],['bracoE',12.5],['bracoD',12.5],['pernaE',15],['pernaD',15]],o={},s=0;P.forEach(function(x,i){var v=i===5?t-s:Math.round(t*x[1]/100);s+=v;o[x[0]]={max:v,atual:v,def:[]};});return o;}
+function mkFicha(n){return {id:n.id,nome:n.nome,titulo:n.titulo,classe:n.classe,desc:'Idade: '+ida(n,' anos')+' · Altura: '+n.altura+'\n\n'+n.hist,
+  atributos:n.attr,extra:{vel:'',forca:'',sorte:'',int:''},vidaTotal:n.vida,partes:vd(n.vida),comida:100,sorteSessao:3,creditos:0,implantes:[],estados:[],retrato:{img:'',zoom:100,x:0,y:0}};}
+CONTRACTS.forEach(function(c){if(c.pay&&!c.reward)c.reward='💳 '+c.pay.toLocaleString('pt-BR')+' créditos'+(c.bonus?' + '+c.bonus:'');});
+var SKEY='s7_missoes', DAY=864e5;
+var picks=[], filter='all', sel=0, anim=true, flipped=null;
+function $(i){return document.getElementById(i);}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function skullBar(n){var s='';for(var i=1;i<=5;i++)s+=i<=n?'☠':'<span class="off">☠</span>';return s;}
+function list(){return picks.filter(function(c){return filter==='all'||c.f===filter;});}
+function fcol(){return filter==='all'?'var(--red)':FACS[filter].c;}
+function bars(name){var h=2166136261,o='';for(var k=0;k<name.length;k++){h^=name.charCodeAt(k);h=Math.imul(h,16777619);}h>>>=0;for(var i=0;i<46;i++){h=Math.imul(h^(h>>>13),1274126177)>>>0;o+='<i style="width:'+(1+h%3)+'px'+(i%2?';background:transparent':'')+'"></i>';}return o;}
+/* ---- filtro do sorteio (o que pode aparecer ao GERAR NOVO QUADRO) ---- */
+var SFKEY='s7_missoes_sf', SF=(function(){try{var d=JSON.parse(localStorage.getItem(SFKEY)||'null');return{f:(d&&d.f)||{},k:(d&&d.k)||{}};}catch(e){return{f:{},k:{}};}})();
+/* ---- missões ARQUIVADAS (salvas no navegador; nunca entram no sorteio) ---- */
+var AKEY='s7_missoes_arq', ARQ=(function(){try{var d=JSON.parse(localStorage.getItem(AKEY)||'[]');return Array.isArray(d)?d.filter(function(x){return typeof x==='string';}):[];}catch(e){return[];}})();
+function arqSave(){try{localStorage.setItem(AKEY,JSON.stringify(ARQ));return true;}catch(e){return false;}}
+function isArq(n){return ARQ.indexOf(n)>=0;}
+function arqCount(){var q=$('arqBarN');if(q)q.textContent=ARQ.length?ARQ.length+(ARQ.length>1?' ARQUIVADAS':' ARQUIVADA'):'';var e=$('arqN');if(e)e.textContent=ARQ.length?'('+ARQ.length+')':'';}
+function escA(t){return String(t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function arqOk(c,drop){
+  if(drop&&!active(c))return true;   /* arrastar até a barra já é a confirmação, só pergunta se o contrato está aceito */
+  return confirm('Arquivar "'+c.name+'"?\nEla sai do quadro e não volta a aparecer ao girar. Dá para desarquivar na aba ARQUIVADAS.'+(active(c)?'\n\nATENÇÃO: o contrato está ACEITO e o prazo será perdido.':''));
 }
-
-function skullBar(n){
-  var s='';
-  for(var i=1;i<=5;i++){ s += i<=n ? '☠' : '<span class="off">☠</span>'; }
-  return s;
+function arquivar(i,ok){
+  var c=list()[i]; if(!c)return false;
+  if(!ok&&!arqOk(c))return false;
+  var novo=!isArq(c.name); if(novo)ARQ.push(c.name);
+  if(!arqSave()){if(novo)ARQ.pop();toast('Não consegui salvar: armazenamento do navegador cheio.');return false;}
+  picks=picks.filter(function(x){return x!==c;}); flipped=null;
+  if(window.S7LOG)S7LOG.add('missao','Arquivou: '+c.name);
+  toast('Arquivada: '+c.name);
+  if(picks.length)render();else renderBoard();
+  return true;
 }
-
-function renderBoard(animate){
-  var board = document.getElementById('board');
-  board.innerHTML='';
-  var picks = shuffle(CONTRACTS).slice(0,5);
-  picks.forEach(function(c, idx){
-    var code = 'OP-' + (Math.floor(Math.random()*900)+100);
-    var card = document.createElement('div');
-    card.className='contract';
-    card.style.animationDelay = (idx*0.08)+'s';
-    card.innerHTML =
-      '<div class="strip strip-top">ARMA-ZENADS ▲▲▲▲▲▲▲▲▲▲▲▲<span class="logo">AZ</span>▲▲▲▲▲▲▲▲▲▲▲▲ SETOR 7</div>'+
-      '<div class="ticks l"></div><div class="ticks r"></div>'+
-      '<div class="inner">'+
-        '<div class="c-code">CONTRATO <b>'+code+'</b> // CONFIDENCIAL</div>'+
-        '<div class="c-skulls">'+skullBar(c.skulls)+'</div>'+
-        '<h3>'+c.name+'</h3>'+
-        '<p>'+c.obj+'</p>'+
-        '<div class="c-reward">RECOMPENSA ▸ '+c.reward+'</div>'+
-      '</div>'+
-      '<div class="strip strip-bot">▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯<span class="lit">▮</span>▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯</div>';
-    board.appendChild(card);
+function desarquivar(nome){
+  var k=ARQ.indexOf(nome); if(k<0)return; ARQ.splice(k,1); arqSave();
+  if(window.S7LOG)S7LOG.add('missao','Desarquivou: '+nome);
+  arqCount(); fillDos('arq'); toast('Desarquivada: '+nome+'. Ela volta ao sorteio.');
+}
+function desarquivarTodas(){
+  if(!ARQ.length||!confirm('Desarquivar TODAS as '+ARQ.length+' missões?'))return;
+  ARQ=[]; arqSave(); arqCount(); fillDos('arq'); toast('Todas as missões voltaram ao sorteio.');
+}
+function okC(c){return !isArq(c.name)&&SF.f[c.f]!==false&&(!c.skulls||SF.k[c.skulls]!==false);}
+function sfSave(){try{localStorage.setItem(SFKEY,JSON.stringify(SF));}catch(e){}}
+function sfOff(){var n=0;Object.keys(FACS).forEach(function(k){if(SF.f[k]===false)n++;});for(var i=1;i<=5;i++)if(SF.k[i]===false)n++;return n;}
+function sfDraw(){
+  var h='<h5>FACÇÕES / TIPO</h5><div class="ch">'+Object.keys(FACS).map(function(k){return '<button type="button" style="--fc:'+FACS[k].c+'" class="'+(SF.f[k]===false?'':'on')+'" onclick="sfTog(\'f\',\''+k+'\')">'+(k==='hs'?'RECRUTAR NPC':FACS[k].n)+'</button>';}).join('')+'</div>'+
+   '<h5>RISCO (CAVEIRAS)</h5><div class="ch">'+[1,2,3,4,5].map(function(i){return '<button type="button" class="'+(SF.k[i]===false?'':'on')+'" onclick="sfTog(\'k\','+i+')">'+'☠'.repeat(i)+'</button>';}).join('')+'</div>'+
+   '<div class="sfi" id="sfi"></div><div class="all"><button type="button" onclick="sfAll(1)">TUDO</button><button type="button" onclick="sfAll(0)">LIMPAR</button></div>';
+  var keep=picks.filter(active).map(function(c){return c.name;}),pos=CONTRACTS.filter(function(c){return okC(c)&&npcOk(c)&&keep.indexOf(c.name)<0;}).length;
+  h=h.replace('<div class="sfi" id="sfi"></div>','<div class="sfi">Toque num botão para ver <b>só aquele</b>; toque de novo para somar outros. O quadro muda na hora. Contratos possíveis: <b>'+pos+'</b></div>');
+  $('sf').innerHTML=h;var n=sfOff();$('sfN').textContent=n?'(ATIVO)':'';
+}
+function sfTog(t,k){var ks=t==='f'?Object.keys(FACS):[1,2,3,4,5],all=ks.every(function(x){return SF[t][x]!==false;});
+  if(all)ks.forEach(function(x){SF[t][x]=(String(x)===String(k));});else SF[t][k]=SF[t][k]===false?true:false;
+  if(!ks.some(function(x){return SF[t][x]!==false;}))ks.forEach(function(x){SF[t][x]=true;});
+  sfSave();sfDraw();renderBoard();}
+function sfAll(on){Object.keys(FACS).forEach(function(k){SF.f[k]=!!on;});[1,2,3,4,5].forEach(function(i){SF.k[i]=!!on;});if(!on){Object.keys(FACS).forEach(function(k){SF.f[k]=true;});[1,2,3,4,5].forEach(function(i){SF.k[i]=true;});}sfSave();sfDraw();renderBoard();}
+function toggleSF(){var b=$('sf');b.hidden=!b.hidden;if(!b.hidden)sfDraw();}
+sfDraw();
+function newCode(){return 'OP-'+(Math.floor(Math.random()*900)+100);}
+/* ---- grupo (vem da BASE: s7_party) ---- */
+function partySize(){try{var p=JSON.parse(localStorage.getItem('s7_party')||'null');return p&&p.slots?p.slots.filter(Boolean).length:0;}catch(e){return 0;}}
+/* ---- prazo ---- */
+function active(c){return c.dl&&c.dl>Date.now();}
+function expired(c){return c.dl&&c.dl<=Date.now();}
+function timeTxt(c){
+  if(!c.dl)return c.d+(c.d>1?' DIAS':' DIA');
+  var r=c.dl-Date.now(); if(r<=0)return 'EXPIRADO';
+  var d=Math.floor(r/DAY),h=Math.floor(r%DAY/36e5),m=Math.floor(r%36e5/6e4);
+  return d>0?d+'d '+h+'h':h+'h '+m+'min';
+}
+function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},3200);}
+/* ---- salvar / carregar ---- */
+function save(){try{localStorage.setItem(SKEY,JSON.stringify({v:1,filter:filter,sel:sel,picks:picks.map(function(c){return{n:c.name,code:c.code,dl:c.dl||0,done:c.done?1:0};})}));}catch(e){}}
+function load(){
+  try{
+    var st=JSON.parse(localStorage.getItem(SKEY)||'null'); if(!st||!st.picks)return false;
+    var out=[];
+    st.picks.forEach(function(p){var b=CONTRACTS.filter(function(c){return c.name===p.n;})[0];if(!b||isArq(p.n))return;var o=Object.assign({},b);o.code=p.code||newCode();if(p.dl)o.dl=p.dl;if(p.done)o.done=1;out.push(o);});
+    if(!out.length)return false;
+    picks=out;filter=(st.filter==='all'||FACS[st.filter])?st.filter:'all';sel=st.sel|0;return true;
+  }catch(e){return false;}
+}
+/* ---- quadro: contratos aceitos (e dentro do prazo) continuam no quadro ---- */
+function ensureF(out,keep,names,f,idx){
+  if(out.some(function(c){return c.f===f;})||idx<keep.length||idx>=out.length)return;
+  var r=shuffle(CONTRACTS.filter(function(c){return c.f===f&&names.indexOf(c.name)<0&&npcOk(c)&&okC(c);}))[0];
+  if(r){var o=Object.assign({},r);o.code=newCode();out[idx]=o;}
+}
+function renderBoard(){
+  var keep=picks.filter(active), names=keep.map(function(c){return c.name;});
+  var pool=shuffle(CONTRACTS.filter(function(c){return names.indexOf(c.name)<0&&npcOk(c)&&okC(c);})), out=keep.slice();
+  if(!pool.length&&!out.length){toast('Nenhum contrato bate com o filtro do sorteio. Ligue mais opções.');return;}
+  while(out.length<5&&pool.length){var o=Object.assign({},pool.shift());o.code=newCode();out.push(o);}
+  ensureF(out,keep,names,'hs',out.length-1);ensureF(out,keep,names,'rc',out.length-2);
+  picks=out;sel=0;flipped=null;anim=true;render();
+  if(keep.length)toast(keep.length+(keep.length>1?' contratos aceitos continuam':' contrato aceito continua')+' no quadro.');
+}
+var RET='<svg viewBox="0 0 120 92" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" opacity=".75"><circle cx="60" cy="46" r="32"/><circle cx="60" cy="46" r="20"/><path d="M60 4v18M60 70v18M16 46h18M86 46h18"/></g><circle cx="60" cy="38" r="8" fill="currentColor"/><path d="M42 64c2-11 10-16 18-16s16 5 18 16z" fill="currentColor"/></svg>';
+function brow(a,b){return '<div class="row"><span>'+a+'</span><b>'+b+'</b></div>';}
+/* carta de caçada: mesma mecânica (frente/verso/prazo), visual de cartaz de procurado */
+function bcard(c,i,ex,ac,st){
+  var pt=partySize(),
+  head='<div class="c-head"><div class="c-tags">%T%</div><h3>'+c.name+'</h3><div class="code">'+c.por+' // <b>'+c.code+'</b></div></div>';
+  return '<div class="cc bty'+(anim?' in':'')+(c.skulls===5?' top':'')+(ex?' exp':'')+'" data-i="'+i+'" data-code="'+c.code+'" style="--fc:'+FACS.rc.c+';--dl:'+(i*.07)+'s"><div class="flip">'+
+    '<div class="face front"><div class="c-in">'+head.replace('%T%','<span class="tag zr-rar">PROCURADO</span><span class="tag">'+c.cond+'</span>')+
+      '<div class="wanted">'+RET+'</div><div class="sk">'+skullBar(c.skulls)+'</div><p>'+c.desc+'</p>'+
+      '<div class="bounty"><span>RECOMPENSA</span><b>₡ '+c.pay.toLocaleString('pt-BR')+'</b></div>'+
+      '<div class="c-foot"><span class="flip-hint">↻ CLIQUE PARA VIRAR</span></div></div></div>'+
+    '<div class="face back"><div class="c-in">'+head.replace('%T%','<button type="button" tabindex="-1" class="tag zr-rar arq" data-arq="1" title="Arquivar esta missão (não volta a aparecer ao girar)">📦 ARQUIVAR</button><span class="tag">'+st+'</span>')+
+      '<div class="info">'+brow('Entregar',c.cond)+brow('Visto em',c.loc)+brow('Risco','<span class="sk" style="font-size:.7rem">'+skullBar(c.skulls)+'</span> '+(RISK[c.skulls]||''))+brow('Membros','até '+c.m)+
+        '<div class="row"><span>'+(c.dl?'Restam':'Prazo')+'</span><b class="cd" data-code="'+c.code+'">'+timeTxt(c)+'</b></div></div>'+
+      (pt?'<div class="grp'+(pt>c.m?' bad':'')+'">SEU GRUPO: '+pt+(pt>c.m?' — EXCEDE O LIMITE':' ✓')+'</div>':'')+
+      '<div class="rw brief"><span>ALVO</span>'+c.obj+'<br><br><span>PAGAMENTO</span>'+c.reward+'</div>'+
+      '<div class="c-foot"><button type="button" tabindex="-1" class="btn'+(ac?' added':'')+'">'+(ex?'PRAZO ESGOTADO':ac?'CAÇADA ACEITA':'ACEITAR CAÇADA')+'</button><span class="flip-hint">↻ CLIQUE PARA VOLTAR</span></div></div></div>'+
+    '</div></div>';
+}
+function scard(c,i,ex,ac,st){
+  var pt=partySize(),N=c.npcs,done=!!c.done;
+  if(done)st='CONCLUÍDA';
+  var head='<div class="c-head"><div class="c-tags">%T%</div><h3>'+c.name+'</h3><div class="code">'+c.por+' // <b>'+c.code+'</b></div></div>';
+  var duo=N.map(function(n){return '<div class="pp"><div class="pf">'+(n.bot&&rv(c,n)?SILB:SIL)+'</div><div class="pn">'+(rv(c,n)?n.nome:'???')+'<small>'+(rv(c,n)?ida(n,' ANOS'):'RECRUTÁVEL')+'</small></div></div>';}).join('<i class="lk"></i>');
+  var btns=done?'<button type="button" tabindex="-1" class="btn fin" data-npc="1">VER RECRUTÁVEIS</button>':
+    '<button type="button" tabindex="-1" class="btn'+(ac?' added':'')+'">'+(ex?'PRAZO ESGOTADO':ac?'CONTRATO ACEITO':'ACEITAR CONTRATO')+'</button>'+(ac?'<button type="button" tabindex="-1" class="btn fin" data-fin="1">MISSÃO CUMPRIDA</button>':'');
+  return '<div class="cc hst'+(anim?' in':'')+(ex?' exp':'')+'" data-i="'+i+'" data-code="'+c.code+'" style="--fc:'+FACS.hs.c+';--dl:'+(i*.07)+'s"><div class="flip">'+
+    '<div class="face front"><div class="c-in">'+head.replace('%T%','<span class="tag zr-rar">HISTÓRIA</span><span class="tag">'+(N.length>1?'RECRUTÁVEIS ×'+N.length:'RECRUTÁVEL')+'</span>')+
+      '<div class="duo">'+duo+'</div><div class="sk">'+skullBar(c.skulls)+'</div><p>'+c.desc+'</p>'+
+      '<div class="rw"><span>RECOMPENSA</span>'+c.reward+'</div>'+
+      '<div class="c-foot"><span class="flip-hint">↻ CLIQUE PARA VIRAR</span></div></div></div>'+
+    '<div class="face back"><div class="c-in">'+head.replace('%T%','<button type="button" tabindex="-1" class="tag zr-rar arq" data-arq="1" title="Arquivar esta missão (não volta a aparecer ao girar)">📦 ARQUIVAR</button><span class="tag">'+st+'</span>')+
+      '<div class="info">'+brow(N.length>1?'Recrutáveis':'Recrutável',N.map(function(n){return rv(c,n)?n.nome:'???';}).join(' + '))+brow('Risco','<span class="sk" style="font-size:.7rem">'+skullBar(c.skulls)+'</span> '+(RISK[c.skulls]||''))+brow('Membros','até '+c.m)+
+        '<div class="row"><span>'+(c.dl?'Restam':'Prazo')+'</span><b class="cd" data-code="'+c.code+'">'+(done?'—':timeTxt(c))+'</b></div></div>'+
+      (pt?'<div class="grp'+(pt>c.m?' bad':'')+'">SEU GRUPO: '+pt+(pt>c.m?' — EXCEDE O LIMITE':' ✓')+'</div>':'')+
+      '<div class="rw brief"><span>OBJETIVO</span>'+c.obj+'<br><br><span>BRIEFING</span>'+c.det+'</div>'+
+      '<div class="c-foot">'+btns+'<span class="flip-hint">↻ CLIQUE PARA VOLTAR</span></div></div></div>'+
+    '</div></div>';
+}
+function dosNpc(c){
+  if(!c.npcs)return''; var P=S7P.getParty();
+  return c.npcs.map(function(n){
+    if(!rv(c,n))return '<div class="npc"><div class="nh"><b>???</b><span>identidade desconhecida</span></div><p>Um recrutável. Quem é só aparece ao cumprir a missão.</p><button class="nbtn" disabled>🔒 LIBERA AO CUMPRIR A MISSÃO</button></div>';
+    var has=hasFicha(n.id),inP=P.slots.indexOf(n.id)>=0,
+    b=inP?'<button class="nbtn" disabled>NA PARTY</button>':(!c.done&&!has)?'<button class="nbtn" disabled>🔒 LIBERA AO CUMPRIR A MISSÃO</button>':'<button class="nbtn" data-rec="'+n.id+'">'+(has?'ENTRAR NA PARTY':'RECRUTAR')+'</button>';
+    return '<div class="npc"><div class="nh"><b>'+n.nome+'</b><span>'+ida(n,' anos')+' · '+n.altura+'</span></div><div class="cls">'+npcCls(n)+'</div><p>'+n.hist+'</p>'+b+'</div>';
+  }).join('');
+}
+function finish(i){
+  var c=list()[i]; if(!c||!c.npcs||!active(c))return;
+  if(confirm('Marcar \"'+c.name+'\" como cumprida e liberar o recrutamento?')){c.done=1;delete c.dl;if(window.S7LOG)S7LOG.add('missao','Cumpriu: '+c.name);if(window.S7REP)S7REP.rep(c.f,10);render();openDos('info');toast('Missão cumprida. Os recrutáveis estão no dossiê.');}
+}
+function recruit(id){
+  var c=list()[sel]; if(!c||!c.npcs||!c.done)return;
+  var n=c.npcs.filter(function(x){return x.id===id;})[0]; if(!n)return;
+  if(!hasFicha(id)){var F=S7P.fichas();F.push(mkFicha(n));if(!S7P.saveFichas(F))return;}
+  toast(S7P.addToParty(id)?n.nome+' entrou na party.':'Party cheia: '+n.nome+' foi salvo como ficha. Abra um slot na BASE.');
+  fillDos(dosMode);
+}
+function render(){
+  var L=list(); if(sel>=L.length)sel=Math.max(0,L.length-1);
+  var h='<div class="op">▸ CANAL 07</div><button type="button" style="--fc:var(--red)" class="'+(filter==='all'?'on':'')+'" onclick="setF(\'all\')">TODOS <i>'+picks.length+'</i></button>';
+  Object.keys(FACS).forEach(function(k){
+    var n=picks.filter(function(c){return c.f===k;}).length;
+    h+='<button type="button" style="--fc:'+FACS[k].c+'" class="'+(filter===k?'on':'')+'" onclick="setF(\''+k+'\')">'+FACS[k].n+' <i>'+n+'</i></button>';
   });
-  document.getElementById('board-count').textContent = '0' + picks.length;
+  $('fbar').innerHTML=h; $('fbar').style.setProperty('--fc',fcol());
+  var d='', pt=partySize();
+  if(!L.length){
+    var F=FACS[filter];
+    d='<div class="cc empty'+(anim?' in':'')+'" data-i="0" style="--fc:'+F.c+'"><div class="flip"><div class="face front"><div class="c-in"><div class="c-head"><div class="c-tags"><span class="tag zr-rar">CONTRATO PRIORITÁRIO</span></div><h3>Contratos<br>esgotados</h3></div><div class="hd"><s class="p1">+</s><s class="p2">+</s><s class="p3">+</s><s class="p4">+</s><b>'+F.g+'</b></div><p>'+F.n+' não tem contratos neste quadro. Gere um novo quadro para tentar outra vez.</p></div></div></div></div>';
+  } else L.forEach(function(c,i){
+    var F=FACS[c.f],ex=expired(c),ac=active(c),st=ex?'EXPIRADO':ac?'ACEITO':'DISPONÍVEL';
+    if(c.f==='rc'){d+=bcard(c,i,ex,ac,st);return;}
+    if(c.f==='hs'){d+=scard(c,i,ex,ac,st);return;}
+    var head='<div class="c-head"><div class="c-tags">%T%</div><h3>'+c.name+'</h3><div class="code">'+F.n+' // <b>'+c.code+'</b></div></div>';
+    d+='<div class="cc'+(anim?' in':'')+(c.skulls===5?' top':'')+(ex?' exp':'')+'" data-i="'+i+'" data-code="'+c.code+'" style="--fc:'+F.c+';--dl:'+(i*.07)+'s"><div class="flip">'+
+      /* FRENTE: dificuldade, DESCRIÇÃO BÁSICA (desc) e recompensa */
+      '<div class="face front"><div class="c-in">'+
+        head.replace('%T%',RISK[c.skulls]?'<span class="tag zr-rar">'+RISK[c.skulls]+'</span>':'')+
+        '<div class="c-bar">'+bars(c.name)+'</div>'+
+        '<div class="hd"><s class="p1">+</s><s class="p2">+</s><s class="p3">+</s><s class="p4">+</s><b>'+F.g+'</b></div>'+
+        '<div class="sk">'+skullBar(c.skulls)+'</div>'+
+        '<p>'+(c.desc||c.obj)+'</p>'+
+        '<div class="rw"><span>RECOMPENSA</span>'+c.reward+'</div>'+
+        '<div class="c-foot"><span class="flip-hint">↻ CLIQUE PARA VIRAR</span></div></div></div>'+
+      /* VERSO: informações completas, OBJETIVO detalhado (obj) + aceitar */
+      '<div class="face back"><div class="c-in">'+
+        head.replace('%T%','<button type="button" tabindex="-1" class="tag zr-rar arq" data-arq="1" title="Arquivar esta missão (não volta a aparecer ao girar)">📦 ARQUIVAR</button><span class="tag">'+st+'</span>')+
+        '<div class="info">'+
+          '<div class="row"><span>Risco</span><b><span class="sk" style="font-size:.7rem">'+skullBar(c.skulls)+'</span> '+(RISK[c.skulls]||'')+'</b></div>'+
+          '<div class="row"><span>Membros</span><b>até '+c.m+'</b></div>'+
+          '<div class="row"><span>'+(c.dl?'Restam':'Prazo')+'</span><b class="cd" data-code="'+c.code+'">'+timeTxt(c)+'</b></div>'+
+        '</div>'+
+        (pt?'<div class="grp'+(pt>c.m?' bad':'')+'">SEU GRUPO: '+pt+(pt>c.m?' — EXCEDE O LIMITE':' ✓')+'</div>':'')+
+        '<div class="rw brief"><span>OBJETIVO</span>'+(c.obj||c.desc)+(c.det?'<br><br><span>BRIEFING</span>'+c.det:'')+'</div>'+
+        '<div class="c-foot"><button type="button" tabindex="-1" class="btn'+(ac?' added':'')+'">'+(ex?'PRAZO ESGOTADO':ac?'CONTRATO ACEITO':'ACEITAR CONTRATO')+'</button><span class="flip-hint">↻ CLIQUE PARA VOLTAR</span></div></div></div>'+
+      '</div></div>';
+  });
+  var dk=$('deck'); dk.classList.add('nt'); dk.innerHTML=d; anim=false; layout();
+  requestAnimationFrame(function(){requestAnimationFrame(function(){dk.classList.remove('nt');});});
+  var n=picks.filter(active).length, F2=filter==='all'?null:FACS[filter];
+  $('rank').style.setProperty('--fc',fcol());
+  $('rank').innerHTML='<div class="rk-top">FACÇÃO: '+(F2?F2.n:'TODAS')+'</div><div class="rk-logo">'+(F2?F2.g:'S7')+'</div>'+
+    '<div class="rk-prog"><span>ACEITOS</span><span>'+n+'/'+picks.length+'</span></div><div class="rk-bar"><i style="width:'+(picks.length?n/picks.length*100:0)+'%"></i></div>';
+  $('board-count').textContent=('0'+picks.length).slice(-2); arqCount();
+  if($('dos').classList.contains('on'))fillDos(dosMode);
+  save();
 }
-renderBoard();
+/* espalha as cartas em volta da selecionada (carrossel 3D) */
+function layout(){
+  var dk=$('deck'),cs=dk.children,cw=Math.min(292,dk.clientWidth*.74),code=flipped;
+  for(var i=0;i<cs.length;i++){
+    var el=cs[i],d=i-sel,a=Math.abs(d),s=d<0?-1:1,on=d===0;
+    var fl=on&&code!==null&&el.getAttribute('data-code')===code;
+    var x=on?0:s*(cw*1.02+(a-1)*cw*.56), z=on?(fl?90:40):-90-(a-1)*70, ry=on?0:s*(a===1?42:52);
+    el.style.transform='translate3d(calc(-50% + '+x+'px),0,'+z+'px) rotateY('+ry+'deg)';
+    el.style.zIndex=50-a; el.style.opacity=a>2?0:1; el.style.pointerEvents=a>2?'none':'';
+    el.classList.toggle('sel',on); el.classList.toggle('flipped',fl);
+    var b=el.querySelector('.btn'); if(b)b.tabIndex=fl?0:-1;
+  }
+  var n=list().length;
+  document.querySelector('.key.l').style.opacity=sel<=0?.3:1;
+  document.querySelector('.key.r').style.opacity=sel>=n-1?.3:1;
+}
+function afterSel(){ if($('dos').classList.contains('on'))fillDos(dosMode); save(); }
+function setF(k){filter=k;sel=0;flipped=null;render();}
+function go(n){ var L=list(); if(n<0||n>=L.length||n===sel)return; sel=n; flipped=null; layout(); afterSel(); }
+function pick(i){ if(i===sel)flip(); else go(i); }
+function step(d){ go(sel+d); }
+function flip(){ var c=list()[sel]; if(!c)return; flipped=(flipped===c.code)?null:c.code; layout(); }
+function acc(i){
+  var c=list()[i]; if(!c||expired(c))return;
+  if(c.done){openDos('info');return;}
+  if(active(c)){ if(confirm('Abandonar o contrato "'+c.name+'"?')){delete c.dl;if(window.S7LOG)S7LOG.add('missao','Abandonou: '+c.name);if(window.S7REP)S7REP.rep(c.f,-5);render();} return; }
+  var pt=partySize();
+  if(pt>c.m){toast('Seu grupo tem '+pt+' membros e "'+c.name+'" aceita até '+c.m+'. Ajuste a party na BASE.');return;}
+  c.dl=Date.now()+c.d*DAY; if(window.S7LOG)S7LOG.add('missao','Aceitou: '+c.name); render(); toast('Contrato aceito. Prazo: '+c.d+(c.d>1?' dias.':' dia.'));
+}
+/* contagem regressiva ao vivo */
+setInterval(function(){
+  var re=false;
+  document.querySelectorAll('.cd').forEach(function(e){
+    var c=picks.filter(function(x){return x.code===e.getAttribute('data-code');})[0]; if(!c)return;
+    var t=timeTxt(c); if(t==='EXPIRADO'&&e.textContent!=='EXPIRADO')re=true; e.textContent=t;
+  });
+  if(re)render();
+},30000);
+function arqDet(b,F){
+  var r=function(k,v){return v?'<div class="row"><span>'+k+'</span><b>'+v+'</b></div>':'';};
+  return r('Contratante',b.por||(F?F.n:''))+(F&&b.por?r('Facção',F.n):'')+r('Entregar',b.cond)+r('Visto em',b.loc)+
+    r('Risco',skullBar(b.skulls).replace(/<[^>]+>/g,'')+(RISK[b.skulls]?' · '+RISK[b.skulls]:''))+
+    r('Limite de membros','até '+b.m)+r('Prazo',b.d+(b.d>1?' dias':' dia'))+
+    '<p class="obj">'+(b.obj||b.desc||'')+'</p>'+(b.det?'<p class="obj"><b>Detalhes:</b> '+b.det+'</p>':'')+
+    '<div class="row"><span>Recompensa</span><b>'+b.reward+'</b></div>';
+}
+/* dossiê */
+var dosMode='info', arqOpen=null;
+function fillDos(m){
+  var c=list()[sel],F=c?FACS[c.f]:null,h;
+  $('dos').style.setProperty('--fc',c?F.c:'var(--red)');
+  if(m==='arq'){
+    $('dos').style.setProperty('--fc','var(--red)');
+    h='<h4>Arquivadas <small>'+ARQ.length+'</small></h4>';
+    if(!ARQ.length)h+='<p class="obj">Nenhuma missão arquivada. Vire uma carta e use <b>📦 ARQUIVAR</b> para tirá-la do sorteio.</p>';
+    else h+='<p class="obj" style="margin-top:0">Estas missões não aparecem ao <b>girar novo quadro</b>.</p><div class="arq-list">'+ARQ.map(function(n){
+      var b=CONTRACTS.filter(function(x){return x.name===n;})[0],F=b?FACS[b.f]:null;
+      var op=(arqOpen===n);
+      return '<div class="arq-it'+(op?' open':'')+'" style="--fc:'+(F?F.c:'var(--red)')+'"><button type="button" class="ai-h" data-arqopen="'+encodeURIComponent(n)+'" aria-expanded="'+op+'"><b>'+escA(n)+'</b><span>'+(F?F.n:'')+(b&&RISK[b.skulls]?' · '+RISK[b.skulls]:'')+'</span></button>'+
+        '<div class="ai-d">'+(b?arqDet(b,F):'<p class="obj">Descrição indisponível.</p>')+'<button type="button" class="nbtn" data-unarq="'+encodeURIComponent(n)+'">↩ DESARQUIVAR</button></div></div>';
+    }).join('')+'</div><button type="button" class="nbtn" data-unarq-all="1">↩ DESARQUIVAR TODAS</button>';
+  }
+  else if(m==='loot'){h='<h4>Recompensas especiais</h4><div class="lootbox">'+LOOT.map(function(x){return'<span>'+x+'</span>';}).join('')+'</div>';}
+  else if(!c){h='<h4>Dossiê</h4><p class="obj">Nenhum contrato selecionado.</p>';}
+  else{
+    var st=c.done?'CONCLUÍDA':expired(c)?'EXPIRADO':active(c)?'ACEITO':'DISPONÍVEL', pt=partySize();
+    h='<h4>'+c.name+'</h4><div class="row"><span>Contratante</span><b>'+(c.por||F.n)+'</b></div>'+(c.cond?'<div class="row"><span>Entregar</span><b>'+c.cond+'</b></div>':'')+'<div class="row"><span>Código</span><b>'+c.code+'</b></div>'+
+      '<div class="row"><span>Risco</span><b>'+skullBar(c.skulls).replace(/<[^>]+>/g,'')+' · '+RISK[c.skulls]+'</b></div>'+
+      '<div class="row"><span>Limite de membros</span><b>até '+c.m+(pt?' (seu grupo: '+pt+')':'')+'</b></div>'+
+      '<div class="row"><span>Prazo</span><b>'+c.d+(c.d>1?' dias':' dia')+'</b></div>'+
+      (c.dl?'<div class="row"><span>Restante</span><b>'+timeTxt(c)+'</b></div>':'')+
+      '<div class="row"><span>Status</span><b>'+st+'</b></div><p class="obj">'+(c.obj||c.desc)+'</p><div class="row"><span>Recompensa</span><b>'+c.reward+'</b></div>'+dosNpc(c);
+  }
+  $('dosBody').innerHTML=h;
+}
+function openDos(m){dosMode=m;fillDos(m);$('dos').classList.add('on');}
+function closeDos(){$('dos').classList.remove('on');}
+document.addEventListener('keydown',function(e){
+  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+  var k=e.key.toLowerCase(), onBtn=/BUTTON|^A$/.test(e.target.tagName);
+  if(k==='a'||k==='arrowleft')step(-1);
+  else if(k==='d'||k==='arrowright')step(1);
+  else if((k==='enter'||k===' ')&&!onBtn){e.preventDefault();flip();}
+  else if(k==='e')acc(sel);
+  else if(k==='escape'){if($('dos').classList.contains('on'))closeDos();else if(flipped!==null){flipped=null;layout();}else location.href='base_de_comando.html';}
+});
+window.addEventListener('resize',layout);
+/* clique / arrastar / shift+roda no carrossel */
+(function(){
+  var dk=$('deck'),sx=0,down=false,moved=false,wt=0;
+  dk.addEventListener('pointerdown',function(e){if(e.button>0)return;down=true;moved=false;sx=e.clientX;});
+  window.addEventListener('pointermove',function(e){if(down&&Math.abs(e.clientX-sx)>8){moved=true;dk.classList.add('drag');}});
+  function end(e){if(!down)return;down=false;dk.classList.remove('drag');var dx=e.clientX-sx;if(e.type==='pointerup'&&Math.abs(dx)>50)step(dx<0?1:-1);}
+  window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
+  dk.addEventListener('click',function(e){
+    if(moved){moved=false;return;}
+    var el=e.target.closest('.cc'); if(!el||el.classList.contains('empty'))return;
+    var i=+el.getAttribute('data-i');
+    if(e.target.closest('[data-arq]')){arquivar(i);return;}
+    var bb=e.target.closest('.btn');
+    if(bb){if(bb.hasAttribute('data-fin'))finish(i);else if(bb.hasAttribute('data-npc'))openDos('info');else acc(i);} else pick(i);
+  });
+  dk.addEventListener('wheel',function(e){
+    if(Math.abs(e.deltaX)<=Math.abs(e.deltaY)&&!e.shiftKey)return;
+    e.preventDefault();var n=Date.now();if(n-wt<260)return;wt=n;step((e.deltaX||e.deltaY)>0?1:-1);
+  },{passive:false});
+})();
+/* ---- ARRASTAR o card selecionado: física de mola + solte na barra para ARQUIVAR ---- */
+(function(){
+  var dk=$('deck'),bar=$('arqBar'),bt=bar.querySelector('.ab-t'),TXT=bt.textContent;
+  var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var g=null,swallow=false;
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function over(x,y){var r=bar.getBoundingClientRect();return x>=r.left-24&&x<=r.right+24&&y>=r.top-44&&y<=r.bottom+36;}
+
+  dk.addEventListener('pointerdown',function(e){
+    if(e.button>0||g)return;
+    if(e.target.closest('button,a,input'))return;
+    var el=e.target.closest('.cc.sel'); if(!el||el.classList.contains('empty'))return;
+    e.stopPropagation();   /* o card selecionado é arrastado; o resto do deck continua trocando de carta */
+    var r=el.getBoundingClientRect();
+    g={el:el,id:e.pointerId,i:+el.getAttribute('data-i'),mode:'wait',sx:e.clientX,sy:e.clientY,px:e.clientX,py:e.clientY,
+       x:0,y:0,vx:0,vy:0,rot:0,rv:0,tilt:0,sc:1,z:0,z0:el.classList.contains('flipped')?90:40,
+       cx:r.left+r.width/2,cy:r.top+r.height/2,last:0,td:0,dx:0,dy:0};
+    g.z=g.z0;
+  },true);
+
+  window.addEventListener('pointermove',function(e){
+    if(!g||e.pointerId!==g.id)return;
+    g.px=e.clientX;g.py=e.clientY;
+    if(g.mode==='wait'&&Math.hypot(e.clientX-g.sx,e.clientY-g.sy)>8)start();
+  });
+
+  function start(){
+    g.mode='drag';
+    dk.classList.add('holding','drag'); bar.classList.add('armed');
+    g.el.style.transition='none'; g.el.style.zIndex=999;
+    Array.prototype.forEach.call(dk.children,function(c){ if(c!==g.el&&Math.abs((+c.getAttribute('data-i'))-g.i)>=2)c.style.visibility='hidden'; });
+    g.last=performance.now(); requestAnimationFrame(tick);
+  }
+  function endHold(){
+    dk.classList.remove('holding','drag'); bar.classList.remove('armed','hot','take'); bt.textContent=TXT;
+    Array.prototype.forEach.call(dk.children,function(c){c.style.visibility='';});
+  }
+  /* devolve o card ao controle do layout() sem salto */
+  function rest(el){ el.style.transition='none'; el.style.opacity=''; layout(); void el.offsetWidth; el.style.transition=''; }
+
+  function tick(now){
+    if(!g||g.mode==='wait')return;
+    var dt=Math.min(2.5,(now-g.last)/16.667)||1; g.last=now;
+    var m=g.mode,tx=0,ty=0,tsc=1,tz=g.z0,tr=0;
+    if(m==='drag'){
+      tx=g.px-g.sx; ty=g.py-g.sy;
+      var br=bar.getBoundingClientRect(), p=clamp(1-(br.top-g.py)/260,0,1), hot=over(g.px,g.py);
+      tsc=1.04-.22*p; tz=g.z0+45;
+      bar.classList.toggle('hot',hot); bt.textContent=hot?'SOLTE PARA ARQUIVAR':TXT;
+    } else if(m==='drop'){ tx=g.dx; ty=g.dy; tsc=.06; tz=g.z0; }
+    var k=m==='drop'?.22:m==='back'?.13:.2, c=m==='drop'?.45:m==='back'?.2:.32;
+    g.vx+=((tx-g.x)*k-g.vx*c)*dt; g.x+=g.vx*dt;
+    g.vy+=((ty-g.y)*k-g.vy*c)*dt; g.y+=g.vy*dt;
+    if(!RM){
+      tr=m==='drop'?14:clamp(g.vx*1.1,-24,24);                       /* inclina para o lado em que está sendo puxado */
+      g.rv+=((tr-g.rot)*.13-g.rv*.15)*dt; g.rot+=g.rv*dt;           /* mola subamortecida = balanço ao soltar */
+      g.tilt+=(clamp(-g.vy*.7,-18,18)-g.tilt)*.15*dt;
+    }
+    g.sc+=(tsc-g.sc)*.2*dt; g.z+=(tz-g.z)*.2*dt;
+    var el=g.el;
+    el.style.transform='translate3d(calc(-50% + '+g.x.toFixed(1)+'px),'+g.y.toFixed(1)+'px,'+g.z.toFixed(1)+'px) rotateZ('+g.rot.toFixed(2)+'deg) rotateX('+g.tilt.toFixed(2)+'deg) scale('+g.sc.toFixed(3)+')';
+    if(m==='drop'){
+      var t=now-g.td; el.style.opacity=Math.max(0,1-t/300);
+      if(t>320)return fimDrop();
+    } else if(m==='back'&&Math.abs(g.x)<.4&&Math.abs(g.y)<.4&&Math.abs(g.vx)<.05&&Math.abs(g.vy)<.05&&Math.abs(g.rot)<.25&&Math.abs(g.rv)<.05&&Math.abs(g.sc-1)<.01&&Math.abs(g.z-g.z0)<.5){
+      var e2=g.el; g=null; endHold(); rest(e2); return;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function fimDrop(){
+    var el=g.el,i=g.i; g=null; endHold();
+    bar.classList.remove('got'); void bar.offsetWidth; bar.classList.add('got');
+    if(!arquivar(i,true))rest(el);
+  }
+
+  function release(e){
+    if(!g||e.pointerId!==g.id)return;
+    if(g.mode==='wait'){g=null;return;}   /* foi só um clique: o handler do deck vira o card */
+    if(g.mode!=='drag')return;
+    swallow=true; setTimeout(function(){swallow=false;},80);
+    var up=e.type==='pointerup',c=list()[g.i];
+    bar.classList.remove('hot'); bt.textContent=TXT;
+    if(up&&c&&over(e.clientX,e.clientY)&&arqOk(c,true)){
+      var br=bar.getBoundingClientRect();
+      g.dx=br.left+br.width/2-g.cx; g.dy=br.top+br.height/2-g.cy;
+      g.mode='drop'; g.td=performance.now(); bar.classList.add('take'); g.last=g.td; return;
+    }
+    var dx=e.clientX-g.sx,dy=e.clientY-g.sy;
+    if(up&&Math.abs(dx)>110&&Math.abs(dx)>Math.abs(dy)*1.5){   /* arrasto lateral longo = trocar de carta (como antes) */
+      var el=g.el; g=null; endHold(); el.style.transition=''; step(dx<0?1:-1); return;
+    }
+    g.mode='back'; g.last=performance.now();
+  }
+  window.addEventListener('pointerup',release);
+  window.addEventListener('pointercancel',release);
+  /* Esc durante o arrasto só solta o card (não sai da página) */
+  window.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&g&&g.mode==='drag'){e.preventDefault();e.stopPropagation();g.mode='back';bar.classList.remove('hot');bt.textContent=TXT;}
+  },true);
+  /* depois de arrastar, o navegador dispara um click: engole para não virar o card */
+  dk.addEventListener('click',function(e){if(swallow){e.stopPropagation();e.preventDefault();}},true);
+})();
+$('dosBody').addEventListener('click',function(e){var b=e.target.closest('[data-rec]');if(b)recruit(b.getAttribute('data-rec'));
+  var o=e.target.closest('[data-arqopen]');if(o){var n=decodeURIComponent(o.getAttribute('data-arqopen'));arqOpen=(arqOpen===n)?null:n;fillDos('arq');return;}
+  var u=e.target.closest('[data-unarq]');if(u)desarquivar(decodeURIComponent(u.getAttribute('data-unarq')));
+  if(e.target.closest('[data-unarq-all]'))desarquivarTodas();});
+window.addEventListener('storage',function(e){if(e.key==='s7_party'||e.key==='s7_fichas'){if($('dos').classList.contains('on'))fillDos(dosMode);}});
+if(load())render();else renderBoard();
 </script>
 <script>
 function toggleNav(){

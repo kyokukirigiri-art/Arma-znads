@@ -123,6 +123,44 @@
   .cap{font-family:var(--hud);font-weight:700;letter-spacing:.12em;color:var(--txt);font-size:1rem;}
   .cap small{color:var(--dim);font-weight:400;font-size:.58rem;letter-spacing:.14em;margin-left:6px;}
   .foot-btns{display:flex;flex-wrap:wrap;gap:8px;}
+  .mini.on{background:var(--cyan);color:#04120f;}
+  /* ---------- GUIAS (INVENTÁRIO / BASE) ---------- */
+  :root{--ink0:#0a0610;}
+  .fbar{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;margin-bottom:14px;}
+  .fbar .op{display:flex;align-items:center;padding:8px 16px;font:600 .58rem var(--hud);letter-spacing:.28em;color:var(--dim);border:1px solid var(--line);border-radius:999px;background:rgba(0,0,0,.25);}
+  .fbar button{--clip:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+    flex:1 1 150px;min-width:0;appearance:none;border:0;cursor:pointer;display:flex;align-items:center;gap:11px;padding:11px 14px;text-align:left;
+    font:600 .72rem var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--fc,var(--red));
+    background:color-mix(in srgb,var(--fc,var(--red)) 8%,var(--panel));box-shadow:inset 3px 0 0 var(--fc,var(--red));
+    clip-path:var(--clip);transition:transform .16s,background .16s,color .16s;}
+  .fbar button:hover{background:color-mix(in srgb,var(--fc,var(--red)) 20%,var(--panel));}
+  .fbar button:focus-visible{outline:2px solid var(--fc,var(--red));outline-offset:-4px;}
+  .fbar button i{margin-left:auto;font:.6rem var(--mono);letter-spacing:.05em;opacity:.7;font-style:normal;}
+  .fbar button.on{background:var(--fc,var(--red));color:var(--ink0);box-shadow:none;transform:translateY(-3px);}
+  .fbar button.on::after{content:"✓";display:inline-grid;place-items:center;flex:none;width:17px;height:17px;border:1px solid var(--ink0);font-size:.62rem;line-height:1;}
+
+  /* ---------- BASE (depósito) ---------- */
+  .base-view{position:relative;padding:16px 18px 18px;background:linear-gradient(180deg,#0a1012,#070b0d);border:1px solid #1b2a2e;clip-path:var(--chamfer);}
+  .base-view[hidden]{display:none;}
+  .bv-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px;}
+  .bv-top .case-title{color:var(--cyan);}
+  .bv-top input{flex:1 1 220px;background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:8px 12px;font-family:var(--hud);font-size:.72rem;letter-spacing:.06em;}
+  .bv-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;padding:8px 12px;border:1px solid var(--line);background:rgba(0,0,0,.25);font:600 .66rem var(--hud);letter-spacing:.12em;color:var(--dim);}
+  .bv-bar b{color:var(--txt);} .bv-bar .sp{flex:1;}
+  .bv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+  .bi{position:relative;cursor:pointer;user-select:none;padding:10px 26px 10px 12px;min-height:62px;display:flex;gap:10px;align-items:center;
+    border:1px solid color-mix(in srgb,var(--rc) 55%,transparent);border-left:4px solid var(--rc);background:color-mix(in srgb,var(--rc) 7%,#0a1012);transition:background .12s;}
+  .bi:hover{background:color-mix(in srgb,var(--rc) 16%,#0a1012);}
+  .bi.on{outline:2px solid var(--rc);box-shadow:0 0 14px color-mix(in srgb,var(--rc) 45%,transparent);}
+  .bi.on::after{content:"✓";position:absolute;right:7px;bottom:4px;font-size:.72rem;color:var(--rc);}
+  .bi .bico{flex:none;width:34px;height:34px;display:grid;place-items:center;font-size:1.4rem;color:var(--rc);border:1px solid var(--rc);}
+  .bi .bico svg{width:1.3rem;height:1.3rem;}
+  .bi .bnm{font:700 .74rem var(--hud);letter-spacing:.04em;text-transform:uppercase;line-height:1.2;word-break:break-word;}
+  .bi .bmt{font-size:.58rem;letter-spacing:.12em;color:var(--dim);margin-top:3px;}
+  .bi .bq{position:absolute;right:7px;top:4px;font:700 .66rem var(--hud);color:var(--rc);}
+  .bv-empty{padding:46px 16px;text-align:center;color:var(--dim);font-size:.72rem;letter-spacing:.16em;line-height:2;}
+  .bv-empty small{display:block;font-size:.58rem;}
+  #grid.selmode .it{cursor:cell;}
   .big{font-family:var(--hud);font-weight:700;letter-spacing:.2em;font-size:.76rem;cursor:pointer;padding:11px 20px;border:none;
     background:var(--green,#46ff7a);color:#04120f;clip-path:var(--chamfer-sm);transition:.12s;}
   .big:hover{transform:translateY(-2px);}
@@ -165,6 +203,10 @@
   .cat-row .cn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .cat-row .cp{color:var(--dim);font-size:.62rem;white-space:nowrap;}
   .cat-empty{color:var(--dim);font-size:.66rem;padding:8px;text-align:center;}
+  .lx-grp{font-family:var(--hud);font-weight:700;font-size:.54rem;letter-spacing:.26em;color:var(--dim);padding:8px 2px 3px;}
+  .lx-box{border-color:rgba(184,224,74,.4);background:rgba(184,224,74,.04);}
+  .lx-box summary{color:#b8e04a;}
+  .lx-box .cat-row .cp b{color:var(--yellow,#e8f500);font-weight:700;}
   .cor-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;}
   .cor-row input[type=color]{width:42px;height:32px;padding:0;border:1px solid var(--line);background:#08040b;cursor:pointer;}
   .sw{width:22px;height:22px;border:1px solid #2a3a3f;cursor:pointer;padding:0;}
@@ -178,6 +220,158 @@
   @media(max-width:900px){.work{grid-template-columns:1fr;}.filters{margin-left:0;}}
   @media(max-width:760px){.case{--cell:44px;padding:12px 8px 14px;}.fg{grid-template-columns:1fr;}}
   @media(prefers-reduced-motion:reduce){.it,.toast{transition:none;}}
+</style>
+<style id="relevo-3d">
+/* ============================================================
+   RELEVO 3D (só visual) — técnica 2D: bisel com box-shadow inset,
+   "espessura" extrudada por sombra sólida, sombra projetada e
+   brilho no topo. Nada de transform/perspective, então o arrastar
+   do JS continua exato. Para voltar ao visual antigo, apague este <style>.
+   ============================================================ */
+#case{
+  --hi:rgba(255,255,255,.16);      /* luz vindo de cima */
+  --lo:rgba(0,0,0,.55);            /* sombra de baixo */
+}
+
+/* ---------- MALETA: caixa com aro biselado e parafusos ---------- */
+.case{
+  background:
+    radial-gradient(circle at 14px 30px,#3b4c52 0 3px,#0a1114 3.5px 4.5px,transparent 5px),
+    radial-gradient(circle at calc(100% - 14px) 14px,#3b4c52 0 3px,#0a1114 3.5px 4.5px,transparent 5px),
+    radial-gradient(circle at 14px calc(100% - 14px),#3b4c52 0 3px,#0a1114 3.5px 4.5px,transparent 5px),
+    radial-gradient(circle at calc(100% - 30px) calc(100% - 14px),#3b4c52 0 3px,#0a1114 3.5px 4.5px,transparent 5px),
+    linear-gradient(180deg,#1a2a30 0%,#0e171b 22%,#091014 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    inset 0 0 0 1px #2a3d43,
+    inset 0 0 0 5px #0b1316,
+    inset 0 0 0 6px rgba(255,255,255,.05),
+    inset 0 -4px 0 rgba(0,0,0,.55);
+  padding:24px 26px 24px;
+}
+/* aba da tampa: faixa chanfrada no topo */
+.case::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:7px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.05) 45%,rgba(0,0,0,.45));
+}
+.case-title{text-shadow:0 2px 0 rgba(0,0,0,.7),0 0 12px color-mix(in srgb,var(--ac) 40%,transparent);}
+
+/* ---------- INTERIOR: forro afundado ---------- */
+.bag{
+  position:relative;
+  background:
+    radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--ac) 7%,transparent),transparent 62%),
+    linear-gradient(180deg,#03070a,#060d10);
+  border:1px solid #000;border-bottom-color:#1d2d33;
+  box-shadow:
+    inset 0 14px 22px -6px rgba(0,0,0,.9),
+    inset 0 -8px 16px -8px rgba(0,0,0,.6),
+    inset 10px 0 18px -10px rgba(0,0,0,.8),
+    inset -10px 0 18px -10px rgba(0,0,0,.8),
+    0 1px 0 rgba(255,255,255,.07);
+}
+.bag-head{
+  position:relative;z-index:3;
+  background:linear-gradient(180deg,#16252b,#0b1317);
+  border-bottom:1px solid #000;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 8px rgba(0,0,0,.55);
+  text-shadow:0 1px 0 #000;
+}
+.grid-scroll{
+  background:
+    radial-gradient(ellipse at 50% 45%,transparent 50%,rgba(0,0,0,.55) 100%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 2px,transparent 2px 7px);
+}
+
+/* ---------- CASAS VAZIAS: encaixes afundados ---------- */
+#grid{
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23101820'/%3E%3Cstop offset='1' stop-color='%231f2a30'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='2' y='2' width='60' height='60' rx='3' fill='url(%23g)'/%3E%3Cpath d='M2.8 61V5.5Q2.8 2.8 5.5 2.8H61' fill='none' stroke='%23000' stroke-opacity='.75' stroke-width='2.2'/%3E%3Cpath d='M61.2 5.5V58.5Q61.2 61.2 58.5 61.2H5' fill='none' stroke='%23fff' stroke-opacity='.1' stroke-width='1.6'/%3E%3Cpath d='M32 27.5v9M27.5 32h9' stroke='%23000' stroke-opacity='.55' stroke-width='2.6' stroke-linecap='round' transform='translate(0 1)'/%3E%3Cpath d='M32 27.5v9M27.5 32h9' stroke='%2341525b' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* ---------- ITENS: peças em alto-relevo ---------- */
+.it{
+  --edge:color-mix(in srgb,var(--rc) 38%,#000);
+  --ext:3px;                                  /* espessura da peça */
+  border-radius:3px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.2) 0,rgba(255,255,255,.04) 34%,rgba(255,255,255,0) 52%,rgba(0,0,0,.28) 100%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 2px,transparent 2px 7px),
+    linear-gradient(160deg,color-mix(in srgb,var(--rc) 30%,#0a0f11),color-mix(in srgb,var(--rc) 8%,#05090a));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.4),
+    inset 1px 0 0 rgba(255,255,255,.14),
+    inset -1px 0 0 rgba(0,0,0,.35),
+    inset 0 -2px 0 rgba(0,0,0,.4),
+    0 var(--ext) 0 var(--edge),
+    0 calc(var(--ext) + 3px) 8px rgba(0,0,0,.7);
+  transition:opacity .15s,box-shadow .15s,translate .15s;
+}
+.it:hover:not(.dragging):not(.dim){translate:0 -1px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 1px 0 0 rgba(255,255,255,.18),inset -1px 0 0 rgba(0,0,0,.35),inset 0 -2px 0 rgba(0,0,0,.4),
+    0 calc(var(--ext) + 1px) 0 var(--edge),0 calc(var(--ext) + 6px) 12px rgba(0,0,0,.75);}
+.it .ico{filter:drop-shadow(0 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 7px var(--rc));}
+.it .hd{box-shadow:0 1px 0 rgba(0,0,0,.5);}
+.it .bd{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(0,0,0,.3);}
+.it .nm{background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.38));text-shadow:0 1px 0 #000;}
+.it .own{box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 1px 0 rgba(0,0,0,.6);}
+/* selecionado: "levanta" da maleta */
+.it.sel{
+  translate:0 -3px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.55),inset 1px 0 0 rgba(255,255,255,.2),inset -1px 0 0 rgba(0,0,0,.35),inset 0 -2px 0 rgba(0,0,0,.4),
+    0 0 0 1px var(--rc),
+    0 calc(var(--ext) + 2px) 0 var(--edge),
+    0 calc(var(--ext) + 12px) 16px rgba(0,0,0,.75),
+    0 0 22px color-mix(in srgb,var(--rc) 50%,transparent);
+}
+/* arrastando: bem no alto, sombra longe */
+.it.dragging{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.4),
+    0 0 0 1px var(--rc),
+    0 calc(var(--ext) + 5px) 0 var(--edge),
+    0 22px 26px rgba(0,0,0,.8),
+    0 0 26px color-mix(in srgb,var(--rc) 55%,transparent);
+  filter:brightness(1.12);
+}
+.it.dim{box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 0 var(--edge);}
+.ghost{border-radius:3px;box-shadow:inset 0 0 14px color-mix(in srgb,var(--rc,var(--sel)) 40%,transparent);}
+
+/* ---------- PAINEL DE DETALHES: plaqueta ---------- */
+.detail{
+  position:relative;
+  background:linear-gradient(180deg,#0d171b,#070c0e);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 0 0 1px #0a1114,0 6px 0 #040708,0 12px 18px rgba(0,0,0,.6);
+}
+.d-head{
+  background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 55%,rgba(0,0,0,.2)),var(--rc);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -3px 0 rgba(0,0,0,.25);
+}
+.d-meta span{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 1px 0 rgba(255,255,255,.2);}
+.d-desc{box-shadow:inset 0 5px 8px -4px rgba(0,0,0,.4),inset 0 -1px 0 rgba(255,255,255,.7);}
+.d-val .vi{background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 20%,transparent),transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 0 rgba(0,0,0,.6);}
+.d-own select,.owner-sel,.f input,.f select,.f textarea,.cat-tools input,.cat-tools select{box-shadow:inset 0 3px 6px rgba(0,0,0,.65),0 1px 0 rgba(255,255,255,.06);}
+
+/* ---------- BOTÕES: teclas com relevo ---------- */
+.kb{box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:background .12s,box-shadow .12s,translate .08s;}
+.kb:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -2px 0 rgba(0,0,0,.4);}
+.kb:active{box-shadow:inset 0 3px 6px rgba(0,0,0,.6);translate:0 1px;}
+.kb kbd{background:linear-gradient(180deg,rgba(255,255,255,.1),transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 0 rgba(0,0,0,.65);border-radius:2px;}
+.mini,.flt,.big{transition:background .12s,color .12s,box-shadow .08s,translate .08s,transform .12s;}
+.mini{box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 -3px 0 rgba(0,0,0,.4);}
+.flt{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 0 rgba(0,0,0,.4);}
+.flt.on{box-shadow:inset 0 3px 6px rgba(0,0,0,.55),inset 0 0 10px rgba(70,255,122,.12);}
+.big{box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -4px 0 rgba(0,0,0,.35);}
+.mini:active,.flt:active,.big:active{box-shadow:inset 0 3px 6px rgba(0,0,0,.55);translate:0 1px;}
+.expand{box-shadow:inset 0 2px 5px rgba(0,0,0,.45);}
+.sw{box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 0 rgba(0,0,0,.6);}
+
+/* ---------- MODAL ---------- */
+.modal{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 0 0 1px rgba(34,230,210,.25),inset 0 -5px 0 rgba(0,0,0,.4);}
+.cat-row{box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 2px 0 rgba(0,0,0,.45);}
+
+@media(max-width:760px){.case{padding:18px 10px 18px;}.it{--ext:2px;}}
+@media(prefers-reduced-motion:reduce){.it,.kb,.mini,.flt,.big{transition:none;}}
 </style>
 </head>
 <body>
@@ -199,7 +393,7 @@
   <nav class="navbar shortcuts-nav" id="shortcutsNav">
     <a href="base_de_comando.html">🏚️ BASE</a>
     <a href="ficha.html">📋 FICHA</a>
-    <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+    <a href="loja.html">🛒 LOJA</a>
     <a href="venda.html">🎲 VENDA</a>
     <a href="missoes.html">🎯 MISSÕES</a>
     <a href="regras_do_setor_7.html">📜 REGRAS</a>
@@ -209,7 +403,7 @@
     <a href="venda.html">VENDA</a>
     <a href="missoes.html">MISSÕES</a>
     <a href="regras_do_setor_7.html">REGRAS</a>
-    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="loja.html">LOJA</a>
     <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
     <a href="configuracoes.html">⚙ CONFIG</a>
   </nav>
@@ -217,6 +411,12 @@
 
 <main>
   <a class="back-base" href="base_de_comando.html">◂ VOLTAR PARA A BASE DE COMANDO <small>// BASE &gt; INVENTÁRIO</small></a>
+
+  <div class="fbar" id="tabs">
+    <div class="op">▸ LOCAL</div>
+    <button type="button" class="on" data-t="inv" style="--fc:var(--green,#46ff7a)">🎒 INVENTÁRIO <i id="tcInv">0</i></button>
+    <button type="button" data-t="base" style="--fc:var(--cyan)">🏚️ BASE <i id="tcBase">0</i></button>
+  </div>
 
   <div class="case" id="case">
     <div class="case-top">
@@ -252,12 +452,24 @@
       <div class="foot-btns">
         <button class="mini" id="btnCopy" type="button">⧉ COPIAR</button>
         <button class="mini" id="btnPaste" type="button">⎘ COLAR</button>
+        <button class="mini" id="btnSelMode" type="button" title="Modo seleção: toque/clique nos itens para marcar vários (ou use Ctrl/Shift + clique)">☑ SELECIONAR</button>
+        <button class="mini" id="btnSelAll" type="button" title="Seleciona todos os itens visíveis (Ctrl+A)">☑ TODOS</button>
+        <button class="mini" id="btnRefresh" type="button" title="Atualiza ícones, tamanhos e dados dos itens conforme as regras atuais e o catálogo da loja">↻ ATUALIZAR ITENS</button>
         <button class="mini" id="btnExport" type="button">⤓ EXPORTAR</button>
         <button class="mini" id="btnImport" type="button">⤒ IMPORTAR</button>
         <input type="file" id="fileImport" accept="application/json,.json" hidden>
         <button class="big" id="btnAdd" type="button">+ ADICIONAR ITEM</button>
       </div>
     </div>
+  </div>
+
+  <div class="base-view" id="baseView" hidden>
+    <div class="bv-top">
+      <div class="case-title">BASE <small>// DEPÓSITO</small></div>
+      <input id="bvQ" type="search" placeholder="Buscar na base..." aria-label="Buscar item na base">
+    </div>
+    <div class="bv-bar" id="bvBar"></div>
+    <div class="bv-grid" id="bvGrid"></div>
   </div>
 </main>
 
@@ -270,6 +482,11 @@
       <div class="cat-tools"><input id="catQ" type="search" placeholder="Buscar item da loja..." aria-label="Buscar no catálogo"><select id="catC" aria-label="Categoria"></select></div>
       <div class="cat-list" id="catList"></div>
       <div class="hint-sm">CLIQUE NO ITEM PARA PREENCHER O FORMULÁRIO — DEPOIS É SÓ SALVAR</div>
+    </details>
+    <details class="cat-box lx-box" id="lixoBox">
+      <summary>🦴 ADICIONAR LIXO / ORGÂNICO PRONTO (PARA O MERCADO NEGRO)</summary>
+      <div class="cat-list" id="lixoList"></div>
+      <div class="hint-sm">CLIQUE NO ITEM PARA PREENCHER O FORMULÁRIO — AJUSTE O VALOR E SALVE</div>
     </details>
     <div id="modelsWrap" style="display:none">
       <div class="hint-sm" style="margin:0 0 10px">MEUS MODELOS — CLIQUE PARA PREENCHER</div>
@@ -290,7 +507,8 @@
       <div class="f"><label for="fW">LARGURA (CASAS)</label><input id="fW" type="number" min="1" max="16" value="1"></div>
       <div class="f"><label for="fH">ALTURA (CASAS)</label><input id="fH" type="number" min="1" max="12" value="1"></div>
       <div class="f"><label for="fQtd">QUANTIDADE</label><input id="fQtd" type="number" min="1" max="999" value="1"></div>
-      <div class="f"><label for="fOwner">EQUIPADO EM</label><select id="fOwner"></select></div>
+      <div class="f"><label for="fPreco">VALOR (CRÉDITOS)</label><input id="fPreco" type="number" min="0" max="99999999" value="0"><div class="hint-sm">O MERCADOR PAGA PARTE DISSO NA VENDA</div></div>
+      <div class="f full"><label for="fOwner">EQUIPADO EM</label><select id="fOwner"></select></div>
       <div class="f full"><label class="chk"><input id="fModelo" type="checkbox"> Guardar como modelo personalizado</label></div>
     </div>
     <div class="modal-btns">
@@ -308,7 +526,7 @@
 
 <script>
 (function(){
-  var I = S7INV, D = I.load(), sel = null, filtro = 'all', ownerF = 'all', editId = null;
+  var I = S7INV, D = I.load(), sel = null, filtro = 'all', ownerF = 'all', editId = null, multi = {}, selMode = false;
   var $ = function(id){ return document.getElementById(id); };
   var gridEl = $('grid'), caseEl = $('case');
   var LUCIDE = ['crosshair','sword','swords','axe','bomb','syringe','pill','flask-conical','shield','shield-check','terminal','laptop','cpu','usb','brain','bot','eye','scan-eye','battery-charging','utensils','key-round','package','zap','dna','wrench','headphones','radio','hard-drive','fingerprint','skull','heart-pulse','flame','biohazard','radiation','target','hand'];
@@ -379,17 +597,18 @@
         + '<span class="hd"><span class="bd">'+catIco(it.cat)+'</span>'+((it.w>1||it.h>1) ? '<span class="nm">'+esc(it.nome)+'</span>' : '')+'</span>'
         + (it.qtd>1 ? '<span class="qt">'+it.qtd+'</span>' : '')
         + (oname ? '<span class="own">◆ '+esc(oname)+'</span>' : '');
-      if(it.id===sel) el.classList.add('sel');
+      if(it.id===sel || multi[it.id]) el.classList.add('sel');
       gridEl.appendChild(el);
     });
     var tot = D.cols*D.rows, used = D.items.reduce(function(s,i){ return s + (i.x===null?0:i.w*i.h); },0);
     $('cap').innerHTML = used+' / '+tot+'<small>// CASAS OCUPADAS</small>';
-    $('cnt').textContent = D.items.length+' ITENS'; buildFilters(); applyFilter(); renderDetail(); I.lucideRefresh();
+    $('cnt').textContent = D.items.length+' ITENS'; updateCounts(); buildFilters(); applyFilter(); renderDetail(); I.lucideRefresh();
   }
 
   /* ---------- detalhes ---------- */
   function renderDetail(){
-    var box = $('detail'), it = sel ? byId(sel) : null;
+    var box = $('detail'), it = sel ? byId(sel) : null, mids = multiIds();
+    if(mids.length > 1){ renderMulti(mids); return; }
     if(!it){ box.style.removeProperty('--rc'); box.innerHTML = '<div class="d-empty">SELECIONE UM ITEM<small>// toque em um item da maleta</small></div>'; return; }
     var rc = I.cor(it);
     var opts = '<option value="">— ninguém —</option>' + fichas().map(function(f){
@@ -403,7 +622,8 @@
       '<div class="d-own"><label for="dOwner">EQUIPADO EM</label><select id="dOwner">'+opts+'</select></div>'+
       '<div class="qty"><button class="mini" id="qMinus" type="button" aria-label="Diminuir">−</button><span>×'+it.qtd+'</span><button class="mini" id="qPlus" type="button" aria-label="Aumentar">+</button></div>'+
       '<div class="keys"><button class="kb" id="dRot" type="button"><kbd>R</kbd>GIRAR</button><button class="kb" id="dEdit" type="button"><kbd>E</kbd>EDITAR</button>'+
-      '<button class="kb" id="dCopy" type="button"><kbd>C</kbd>COPIAR</button><button class="kb dn" id="dDel" type="button"><kbd>DEL</kbd>REMOVER</button></div>';
+      '<button class="kb" id="dCopy" type="button"><kbd>C</kbd>COPIAR</button><button class="kb dn" id="dDel" type="button"><kbd>DEL</kbd>REMOVER</button>'+
+      '<button class="kb" id="dBase" type="button" style="grid-column:1/-1"><kbd>B</kbd>ENVIAR PARA A BASE</button></div>';
     $('dOwner').onchange = function(){ it.owner = this.value; save(); render(); toast(it.owner ? it.nome+' equipado em '+ownerName(it.owner) : it.nome+' desequipado'); };
     $('qMinus').onclick = function(){ if(it.qtd>1){ it.qtd--; save(); render(); } else removeItem(it); };
     $('qPlus').onclick = function(){ it.qtd++; save(); render(); };
@@ -411,6 +631,7 @@
     $('dEdit').onclick = function(){ openModal(it); };
     $('dCopy').onclick = function(){ copyItem(it); };
     $('dDel').onclick = function(){ removeItem(it); };
+    $('dBase').onclick = function(){ sendBase([it.id]); };
     I.lucideRefresh();
   }
   function copyItem(it){
@@ -421,7 +642,7 @@
   function pasteCode(str){
     var l = I.decode(str); if(!l) return toast('Código S7ITEM inválido');
     var last; l.forEach(function(o){ o.origem = 'manual'; last = I.add(D, o); });
-    if(last) sel = last.id; save(); render(); toast(l.length+' item(ns) colado(s)');
+    if(last) sel = last.id; multi = {}; save(); render(); toast(l.length+' item(ns) colado(s)');
   }
   function pasteItems(){
     var ask = function(){ pasteCode(window.prompt('Cole o código S7ITEM:') || ''); };
@@ -450,9 +671,67 @@
 
   /* ---------- seleção + arrastar (mouse e toque) ---------- */
   function markSel(id){
-    sel = id;
-    gridEl.querySelectorAll('.it').forEach(function(el){ el.classList.toggle('sel', el.dataset.id===id); });
-    renderDetail();
+    sel = id; multi = {};
+    paintSel(); renderDetail();
+  }
+  function paintSel(){
+    gridEl.querySelectorAll('.it').forEach(function(el){ el.classList.toggle('sel', el.dataset.id===sel || !!multi[el.dataset.id]); });
+  }
+
+  /* ---------- seleção múltipla ---------- */
+  function multiIds(){ return Object.keys(multi).filter(function(id){ return byId(id); }); }
+  function setMulti(ids){
+    multi = {}; sel = null;
+    if(ids.length === 1) sel = ids[0]; else ids.forEach(function(id){ multi[id] = 1; });
+    paintSel(); renderDetail();
+  }
+  function toggleMulti(id){
+    var ids = multiIds();
+    if(!ids.length && sel && byId(sel)) ids = [sel];
+    var i = ids.indexOf(id);
+    if(i >= 0) ids.splice(i,1); else ids.push(id);
+    setMulti(ids);
+  }
+  function selectAll(){
+    var ids = D.items.filter(function(it){ return it.x!==null && passes(it); }).map(function(it){ return it.id; });
+    if(!ids.length) return toast('Nenhum item para selecionar');
+    setMulti(ids); toast(ids.length+' item(ns) selecionado(s)');
+  }
+  function renderMulti(ids){
+    var box = $('detail'), l = ids.map(byId), qtd = 0, val = 0;
+    l.forEach(function(it){ qtd += it.qtd; val += (it.preco||0)*it.qtd; });
+    var nomes = l.slice(0,8).map(function(it){ return esc(it.nome)+(it.qtd>1?' ×'+it.qtd:''); }).join(' · ') + (l.length>8 ? ' · +'+(l.length-8)+' outros' : '');
+    var opts = '<option value="">— escolher —</option><option value="__none">— ninguém (desequipar) —</option>' + fichas().map(function(f){
+      return '<option value="'+esc(f.id)+'">'+esc(f.nome)+'</option>'; }).join('');
+    box.style.setProperty('--rc', '#22e6d2');
+    box.innerHTML =
+      '<div class="d-head"><div class="d-name">'+l.length+' ITENS SELECIONADOS</div><div class="d-meta"><span>'+qtd+' unid.</span><span>'+val.toLocaleString('pt-BR')+' cr</span></div></div>'+
+      '<div class="d-desc">'+nomes+'</div>'+
+      '<div class="d-own"><label for="mOwner">EQUIPAR TODOS EM</label><select id="mOwner">'+opts+'</select></div>'+
+      '<div class="keys"><button class="kb" id="mCopy" type="button"><kbd>C</kbd>COPIAR</button><button class="kb dn" id="mDel" type="button"><kbd>DEL</kbd>REMOVER</button>'+
+      '<button class="kb" id="mBase" type="button" style="grid-column:1/-1"><kbd>B</kbd>ENVIAR PARA A BASE</button>'+
+      '<button class="kb" id="mClr" type="button" style="grid-column:1/-1"><kbd>ESC</kbd>LIMPAR SELEÇÃO</button></div>';
+    $('mOwner').onchange = function(){
+      if(!this.value) return;
+      var o = this.value === '__none' ? '' : this.value;
+      l.forEach(function(it){ it.owner = o; });
+      save(); render(); toast(o ? l.length+' itens equipados em '+ownerName(o) : l.length+' itens desequipados');
+    };
+    $('mCopy').onclick = function(){ copyMany(ids); };
+    $('mDel').onclick = function(){ removeMany(ids); };
+    $('mBase').onclick = function(){ sendBase(ids); };
+    $('mClr').onclick = function(){ markSel(null); };
+    I.lucideRefresh();
+  }
+  function copyMany(ids){
+    var code = I.encode(ids.map(byId));
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(function(){ toast(ids.length+' itens copiados'); }, function(){ window.prompt('Copie o código:', code); });
+    else window.prompt('Copie o código:', code);
+  }
+  function removeMany(ids){
+    if(!confirm('Remover '+ids.length+' itens da maleta?')) return;
+    D.items = D.items.filter(function(i){ return ids.indexOf(i.id) < 0; });
+    sel = null; multi = {}; save(); render(); toast(ids.length+' itens removidos');
   }
   var drag = null, ghost = null;
   function cellSize(){ var r = gridEl.getBoundingClientRect(); return {w:r.width/D.cols, h:r.height/D.rows}; }
@@ -466,6 +745,7 @@
   gridEl.addEventListener('pointerdown', function(e){
     var el = e.target.closest('.it'); if(!el) { return; }
     var it = byId(el.dataset.id); if(!it) return;
+    if(selMode || e.ctrlKey || e.metaKey || e.shiftKey){ if(!e.button) toggleMulti(it.id); return; }
     markSel(it.id);
     if(e.button && e.button!==0) return;
     drag = {it:it, el:el, sx:e.clientX, sy:e.clientY, moved:false, tx:it.x, ty:it.y, ok:true, pid:e.pointerId};
@@ -494,14 +774,24 @@
   }
   gridEl.addEventListener('pointerup', function(e){ endDrag(e,false); });
   gridEl.addEventListener('pointercancel', function(e){ endDrag(e,true); });
-  gridEl.addEventListener('click', function(e){ if(!e.target.closest('.it') && sel){ markSel(null); } });
+  gridEl.addEventListener('click', function(e){ if(!e.target.closest('.it') && (sel || multiIds().length)){ markSel(null); } });
   gridEl.addEventListener('keydown', function(e){
     var el = e.target.closest('.it'); if(el && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); markSel(el.dataset.id); }
   });
 
   document.addEventListener('keydown', function(e){
+    if(tab==='base'){ baseKey(e); return; }
     if($('ov').classList.contains('on')){ if(e.key==='Escape') closeModal(); return; }
     var tag = (e.target.tagName||'').toLowerCase(); if(tag==='input'||tag==='textarea'||tag==='select') return;
+    if((e.key==='a'||e.key==='A') && (e.ctrlKey||e.metaKey)){ e.preventDefault(); selectAll(); return; }
+    var mids = multiIds();
+    if(mids.length > 1){
+      if(e.key==='Delete'||e.key==='Backspace'){ e.preventDefault(); removeMany(mids); }
+      else if((e.key==='c'||e.key==='C') && !e.ctrlKey && !e.metaKey) copyMany(mids);
+      else if((e.key==='b'||e.key==='B') && !e.ctrlKey && !e.metaKey) sendBase(mids);
+      else if(e.key==='Escape') markSel(null);
+      return;
+    }
     var it = sel ? byId(sel) : null; if(!it) return;
     if(e.key==='r'||e.key==='R'){
       if(drag && drag.moved){ /* gira durante o arrasto */
@@ -514,6 +804,7 @@
     if(e.key==='e'||e.key==='E'){ e.preventDefault(); openModal(it); }
     if((e.key==='c'||e.key==='C') && !e.ctrlKey && !e.metaKey){ copyItem(it); }
     if(e.key==='Delete'||e.key==='Backspace'){ e.preventDefault(); removeItem(it); }
+    if((e.key==='b'||e.key==='B') && !e.ctrlKey && !e.metaKey){ sendBase([it.id]); }
     if(e.key==='Escape'){ markSel(null); }
   });
 
@@ -586,15 +877,34 @@
   $('catList').addEventListener('click', function(e){
     var b = e.target.closest('.cat-row'); if(!b) return;
     var c = CAT[+b.dataset.i], cat = catCatOf(c), d = I.CATS[cat];
-    var sp = I.spec(c.nome) || {}; fillForm({nome:c.nome, cat:cat, raridade:c.raridade, icone:sp.icone||('lucide:'+d.lu), desc:c.desc, efeito:c.efeito, w:sp.w||d.w, h:sp.h||d.h, qtd:1, owner:'', cor:''});
+    var sp = I.spec(c.nome) || {}; fillForm({nome:c.nome, cat:cat, raridade:c.raridade, icone:sp.icone||('lucide:'+d.lu), desc:c.desc, efeito:c.efeito, w:sp.w||d.w, h:sp.h||d.h, qtd:1, preco:c.preco, owner:'', cor:''});
     $('fModelo').checked = false;
     toast(c.nome+' carregado — ajuste e salve');
+  });
+
+  /* ---------- lixo / orgânicos prontos ---------- */
+  function renderLixo(){
+    var L = I.LIXO || [], last = '', out = '';
+    L.forEach(function(r,i){
+      if(r[0]!==last){ out += '<div class="lx-grp">'+esc(r[0])+'</div>'; last = r[0]; }
+      var rar = I.RAR[r[4]] || I.RAR.comum;
+      out += '<button class="cat-row" type="button" data-i="'+i+'" style="--rc:'+rar.c+'"><span>'+I.iconHTML(r[2],'lixo')+'</span><span class="cn">'+esc(r[1])+'</span><span class="cp">'+rar.n+' · <b>'+r[3].toLocaleString('pt-BR')+'</b> cr</span></button>';
+    });
+    $('lixoList').innerHTML = out || '<div class="cat-empty">Nenhuma sugestão.</div>';
+    I.lucideRefresh();
+  }
+  $('lixoList').addEventListener('click', function(e){
+    var b = e.target.closest('.cat-row'); if(!b) return;
+    var r = I.LIXO[+b.dataset.i];
+    fillForm({nome:r[1], cat:'lixo', raridade:r[4], icone:r[2], desc:r[7], efeito:'', w:r[5], h:r[6], qtd:1, preco:r[3], owner:'', cor:''});
+    $('fModelo').checked = false;
+    toast(r[1]+' carregado — ajuste o valor e salve');
   });
 
   function fillForm(v){
     $('fNome').value=v.nome||''; $('fCat').value=v.cat||'outro'; $('fRar').value=v.raridade||'comum';
     $('fIco').value=v.icone||''; $('fDesc').value=v.desc||''; $('fEf').value=v.efeito||'';
-    $('fW').value=v.w||1; $('fH').value=v.h||1; $('fQtd').value=v.qtd||1; $('fOwner').value=v.owner||'';
+    $('fW').value=v.w||1; $('fH').value=v.h||1; $('fQtd').value=v.qtd||1; $('fPreco').value=v.preco||0; $('fOwner').value=v.owner||'';
     corSel = v.cor||''; showCor();
   }
   function renderModels(){
@@ -617,6 +927,7 @@
     $('fModelo').checked = false; $('fModelo').closest('.f').style.display = item ? 'none' : 'block';
     renderModels();
     $('catBox').style.display = item ? 'none' : 'block'; if(!item){ $('catBox').open = true; $('catQ').value=''; buildCatalog(); }
+    $('lixoBox').style.display = item ? 'none' : 'block'; if(!item){ $('lixoBox').open = false; renderLixo(); }
     $('ov').classList.add('on'); setTimeout(function(){ (item ? $('fNome') : $('catQ')).focus(); }, 30);
   }
   function closeModal(){ $('ov').classList.remove('on'); editId=null; }
@@ -628,7 +939,7 @@
     if(!nome){ $('fNome').focus(); return toast('Dê um nome ao item'); }
     var data = {
       nome:nome, cat:$('fCat').value, raridade:$('fRar').value, icone:$('fIco').value.trim(), desc:$('fDesc').value.trim(),
-      efeito:$('fEf').value.trim(), cor:corSel, w:$('fW').value, h:$('fH').value, qtd:$('fQtd').value, owner:$('fOwner').value
+      efeito:$('fEf').value.trim(), cor:corSel, w:$('fW').value, h:$('fH').value, qtd:$('fQtd').value, preco:$('fPreco').value, owner:$('fOwner').value
     };
     if(editId){
       var it = byId(editId), old = {w:it.w,h:it.h};
@@ -648,6 +959,19 @@
     sel = added.id; save(); closeModal(); render();
   };
 
+  $('btnSelMode').onclick = function(){
+    selMode = !selMode; this.classList.toggle('on', selMode); gridEl.classList.toggle('selmode', selMode);
+    toast(selMode ? 'Modo seleção ligado — toque nos itens para marcar' : 'Modo seleção desligado');
+  };
+  $('btnSelAll').onclick = selectAll;
+  $('btnRefresh').onclick = function(){
+    if(!D.items.length) return toast('Maleta vazia — nada a atualizar');
+    if(!confirm('Atualizar os itens da maleta?\n\n• Ícone: volta ao ícone atual de cada item (inclusive se você trocou na mão)\n• Tamanho: só de itens que ainda estão no tamanho padrão da categoria\n• Raridade, descrição e efeito: copiados do catálogo da loja\n\nQuantidade, dono, cor, preço e posição ficam como estão.')) return;
+    var r = I.atualizar(D);
+    if(!r.itens && !r.icone){ toast('Tudo já está atualizado'); return; }
+    sel = null; multi = {}; render();
+    toast(r.itens+' item(ns) atualizado(s): '+r.icone+' ícone(s), '+r.tam+' tamanho(s), '+r.dados+' dado(s)'+(r.soltos?' — '+r.soltos+' sem espaço, aumente a maleta':''));
+  };
   $('btnCopy').onclick = function(){ var it = sel ? byId(sel) : null; if(it) copyItem(it); else toast('Selecione um item para copiar'); };
   $('btnPaste').onclick = pasteItems;
   /* ---------- backup ---------- */
@@ -670,11 +994,105 @@
     r.readAsText(f); this.value='';
   };
 
+  /* ---------- guias: INVENTÁRIO / BASE ---------- */
+  var tab = 'inv', bSel = {}, bQ = '';
+  function updateCounts(){
+    var a = $('tcInv'), b = $('tcBase');
+    if(a) a.textContent = D.items.length;
+    if(b) b.textContent = I.baseLoad().length;
+  }
+  function setTab(t){
+    tab = t === 'base' ? 'base' : 'inv';
+    $('case').style.display = tab==='inv' ? '' : 'none';
+    $('baseView').hidden = tab!=='base';
+    Array.prototype.forEach.call($('tabs').querySelectorAll('button[data-t]'), function(b){ b.classList.toggle('on', b.dataset.t===tab); });
+    try{ history.replaceState(null, '', tab==='base' ? '#base' : location.pathname + location.search); }catch(_){}
+    if(tab==='base'){ renderBase(); } else { D = I.load(); render(); }
+    updateCounts();
+  }
+  $('tabs').addEventListener('click', function(e){ var b = e.target.closest('button[data-t]'); if(b) setTab(b.dataset.t); });
+
+  /* maleta -> base */
+  function sendBase(ids){
+    var eq = ids.filter(function(id){ var it = byId(id); return it && it.owner; }).length;
+    var n = I.paraBase(D, ids);
+    if(!n) return toast('Não foi possível enviar para a base');
+    sel = null; multi = {}; render();
+    toast(n+' item(ns) enviado(s) para a base'+(eq ? ' — '+eq+' desequipado(s)' : ''));
+  }
+
+  /* base: lista + seleção + envio de volta */
+  function baseVis(l){
+    var q = bQ.trim().toLowerCase();
+    if(!q) return l;
+    return l.filter(function(it){ return (it.nome+' '+I.CATS[it.cat].n+' '+I.RAR[it.raridade].n).toLowerCase().indexOf(q) >= 0; });
+  }
+  function bIds(l){ return l.filter(function(it){ return bSel[it.id]; }).map(function(it){ return it.id; }); }
+  function renderBase(){
+    var all = I.baseLoad(), l = baseVis(all), ids = all.map(function(i){ return i.id; });
+    Object.keys(bSel).forEach(function(k){ if(ids.indexOf(k) < 0) delete bSel[k]; });
+    var s = bIds(all), val = 0, un = 0;
+    all.forEach(function(it){ if(bSel[it.id]){ val += (it.preco||0)*it.qtd; un += it.qtd; } });
+    $('bvBar').innerHTML =
+      '<span>NA BASE: <b>'+all.length+'</b></span>'+
+      '<span>SELECIONADOS: <b>'+s.length+'</b>'+(s.length ? ' ('+un+' unid. · '+val.toLocaleString('pt-BR')+' cr)' : '')+'</span><span class="sp"></span>'+
+      '<button class="mini" type="button" id="bvAll">☑ TODOS</button>'+
+      '<button class="mini" type="button" id="bvClr"'+(s.length?'':' disabled')+'>LIMPAR</button>'+
+      '<button class="big" type="button" id="bvOut"'+(s.length?'':' disabled')+'>🎒 ENVIAR PARA O INVENTÁRIO</button>'+
+      '<button class="mini" type="button" id="bvDel"'+(s.length?'':' disabled')+'>🗑 REMOVER</button>';
+    $('bvGrid').innerHTML = l.length ? l.map(function(it){
+      return '<div class="bi'+(bSel[it.id]?' on':'')+'" data-id="'+esc(it.id)+'" style="--rc:'+I.cor(it)+'" title="Clique para marcar · duplo clique envia para o inventário">'+
+        '<span class="bico">'+I.iconHTML(it.icone,it.cat)+'</span>'+
+        '<div><div class="bnm">'+esc(it.nome)+'</div><div class="bmt">'+I.CATS[it.cat].n+' · '+I.RAR[it.raridade].n+' · '+it.w+'×'+it.h+(it.preco ? ' · '+it.preco.toLocaleString('pt-BR')+' cr' : '')+'</div></div>'+
+        (it.qtd>1 ? '<span class="bq">×'+it.qtd+'</span>' : '')+'</div>';
+    }).join('') : '<div class="bv-empty" style="grid-column:1/-1">'+(all.length ? 'NENHUM ITEM ENCONTRADO' : '// BASE VAZIA')+
+      '<small>'+(all.length ? 'tente outra busca' : 'no inventário, selecione itens e use ENVIAR PARA A BASE')+'</small></div>';
+    I.lucideRefresh(); updateCounts();
+  }
+  function baseToInv(ids){
+    if(!ids.length) return;
+    var r = I.daBase(D, ids);
+    ids.forEach(function(id){ delete bSel[id]; });
+    renderBase(); render();
+    toast(r.ok+' item(ns) enviado(s) para o inventário'+(r.falhou ? ' — '+r.falhou+' sem espaço na maleta (ficaram na base)' : ''));
+  }
+  function baseRemove(ids){
+    if(!ids.length || !confirm('Remover '+ids.length+' item(ns) da base? Isso não tem volta.')) return;
+    I.baseSave(I.baseLoad().filter(function(i){ return ids.indexOf(i.id) < 0; }));
+    bSel = {}; renderBase(); toast(ids.length+' item(ns) removido(s) da base');
+  }
+  $('bvGrid').addEventListener('click', function(e){
+    var el = e.target.closest('.bi'); if(!el) return;
+    var id = el.dataset.id; if(bSel[id]) delete bSel[id]; else bSel[id] = 1;
+    renderBase();
+  });
+  $('bvGrid').addEventListener('dblclick', function(e){
+    var el = e.target.closest('.bi'); if(el) baseToInv([el.dataset.id]);
+  });
+  $('bvBar').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b || b.disabled) return;
+    var all = I.baseLoad();
+    if(b.id==='bvAll'){ baseVis(all).forEach(function(i){ bSel[i.id] = 1; }); renderBase(); }
+    else if(b.id==='bvClr'){ bSel = {}; renderBase(); }
+    else if(b.id==='bvOut') baseToInv(bIds(all));
+    else if(b.id==='bvDel') baseRemove(bIds(all));
+  });
+  $('bvQ').addEventListener('input', function(){ bQ = this.value; renderBase(); });
+  function baseKey(e){
+    var tg = (e.target.tagName||'').toLowerCase(); if(tg==='input'||tg==='textarea'||tg==='select') return;
+    var all = I.baseLoad(), s = bIds(all);
+    if((e.key==='a'||e.key==='A') && (e.ctrlKey||e.metaKey)){ e.preventDefault(); baseVis(all).forEach(function(i){ bSel[i.id] = 1; }); renderBase(); }
+    else if(e.key==='Escape'){ bSel = {}; renderBase(); }
+    else if((e.key==='Delete'||e.key==='Backspace') && s.length){ e.preventDefault(); baseRemove(s); }
+    else if(e.key==='Enter' && s.length){ baseToInv(s); }
+  }
+
   /* mudanças vindas de outra aba (loja/ficha) */
-  window.addEventListener('storage', function(e){ if(e.key===I.KEY || e.key==='s7_fichas'){ D = I.load(); render(); } });
-  window.addEventListener('focus', function(){ D = I.load(); render(); });
+  window.addEventListener('storage', function(e){ if(e.key===I.KEY || e.key==='s7_fichas'){ D = I.load(); render(); } if(e.key===I.BKEY){ updateCounts(); if(tab==='base') renderBase(); } });
+  window.addEventListener('focus', function(){ D = I.load(); render(); if(tab==='base') renderBase(); });
 
   render();
+  if(location.hash==='#base') setTab('base');
 })();
 
 function toggleNav(){

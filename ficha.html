@@ -49,6 +49,64 @@
   }
   .btn-new:hover{background:var(--cyan);color:#04120f;}
 
+  /* ---------- RECORDS: seletor de operativos em tela cheia ---------- */
+  .rc-cur{display:flex;align-items:center;gap:14px;width:100%;max-width:520px;text-align:left;cursor:pointer;font-family:var(--hud);color:var(--txt);
+    background:linear-gradient(135deg,color-mix(in srgb,var(--cyan) 14%,transparent),color-mix(in srgb,var(--cyan) 4%,transparent));border:1px solid var(--cyan);padding:10px 16px 10px 10px;clip-path:var(--chamfer-sm);transition:.15s;}
+  .rc-cur:hover{background:color-mix(in srgb,var(--cyan) 22%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--cyan) 25%,transparent);}
+  .rc-cur .rc-mini{flex:none;width:46px;height:56px;overflow:hidden;position:relative;background:#000;border:1px solid color-mix(in srgb,var(--cyan) 50%,transparent);}
+  .rc-cur .rc-mini .pt-frame{aspect-ratio:auto;height:100%;}
+  .rc-cur .rc-ct{flex:1;min-width:0;}
+  .rc-cur .rc-ct b{display:block;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rc-cur .rc-ct small{display:block;color:var(--cyan);font-size:.66rem;letter-spacing:.16em;margin-top:3px;}
+  .rc-cur .rc-go{font-size:.64rem;letter-spacing:.2em;color:var(--cyan);font-weight:700;white-space:nowrap;}
+  body.rc-open{overflow:hidden;}
+  #rcOv{position:fixed;inset:0;z-index:8000;display:flex;flex-direction:column;font-family:var(--hud);color:color-mix(in srgb,var(--cyan) 20%,var(--txt));
+    background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--cyan) 14%,var(--bg2)),var(--bg));animation:rcin .22s ease-out;}
+  #rcOv:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(color-mix(in srgb,var(--cyan) 6%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--cyan) 6%,transparent) 1px,transparent 1px);background-size:34px 34px;}
+  @keyframes rcin{from{opacity:0;transform:scale(1.02)}}
+  .rc-top{position:relative;display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:2px solid color-mix(in srgb,var(--cyan) 45%,transparent);background:linear-gradient(90deg,color-mix(in srgb,var(--cyan) 18%,transparent),transparent 70%);}
+  .rc-top h2{margin:0;font-size:1.5rem;letter-spacing:.32em;color:var(--cyan);text-shadow:0 0 14px color-mix(in srgb,var(--cyan) 60%,transparent);flex:1;white-space:nowrap;}
+  .rc-top h2 small{font-size:.6rem;letter-spacing:.2em;color:color-mix(in srgb,var(--cyan) 40%,var(--dim));margin-left:12px;}
+  .rc-btn{font-family:var(--hud);font-weight:700;letter-spacing:.18em;font-size:.72rem;background:color-mix(in srgb,var(--cyan) 8%,transparent);border:1px solid var(--cyan);color:var(--cyan);padding:9px 16px;cursor:pointer;clip-path:var(--chamfer-sm);text-transform:uppercase;}
+  .rc-btn:hover{background:var(--cyan);color:var(--bg);}
+  .rc-tools{position:relative;display:flex;align-items:center;gap:14px;padding:10px 18px;font-size:.66rem;letter-spacing:.18em;color:color-mix(in srgb,var(--cyan) 40%,var(--dim));flex-wrap:wrap;}
+  .rc-tools input[type=range]{accent-color:var(--cyan);width:min(240px,50vw);}
+  .rc-tools .rc-hint{margin-left:auto;opacity:.7;}
+  .rc-stage{position:relative;flex:1;min-height:0;display:flex;align-items:stretch;}
+  .rc-track{flex:1;min-width:0;display:grid;grid-auto-flow:column;grid-template-rows:repeat(var(--rows,1),max-content);align-content:center;gap:calc(22px*var(--z,1));
+    overflow-x:auto;overflow-y:hidden;padding:20px 8vw;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--cyan) transparent;cursor:grab;-webkit-overflow-scrolling:touch;}
+  .rc-track.drag{cursor:grabbing;scroll-snap-type:none;}
+  .rc-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:42px;height:84px;background:color-mix(in srgb,var(--bg) 80%,transparent);border:1px solid var(--cyan);color:var(--cyan);font-size:1.3rem;cursor:pointer;}
+  .rc-nav:hover{background:var(--cyan);color:var(--bg);} .rc-nav.l{left:0;} .rc-nav.r{right:0;}
+  .rc{position:relative;font-size:calc(14px*var(--z,1));width:21.5em;scroll-snap-align:center;cursor:pointer;user-select:none;
+    background:linear-gradient(160deg,color-mix(in srgb,var(--cyan) 20%,transparent),color-mix(in srgb,color-mix(in srgb,var(--cyan) 12%,var(--bg2)) 55%,transparent));border:1px solid color-mix(in srgb,var(--cyan) 55%,transparent);padding:1.1em 1.1em 1em;
+    box-shadow:0 0 0 1px rgba(0,0,0,.6),0 0 1.4em color-mix(in srgb,var(--cyan) 12%,transparent);clip-path:polygon(0 0,calc(100% - 1.4em) 0,100% 1.4em,100% 100%,1.4em 100%,0 calc(100% - 1.4em));transition:transform .15s,box-shadow .15s,background .15s;}
+  .rc:before{content:"";position:absolute;left:0;top:0;width:42%;height:.38em;background:color-mix(in srgb,var(--cyan) 45%,#fff);box-shadow:0 0 .8em var(--cyan);}
+  .rc:hover,.rc:focus-visible{transform:translateY(-.35em);outline:none;box-shadow:0 0 0 1px #000,0 0 2em color-mix(in srgb,var(--cyan) 45%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--cyan) 32%,transparent),color-mix(in srgb,color-mix(in srgb,var(--cyan) 12%,var(--bg2)) 60%,transparent));}
+  .rc.active{border-color:var(--yellow);box-shadow:0 0 0 1px #000,0 0 2em color-mix(in srgb,var(--yellow) 30%,transparent);}
+  .rc.active:before{background:var(--yellow);box-shadow:0 0 .8em var(--yellow);}
+  .rc-head{display:flex;gap:1em;align-items:stretch;}
+  .rc-pt{flex:none;width:7.6em;aspect-ratio:3/4;overflow:hidden;position:relative;background:var(--bg);border:1px solid color-mix(in srgb,var(--cyan) 60%,transparent);}
+  .rc-pt .pt-frame{position:absolute;inset:0;aspect-ratio:auto;}
+  .rc-pt .pt-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:.6em;letter-spacing:.2em;color:var(--dim);}
+  .rc-info{flex:1;min-width:0;margin:0;display:grid;grid-template-columns:auto 1fr;column-gap:.8em;row-gap:.38em;align-content:center;font-size:.85em;}
+  .rc-info dt{color:color-mix(in srgb,var(--cyan) 75%,var(--txt));letter-spacing:.1em;font-size:.82em;align-self:center;}
+  .rc-info dd{margin:0;font-weight:700;letter-spacing:.06em;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rc-info dd.cl{color:var(--cc,var(--cyan));}
+  .rc-xp{margin-top:.9em;font-size:.7em;letter-spacing:.14em;color:color-mix(in srgb,var(--cyan) 40%,var(--dim));display:flex;justify-content:space-between;gap:.6em;}
+  .rc-bar{height:.5em;background:rgba(0,0,0,.55);border:1px solid color-mix(in srgb,var(--cyan) 35%,transparent);margin-top:.3em;}
+  .rc-bar b{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),#e8f500);}
+  .rc-tags{display:flex;gap:.5em;margin-top:.7em;flex-wrap:wrap;font-size:.62em;letter-spacing:.16em;}
+  .rc-tags span{border:1px solid currentColor;padding:.15em .8em;border-radius:99px;}
+  .rc-tags .t-on{color:var(--yellow);} .rc-tags .t-pt{color:var(--green);}
+  .rc-del{position:absolute;right:1.5em;top:.55em;width:1.9em;height:1.9em;background:rgba(0,0,0,.5);border:1px solid color-mix(in srgb,var(--cyan) 50%,transparent);color:var(--cyan);font-size:.8em;cursor:pointer;line-height:1;font-family:inherit;}
+  .rc-del:hover{background:var(--red);border-color:var(--red);color:#060308;}
+  .rc.novo{display:grid;place-items:center;align-content:center;gap:.5em;min-height:12em;border-style:dashed;background:color-mix(in srgb,var(--cyan) 4%,transparent);color:var(--cyan);text-align:center;letter-spacing:.2em;font-weight:700;}
+  .rc.novo i{font-style:normal;font-size:3.2em;line-height:1;}
+  .rc.novo:before{display:none;}
+  @media (max-width:600px){.rc-nav{display:none;} .rc-top h2{font-size:1.05rem;letter-spacing:.2em;} .rc-tools .rc-hint{display:none;}}
+
   .empty-state{text-align:center;padding:60px 20px;color:var(--dim);font-size:.78rem;letter-spacing:.1em;}
 
   #sheet{display:none;}
@@ -418,6 +476,45 @@
   .est-warn{font-size:.62rem;color:#ff9a3d;letter-spacing:.06em;}
   .party-btn{align-self:flex-start;}
   @media(max-width:640px){.ex-grid{grid-template-columns:1fr;}.ex-left{max-width:260px;}}
+
+  /* ---------- NÍVEL & XP ---------- */
+  .nv-top{display:flex;flex-wrap:wrap;gap:18px 24px;align-items:center;}
+  .nv-lv{font-family:var(--hud);font-weight:700;color:var(--yellow);font-size:2rem;line-height:1;letter-spacing:.06em;}
+  .nv-lv small{display:block;font-size:.55rem;color:var(--dim);letter-spacing:.22em;font-weight:400;margin-bottom:5px;}
+  .nv-lv span{font-size:.85rem;color:var(--dim);}
+  .nv-bar{flex:1 1 260px;min-width:220px;}
+  .nv-track{height:14px;background:var(--bg);border:1px solid var(--line);overflow:hidden;}
+  .nv-track b{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--yellow));transition:width .3s;}
+  .nv-num{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.64rem;color:var(--dim);margin-top:6px;letter-spacing:.06em;}
+  .nv-ctl{display:flex;gap:6px;align-items:center;}
+  .nv-ctl input{width:84px;background:var(--bg);border:1px solid var(--line);color:var(--txt);padding:7px 8px;font-family:var(--hud);font-size:.8rem;text-align:center;}
+  .nv-ctl button,.nv-opts button{background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:7px 12px;font-family:var(--hud);font-size:.68rem;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;}
+  .nv-ctl button:hover,.nv-opts button:hover{border-color:var(--cyan);color:var(--cyan);}
+  .nv-ctl button.mais{border-color:var(--yellow);color:var(--yellow);}
+  .nv-opts button small{color:var(--dim);margin-left:4px;}
+  .nv-opts button.cls{border-color:var(--cc);color:var(--cc);}
+  .nv-msg{margin-top:10px;font-family:var(--hud);letter-spacing:.14em;font-size:.75rem;color:var(--yellow);}
+  .nv-trilha{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:18px;}
+  .nv-st{border:1px solid var(--line);padding:6px 9px;font-size:.56rem;letter-spacing:.12em;color:var(--dim);}
+  .nv-st b{display:block;font-family:var(--hud);font-size:.82rem;color:var(--txt);letter-spacing:.06em;}
+  .nv-st.ok{border-color:var(--cyan);} .nv-st.ok b{color:var(--cyan);}
+  .nv-st.pend{border-color:var(--yellow);box-shadow:0 0 10px -3px var(--yellow);} .nv-st.pend b{color:var(--yellow);}
+  .nv-st.bloq{opacity:.4;}
+  .nv-pend{margin-top:14px;border-left:4px solid var(--yellow);background:rgba(0,0,0,.22);padding:12px 16px;}
+  .nv-pt{font-family:var(--hud);font-weight:700;letter-spacing:.16em;color:var(--yellow);font-size:.78rem;margin-bottom:9px;}
+  .nv-opts{display:flex;flex-wrap:wrap;gap:8px;}
+  .nv-habopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+  .nv-opts button.hab{text-align:left;text-transform:none;border-color:var(--cc);display:flex;flex-direction:column;gap:5px;padding:10px 12px;line-height:1.45;letter-spacing:.02em;}
+  .nv-opts button.hab b{color:var(--cc);letter-spacing:.12em;font-size:.74rem;}
+  .nv-opts button.hab span{color:var(--txt);font-size:.68rem;}
+  .nv-opts button.hab:hover{background:rgba(255,255,255,.06);}
+  .nv-troca{margin-top:8px;}
+  .nv-troca button{background:transparent;border:1px dashed var(--cc);color:var(--cc);padding:4px 10px;font-family:var(--hud);font-size:.6rem;letter-spacing:.1em;cursor:pointer;}
+  .nv-troca button:hover{background:rgba(255,255,255,.07);}
+  .nv-aviso{margin-top:12px;font-size:.66rem;color:var(--dim);letter-spacing:.1em;}
+  .nv-habs{margin-top:16px;display:grid;gap:10px;}
+  .nv-hab{--cc:var(--cyan);border-left:4px solid var(--cc);background:rgba(0,0,0,.22);padding:10px 14px;font-size:.76rem;line-height:1.55;}
+  .nv-hab .nv-hn{font-family:var(--hud);font-weight:700;letter-spacing:.14em;color:var(--cc);font-size:.74rem;margin-bottom:3px;}
 </style>
 </head>
 <body>
@@ -438,7 +535,7 @@
   </div>
   <nav class="navbar shortcuts-nav" id="shortcutsNav">
   <a href="base_de_comando.html">🏚️ BASE</a>
-  <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+  <a href="loja.html">🛒 LOJA</a>
   <a href="venda.html">🎲 VENDA</a>
   <a href="missoes.html">🎯 MISSÕES</a>
   <a href="regras_do_setor_7.html">📜 REGRAS</a>
@@ -448,7 +545,7 @@
     <a href="venda.html">VENDA</a>
     <a href="missoes.html">MISSÕES</a>
     <a href="regras_do_setor_7.html">REGRAS</a>
-    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="loja.html">LOJA</a>
     <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
 
     <a href="configuracoes.html">⚙ CONFIG</a>
@@ -459,7 +556,7 @@
 
   <a class="back-base" href="base_de_comando.html">◂ VOLTAR PARA A BASE DE COMANDO <small>// BASE &gt; FICHA</small></a>
 
-  <div class="section-title">📋 OPERATIVOS SALVOS<small>escolha, crie ou apague uma ficha — tudo fica salvo neste navegador</small></div>
+  <div class="section-title">📋 OPERATIVOS SALVOS<small>toque no operativo para abrir o RECORDS: escolha, crie ou apague fichas — tudo fica salvo neste navegador</small></div>
   <div class="panel">
     <div class="char-bar" id="charBar"></div>
     <button class="btn-new" id="newCharBtn">+ NOVO OPERATIVO</button>
@@ -512,6 +609,9 @@
     <div class="panel">
       <div class="attr-grid" id="attrGrid"></div>
     </div>
+
+    <div class="section-title">⭐ NÍVEL &amp; XP<small>nível 1 a 15 — o XP sobe o nível sozinho; a cada marco você escolhe atributo, habilidade ou segunda classe</small></div>
+    <div class="panel" id="nvPanel"></div>
 
     <div class="section-title">🫀 DISTRIBUIÇÃO DE VIDA<small>a vida total é repartida entre as partes do corpo — edite à vontade e adicione camadas de defesa</small></div>
     <div class="panel">
@@ -885,31 +985,127 @@ function novaFichaObj(nome){
   };
 }
 
-/* ============ RENDER: BARRA DE PERSONAGENS ============ */
+/* ============ RENDER: BARRA DE PERSONAGENS + TELA "RECORDS" ============ */
+var RC_ZK = 's7_fichaZoom';
+function rcZoom(){ var z = parseFloat(localStorage.getItem(RC_ZK)); return (z >= 0.5 && z <= 1.6) ? z : 1; }
+function rcInfo(f, i){
+  S7P.ensure(f);
+  var nv = S7P.nivel(f), c = S7P.classeObj(f.classe), c2 = S7P.classeObj(f.classe2), s = S7P.stats(f);
+  var base = S7P.xpAcum(nv), custo = nv >= S7P.NV_MAX ? 0 : S7P.xpCusto(nv);
+  return { nv:nv, c:c, c2:c2, vida:s.vida, vmax:s.vidaMax,
+    xp:(f.xp||0), pct: custo ? Math.max(0, Math.min(100, Math.round((f.xp - base) / custo * 100))) : 100,
+    cod:'OP-'+('0'+(i+1)).slice(-2)+'-'+String(f.id||'').slice(-3).toUpperCase() };
+}
 function renderCharBar(){
   var wrap = document.getElementById('charBar');
   wrap.innerHTML = '';
-  fichas.forEach(function(f){
-    var chip = document.createElement('div');
-    chip.className = 'char-chip' + (f.id===currentId ? ' active' : '');
-    chip.innerHTML = '<span class="cn">'+esc(f.nome||'SEM NOME')+'</span><button class="del" data-id="'+f.id+'" title="Apagar ficha">✕</button>';
-    chip.addEventListener('click', function(e){
-      if(e.target.classList.contains('del')) return;
-      currentId = f.id;
-      localStorage.setItem('s7_currentFicha', currentId);
-      renderAll();
-    });
-    chip.querySelector('.del').addEventListener('click', function(e){
-      e.stopPropagation();
-      if(!confirm('Apagar a ficha de "'+(f.nome||'SEM NOME')+'"? Não tem volta.')) return;
-      fichas = fichas.filter(function(x){ return x.id!==f.id; });
-      if(currentId===f.id){ currentId = fichas[0] ? fichas[0].id : null; }
-      saveFichas();
-      localStorage.setItem('s7_currentFicha', currentId||'');
-      renderAll();
-    });
-    wrap.appendChild(chip);
+  var f = getCurrent(), btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'rc-cur';
+  if(f){
+    var i = rcInfo(f, fichas.indexOf(f));
+    btn.innerHTML = '<span class="rc-mini">'+S7P.portraitHTML(f.retrato).replace('class="pt-img"','class="pt-img" style="object-fit:cover"')+'</span>'+
+      '<span class="rc-ct"><b>'+esc(f.nome||'SEM NOME')+'</b><small>LEVEL-'+i.nv+' · '+(i.c ? i.c.i+' '+esc(i.c.n) : 'SEM CLASSE')+'</small></span>'+
+      '<span class="rc-go">TROCAR ▸<br><small style="color:color-mix(in srgb,var(--cyan) 40%,var(--dim))">'+fichas.length+' FICHA'+(fichas.length>1?'S':'')+'</small></span>';
+  } else {
+    btn.innerHTML = '<span class="rc-ct"><b>NENHUM OPERATIVO</b><small>ABRA O RECORDS PARA CRIAR</small></span><span class="rc-go">ABRIR ▸</span>';
+  }
+  btn.addEventListener('click', abrirRecords);
+  wrap.appendChild(btn);
+}
+
+function rcCard(f, i){
+  var d = rcInfo(f, i), cc = d.c ? d.c.c : 'var(--cyan)', ptn = S7P.inParty(f.id);
+  return '<div class="rc'+(f.id===currentId ? ' active' : '')+'" tabindex="0" data-id="'+esc(f.id)+'" style="--cc:'+cc+'">'+
+    '<button type="button" class="rc-del" data-del="'+esc(f.id)+'" title="Apagar ficha">✕</button>'+
+    '<div class="rc-head"><div class="rc-pt">'+S7P.portraitHTML(f.retrato)+'</div>'+
+    '<dl class="rc-info"><dt>ID</dt><dd>'+d.cod+'</dd><dt>NOME</dt><dd title="'+esc(f.nome||'')+'">'+esc(f.nome||'SEM NOME')+'</dd>'+
+    '<dt>NÍVEL</dt><dd>'+d.nv+' / '+S7P.NV_MAX+'</dd>'+
+    '<dt>CLASSE</dt><dd class="cl">'+(d.c ? d.c.i+' '+esc(d.c.n) : '—')+'</dd>'+
+    '<dt>2ª CL.</dt><dd class="cl" style="--cc:'+(d.c2 ? d.c2.c : 'var(--cyan)')+'">'+(d.c2 ? d.c2.i+' '+esc(d.c2.n) : '—')+'</dd>'+
+    '<dt>VIDA</dt><dd>'+d.vida+' / '+d.vmax+'</dd></dl></div>'+
+    '<div class="rc-xp"><span>XP '+d.xp.toLocaleString('pt-BR')+'</span><span>'+(d.nv>=S7P.NV_MAX ? 'MÁXIMO' : d.pct+'%')+'</span></div><div class="rc-bar"><b style="width:'+d.pct+'%"></b></div>'+
+    '<div class="rc-tags">'+(f.id===currentId ? '<span class="t-on">ABERTA</span>' : '')+(ptn ? '<span class="t-pt">⭐ NA PARTY</span>' : '')+'</div></div>';
+}
+
+function criarOperativo(){
+  var nome = prompt('Nome do novo operativo:', 'Novo Operativo');
+  if(nome===null) return false;
+  var f = novaFichaObj(nome);
+  fichas.push(f); currentId = f.id;
+  saveFichas(); localStorage.setItem('s7_currentFicha', currentId);
+  return true;
+}
+function apagarFicha(id){
+  var f = fichas.filter(function(x){ return x.id===id; })[0]; if(!f) return false;
+  if(!confirm('Apagar a ficha de "'+(f.nome||'SEM NOME')+'"? Não tem volta.')) return false;
+  fichas = fichas.filter(function(x){ return x.id!==id; });
+  if(currentId===id) currentId = fichas[0] ? fichas[0].id : null;
+  saveFichas(); localStorage.setItem('s7_currentFicha', currentId||'');
+  return true;
+}
+
+function fecharRecords(){
+  var ov = document.getElementById('rcOv'); if(!ov) return;
+  document.removeEventListener('keydown', ov._key, true);
+  document.body.classList.remove('rc-open'); ov.remove();
+}
+function abrirRecords(){
+  if(document.getElementById('rcOv')) return;
+  var ov = document.createElement('div'); ov.id = 'rcOv';
+  ov.innerHTML =
+    '<div class="rc-top"><button type="button" class="rc-btn" data-a="x">◂ VOLTAR</button><h2>RECORDS<small>// OPERATIVOS</small></h2>'+
+      '<button type="button" class="rc-btn" data-a="new">+ NOVO</button></div>'+
+    '<div class="rc-tools"><label>🔍 ZOOM <input type="range" id="rcZ" min="50" max="160" step="5"></label><span id="rcN"></span>'+
+      '<span class="rc-hint">arraste, use a roda do mouse ou ◂ ▸ · Enter abre · Esc fecha</span></div>'+
+    '<div class="rc-stage"><button type="button" class="rc-nav l" data-a="l">◂</button><div class="rc-track" id="rcTrack"></div><button type="button" class="rc-nav r" data-a="r">▸</button></div>';
+  document.body.appendChild(ov); document.body.classList.add('rc-open');
+  var tr = ov.querySelector('#rcTrack'), zr = ov.querySelector('#rcZ');
+
+  function zoom(z){
+    z = Math.max(.5, Math.min(1.6, z));
+    ov.style.setProperty('--z', z); ov.style.setProperty('--rows', z < .85 ? 2 : 1);   /* zoom baixo = 2 fileiras = mais fichas na tela */
+    zr.value = Math.round(z*100); try{ localStorage.setItem(RC_ZK, z); }catch(e){}
+  }
+  function desenha(keep){
+    var x = keep ? tr.scrollLeft : 0;
+    tr.innerHTML = fichas.map(rcCard).join('') +
+      '<div class="rc novo" tabindex="0" data-a="new"><i>+</i>NOVO OPERATIVO</div>';
+    ov.querySelector('#rcN').textContent = fichas.length+' FICHA'+(fichas.length===1?'':'S');
+    if(keep) tr.scrollLeft = x;
+    else { var a = tr.querySelector('.rc.active'); if(a) a.scrollIntoView({inline:'center', block:'nearest'}); }
+    if(window.S7EMO) S7EMO.scan(tr);
+  }
+  function passo(d){ var c = tr.querySelector('.rc'); tr.scrollBy({left:d * ((c ? c.offsetWidth : 300) + 24), behavior:'smooth'}); }
+  function novo(){ if(criarOperativo()){ fecharRecords(); renderAll(); } }
+
+  zr.addEventListener('input', function(){ zoom(zr.value/100); });
+  zoom(rcZoom()); desenha(false);
+
+  ov.addEventListener('click', function(e){
+    var t = e.target, a = t.closest && t.closest('[data-a]'), del = t.closest && t.closest('[data-del]'), c = t.closest && t.closest('.rc[data-id]');
+    if(tr._moved){ tr._moved = false; return; }
+    if(del){ e.stopPropagation(); if(apagarFicha(del.getAttribute('data-del'))){ renderCharBar(); if(!fichas.length){ fecharRecords(); renderAll(); } else desenha(true); } return; }
+    if(a){ var k = a.getAttribute('data-a'); if(k==='x') fecharRecords(); else if(k==='new') novo(); else passo(k==='l' ? -1 : 1); return; }
+    if(c){ currentId = c.getAttribute('data-id'); localStorage.setItem('s7_currentFicha', currentId); fecharRecords(); renderAll(); window.scrollTo(0, 0); }
   });
+  ov._key = function(e){
+    if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); fecharRecords(); }
+    else if(e.key==='ArrowRight'){ e.preventDefault(); passo(1); } else if(e.key==='ArrowLeft'){ e.preventDefault(); passo(-1); }
+    else if(e.key==='Enter'){ var f = document.activeElement; if(f && f.classList && f.classList.contains('rc')){ e.preventDefault(); f.click(); } }
+  };
+  document.addEventListener('keydown', ov._key, true);
+
+  /* roda do mouse (vertical) anda para o lado; arrastar com o mouse também (toque já rola sozinho) */
+  tr.addEventListener('wheel', function(e){ if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){ tr.scrollLeft += e.deltaY; e.preventDefault(); } }, {passive:false});
+  var down = null;
+  tr.addEventListener('pointerdown', function(e){ if(e.pointerType !== 'mouse' || e.button) return; down = {x:e.clientX, s:tr.scrollLeft}; tr._moved = false; });
+  window.addEventListener('pointermove', function mv(e){
+    if(!document.getElementById('rcOv')){ window.removeEventListener('pointermove', mv); return; }
+    if(!down) return; var dx = e.clientX - down.x;
+    if(Math.abs(dx) > 6){ tr._moved = true; tr.classList.add('drag'); tr.scrollLeft = down.s - dx; }
+  });
+  window.addEventListener('pointerup', function(){ down = null; tr.classList.remove('drag'); setTimeout(function(){ tr._moved = false; }, 0); });
+  var first = tr.querySelector('.rc.active') || tr.querySelector('.rc'); if(first) first.focus({preventScroll:true});
 }
 
 /* ============ RENDER: FICHA ATUAL ============ */
@@ -933,6 +1129,7 @@ function renderAll(){
   renderBodyMap(f);
   renderImplantes(f);
   renderExtras(f);
+  renderNivel(f);
 }
 
 function renderVidaResumo(f){
@@ -1352,16 +1549,7 @@ document.getElementById('pasteCodeBtn').addEventListener('click', async function
 });
 
 /* ---------- novo / apagar personagem ---------- */
-document.getElementById('newCharBtn').addEventListener('click', function(){
-  var nome = prompt('Nome do novo operativo:', 'Novo Operativo');
-  if(nome===null) return;
-  var f = novaFichaObj(nome);
-  fichas.push(f);
-  currentId = f.id;
-  saveFichas();
-  localStorage.setItem('s7_currentFicha', currentId);
-  renderAll();
-});
+document.getElementById('newCharBtn').addEventListener('click', function(){ if(criarOperativo()) renderAll(); });
 
 /* ============ ROLADOR DE DADOS GERAL (estilo Google) ============ */
 function renderDiceTypes(){
@@ -1585,7 +1773,8 @@ function renderClasse(f){
     b.innerHTML = '<div class="cb-top"><i>'+c.i+'</i>'+c.n+'</div><div class="cb-foco">'+c.foco+'</div>';
     b.addEventListener('click', function(){
       f.classe = (f.classe===c.k) ? '' : c.k;      /* clicar de novo desmarca */
-      safeSave(); renderClasse(f);
+      S7P.ensure(f); safeSave(); renderClasse(f); renderNivel(f);
+      if(f.classe) abrirCartas(f);      /* classe nova pode liberar habilidades já alcançadas */
     });
     g.appendChild(b);
   });
@@ -1594,6 +1783,134 @@ function renderClasse(f){
   d.className = 'cls-desc'; d.style.setProperty('--cc', cur.c);
   d.innerHTML = '<div class="cd-n">'+cur.i+' '+cur.n+'</div>'+cur.d+
     '<div class="cd-aff">IMPLANTES: NATIVO <b>'+cur.nat+'</b> · COMPATÍVEL <b>'+cur.comp.join(', ')+'</b></div>';
+}
+
+/* ============ NÍVEL & XP ============ */
+var nvMsg = '';
+function nvFmt(n){ return (+n||0).toLocaleString('pt-BR'); }
+function renderNivel(f){
+  var P = S7P, box = document.getElementById('nvPanel'); if(!box) return;
+  P.ensure(f);
+  var q = document.getElementById('nvQtd'), qv = q ? q.value : '250';
+  var nv = P.nivel(f), max = nv >= P.NV_MAX, base = P.xpAcum(nv), custo = max ? 0 : P.xpCusto(nv);
+  var cur = f.xp - base, pct = max ? 100 : Math.max(0, Math.min(100, Math.round(cur / custo * 100)));
+  var c1 = P.classeObj(f.classe), c2 = P.classeObj(f.classe2);
+
+  var h = '<div class="nv-top">'+
+    '<div class="nv-lv"><small>NÍVEL</small>'+nv+' <span>/ '+P.NV_MAX+'</span></div>'+
+    '<div class="nv-bar"><div class="nv-track"><b style="width:'+pct+'%"></b></div>'+
+      '<div class="nv-num">'+(max ? '<span>NÍVEL MÁXIMO</span>' : '<span>XP '+nvFmt(cur)+' / '+nvFmt(custo)+'</span>')+
+      '<span>total '+nvFmt(f.xp)+(max ? '' : ' · faltam '+nvFmt(custo-cur)+' p/ o nível '+(nv+1))+'</span></div></div>'+
+    '<div class="nv-ctl"><input type="number" id="nvQtd" min="1" value="'+esc(qv)+'" title="quantidade de XP">'+
+      '<button type="button" class="mais" data-nv="+">+ XP</button><button type="button" data-nv="-">− XP</button></div>'+
+    '</div>';
+  if(nvMsg){ h += '<div class="nv-msg">'+esc(nvMsg)+'</div>'; nvMsg = ''; }
+
+  /* trilha dos 15 níveis */
+  h += '<div class="nv-trilha">';
+  for(var lv = 1; lv <= P.NV_MAX; lv++){
+    var t = P.PREMIOS[lv], lab = '—', st = lv <= nv ? 'ok' : 'bloq';
+    if(lv === 1){ lab = 'CLASSE'; st = f.classe ? 'ok' : 'pend'; }
+    else if(t === 'attr'){ lab = '+1 ATRIBUTO'; st = lv > nv ? 'bloq' : (f.nivEsc[lv] ? 'ok' : 'pend'); }
+    else if(t === 'cls'){ lab = '2ª CLASSE'; st = lv > nv ? 'bloq' : (f.classe2 ? 'ok' : 'pend'); }
+    else if(t){ lab = 'HABILIDADE'; st = lv > nv ? 'bloq' : (f.habEsc[lv] ? 'ok' : 'pend'); }
+    h += '<div class="nv-st '+st+'"><b>NV '+lv+'</b>'+lab+'</div>';
+  }
+  h += '</div>';
+
+  /* escolhas pendentes */
+  P.pendentes(f).forEach(function(p){
+    if(p.tipo === 'attr'){
+      h += '<div class="nv-pend"><div class="nv-pt">NÍVEL '+p.lv+' · ESCOLHA +1 ATRIBUTO</div><div class="nv-opts">'+
+        P.ATRS.map(function(a){ var b = +f.atributos[a[0]] || 10;
+          return '<button type="button" data-esc="'+p.lv+'" data-v="'+a[0]+'">'+a[2]+' '+a[1]+' <small>'+b+' → '+(b+1)+'</small></button>'; }).join('')+
+        '</div></div>';
+    } else if(p.tipo === 'hab'){
+      h += '<div class="nv-pend"><div class="nv-pt">NÍVEL '+p.lv+' · ESCOLHA UMA HABILIDADE — '+p.classe.i+' '+p.classe.n+'</div><div class="nv-opts nv-habopts">'+
+        p.opts.map(function(o){
+          return '<button type="button" class="hab" style="--cc:'+p.classe.c+'" data-hab="'+p.lv+'" data-v="'+esc(o.n)+'"><b>'+esc(o.n)+'</b><span>'+esc(o.d)+'</span></button>'; }).join('')+
+        '</div><button type="button" data-cartas="'+p.lv+'" style="margin-top:8px;background:var(--panel2,#150f1d);border:1px solid var(--yellow,#e8f500);color:var(--yellow,#e8f500);padding:6px 12px;font-family:var(--hud);font-size:.7rem;letter-spacing:.12em;cursor:pointer">🎴 ESCOLHER NAS CARTAS</button><div class="nv-aviso" style="margin-top:8px">Dá para trocar depois, de graça, na lista de habilidades abaixo.</div></div>';
+    } else {
+      var ops = P.opcoesClasse2(f);
+      h += '<div class="nv-pend"><div class="nv-pt">NÍVEL '+p.lv+' · ESCOLHA A SEGUNDA CLASSE</div>';
+      if(!ops.length) h += '<div class="nv-aviso" style="margin:0">// ESCOLHA PRIMEIRO A CLASSE DO NÍVEL 1 (SEÇÃO CLASSE) //</div>';
+      else h += '<div class="nv-opts">'+ops.map(function(c){
+        return '<button type="button" class="cls" style="--cc:'+c.c+'" data-esc="'+p.lv+'" data-v="'+c.k+'">'+c.i+' '+c.n+'</button>'; }).join('')+'</div>';
+      h += '</div>';
+    }
+  });
+
+  /* habilidades ganhas */
+  var habs = P.habilidades(f);
+  if(habs.length){
+    h += '<div class="nv-habs">'+habs.map(function(x){
+      return '<div class="nv-hab" style="--cc:'+x.classe.c+'"><div class="nv-hn">NV '+x.lv+' · '+x.classe.i+' '+x.classe.n+' — '+esc(x.n)+'</div>'+esc(x.d)+(x.outra ? '<div class="nv-troca"><button type="button" data-hab="'+x.lv+'" data-v="'+esc(x.outra.n)+'" title="'+esc(x.outra.d)+'">↺ TROCAR POR '+esc(x.outra.n)+'</button></div>' : '')+'</div>'; }).join('')+'</div>';
+  }
+  if(nv >= 4 && !c1) h += '<div class="nv-aviso">// ESCOLHA A CLASSE (SEÇÃO CLASSE) PARA LIBERAR AS HABILIDADES //</div>';
+  else if(nv >= 14 && c1 && !c2) h += '<div class="nv-aviso">// ESCOLHA A SEGUNDA CLASSE PARA LIBERAR A HABILIDADE DO NÍVEL 14 //</div>';
+  else if(nv < 4) h += '<div class="nv-aviso">// A PRIMEIRA HABILIDADE DE CLASSE CHEGA NO NÍVEL 4 (você escolhe 1 de 2) //</div>';
+  if(c2) h += '<div class="nv-aviso">2ª CLASSE: <b style="color:'+c2.c+'">'+c2.i+' '+c2.n+'</b> — só dá a habilidade do nível 14; a afinidade dos implantes continua sendo a da classe principal.</div>';
+  box.innerHTML = h;
+}
+document.getElementById('nvPanel').addEventListener('click', function(e){
+  var f = getCurrent(); if(!f) return;
+  var b = e.target.closest('button'); if(!b) return;
+  var P = S7P;
+  if(b.dataset.nv){
+    var qv = Math.abs(parseInt((document.getElementById('nvQtd')||{}).value, 10) || 0); if(!qv) return;
+    var d = b.dataset.nv === '-' ? -qv : qv;
+    P.ensure(f);
+    var alvo = P.nivelDe(Math.max(0, f.xp + d));
+    var perde = Object.keys(f.nivEsc).some(function(k){ return +k > alvo; }) || (f.classe2 && alvo < 8);
+    if(alvo < P.nivel(f) && perde && !confirm('Isso derruba a ficha para o nível '+alvo+' e DESFAZ as escolhas dos níveis acima (atributos e 2ª classe). Continuar?')) return;
+    var r = P.darXp(f, d);
+    nvMsg = r.para > r.de ? '▲ SUBIU PARA O NÍVEL '+r.para+'!' : (r.para < r.de ? '▼ CAIU PARA O NÍVEL '+r.para : '');
+    safeSave(); renderAtributos(f); renderNivel(f);
+    if(window.S7FX && r.para > r.de) S7FX.subiu(f, r.de, r.para, function(lv, nome, op, cl){ return pickHabFx(f, lv, nome, op, cl); });
+  } else if(b.dataset.cartas){
+    var pc = P.pendentes(f).filter(function(x){ return x.tipo === 'hab' && String(x.lv) === String(b.dataset.cartas); })[0];
+    if(pc && window.S7FX) S7FX.escolha({lv:+pc.lv, classe:pc.classe, opts:pc.opts, onPick:function(nome, op){ return pickHabFx(f, pc.lv, nome, op, pc.classe); }});
+  } else if(b.dataset.hab){
+    var pp = P.pendentes(f).filter(function(x){ return x.tipo === 'hab' && String(x.lv) === String(b.dataset.hab); })[0];
+    pickHabFx(f, b.dataset.hab, b.dataset.v, {d:(b.querySelector('span') || {}).textContent || ''}, pp && pp.classe);
+  } else if(b.dataset.esc){
+    var lv = b.dataset.esc, v = b.dataset.v;
+    var nome = b.textContent.replace(/\s*\d+\s*→\s*\d+\s*$/, '').trim();
+    if(!confirm('Nível '+lv+': confirmar '+nome+'? Não dá pra trocar depois (só perdendo XP).')) return;
+    if(P.escolher(f, lv, v)){ safeSave(); renderAtributos(f); renderNivel(f); escolhaFx(f, +lv, v); }
+  }
+});
+
+/* aplica a escolha de habilidade (vinda das cartas ou do painel), salva, redesenha e toca a animação */
+function pickHabFx(f, lv, nome, op, classe){
+  if(!S7P.escolherHab(f, lv, nome)) return false;
+  safeSave(); renderNivel(f);
+  if(window.S7FX) S7FX.habilidade(nome, op && op.d, classe);
+  return true;
+}
+
+/* abre as cartas (1 de 2) de todas as habilidades pendentes da ficha */
+function abrirCartas(f){
+  if(!window.S7FX) return;
+  S7P.pendentes(f).forEach(function(x){
+    if(x.tipo !== 'hab') return;
+    S7FX.escolha({lv:+x.lv, classe:x.classe, opts:x.opts, onPick:function(nome, op){ return pickHabFx(f, x.lv, nome, op, x.classe); }});
+  });
+}
+/* animação ao escolher +1 atributo ou a 2ª classe; depois abre as cartas que isso liberou (ex.: habilidade do nível 14) */
+function escolhaFx(f, lv, v){
+  if(!window.S7FX) return;
+  var P = S7P;
+  if(P.PREMIOS[lv] === 'attr'){
+    var a = P.ATRS.filter(function(x){ return x[0] === v; })[0];
+    if(a) S7FX.play({label:'ATRIBUTO', sub:'Nível '+lv+' · '+a[1], burst:'+1!', nv:lv, max:P.NV_MAX,
+      get:{tag:'Atributo aumentado', titulo:a[2]+' '+a[1], desc:'Agora em '+(f.atributos[v] || '')+'.'}});
+  } else {
+    var c = P.classeObj(v);
+    if(c) S7FX.play({cor:c.c, label:'2ª CLASSE', sub:'Nível '+lv+' · '+c.n, burst:'CLASSE!', nv:lv, max:P.NV_MAX,
+      card:{ico:c.i, num:'II', nome:c.n}, get:{tag:'Segunda classe', titulo:c.n, desc:'Libera a habilidade de classe do nível 14.'}});
+  }
+  abrirCartas(f);
 }
 
 /* ============ NAV (menu / atalhos retráteis) ============ */
@@ -1612,6 +1929,8 @@ function toggleShortcuts(){
 
 /* ============ BOOT ============ */
 renderDiceTypes();
+/* veio do "+ NOVO OPERATIVO" da Base de Comando */
+if(localStorage.getItem('s7_novoOp')){ localStorage.removeItem('s7_novoOp'); try{ criarOperativo(); }catch(e){} }
 renderAll();
 </script>
 <script>

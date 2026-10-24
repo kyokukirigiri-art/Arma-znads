@@ -27,7 +27,8 @@
       for(var k in c.partes) c.partes[k].atual = c.partes[k].max;
       all.push(c); out.push(c);
     }
-    wr(KF, all); return out;
+    if(!wr(KF, all)) return [];   /* sem espaço no navegador: não finge que salvou */
+    return out;
   }
   function stats(f){ var a=0, m=0, p=f.partes||{}; for(var k in p){ a += +p[k].atual||0; m += +p[k].max||0; } return {v:a, m:m}; }
   /* dano (<0) tira das partes (torso primeiro); cura (>0) enche as partes */

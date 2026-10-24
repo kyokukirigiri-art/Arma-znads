@@ -50,6 +50,132 @@
      nat:'REFORÇO', comp:['TÁTICO','TANQUE']}
   ];
 
+  /* ---------- NÍVEL & XP ----------
+     Guardado na ficha: xp (total acumulado), nivEsc {nível: atributo escolhido}, classe2.
+     O nível é CALCULADO a partir do XP (não é gravado). Níveis 1 a 15.
+     Custo de cada nível: 250 + 125 × (nível atual − 1).
+     Prêmios: 2 attr · 4 hab 1 · 6 attr · 8 2ª classe · 10 hab 2 · 12 attr · 14 hab da 2ª classe · 15 attr.
+     Habilidades: em cada marco (4, 10 e 14) o jogador ESCOLHE 1 de 2 opções (f.habEsc); atributo e 2ª classe também são escolhas pendentes. */
+  /* HABILIDADES: cada classe tem 2 MARCOS (nível 4 e 10) e cada marco oferece 2 OPÇÕES — o jogador escolhe uma.
+     A 2ª classe (nível 14) escolhe entre as 2 opções do MARCO 1 dela. A escolha fica em f.habEsc {4:'NOME',10:'NOME',14:'NOME'}
+     e pode ser trocada à vontade na ficha (sem perder nada). Os nomes aqui são usados pelo combate.js (aba CLASSE). */
+  var HAB = {
+    bruto:[[{n:'GOLPE BRUTAL',d:'1× por cena: um acerto corpo a corpo causa +1d6 de dano.'},
+            {n:'DOBRO OU NADA',d:'1× por cena: o dano de um ataque é dobrado, mas o teste de acerto desse ataque sofre −3.'}],
+           [{n:'ESMAGAR',d:'1× por cena: um ataque corpo a corpo ignora a redução de dano da armadura do alvo.'},
+            {n:'CARGA TOTAL',d:'1× por cena: gasta o turno carregando; o próximo ataque tem +5 para acertar e rola o dano da arma duas vezes.'}]],
+    veloz:[[{n:'PRIMEIRO A AGIR',d:'Em todo combate: +3 na iniciativa e uma ação extra na primeira rodada.'},
+            {n:'MIRAGEM',d:'1× por cena: um ataque feito contra você erra automaticamente.'}],
+           [{n:'PASSO FANTASMA',d:'1× por cena: depois de uma esquiva bem-sucedida, ganha +2 no próximo ataque e um movimento extra.'},
+            {n:'RAJADA',d:'1× por cena: faz dois ataques no mesmo turno, cada um com −2 para acertar.'}]],
+    tanque:[[{n:'PELE DE FERRO',d:'1× por cena: reduz em 1d8 o dano de um ataque que você sofrer.'},
+             {n:'PROVOCAR',d:'1× por cena: por 2 turnos os inimigos preferem te atacar, e você reduz 1d4 de cada ataque que sofrer.'}],
+            [{n:'MURALHA',d:'1× por cena: assume o ataque dirigido a um aliado próximo; você sofre o dano reduzido em 1d6.'},
+             {n:'SEGUNDO FÔLEGO',d:'1× por cena: recupera 1d8 de Vida numa parte do seu corpo e remove um estado seu.'}]],
+    tatico:[[{n:'PONTO FRACO',d:'1× por cena: marca um inimigo; você e seus aliados ganham +2 para acertá-lo por 2 turnos.'},
+             {n:'TIRO CERTEIRO',d:'1× por cena: um ataque seu acerta automaticamente, sem teste.'}],
+            [{n:'LEITURA DE CAMPO',d:'1× por cena: em um teste de ataque ou de percepção, role 2d20 e fique com o maior.'},
+             {n:'ORDEM TÁTICA',d:'1× por cena: um aliado (ou você) age agora, com uma ação extra e +2 no teste.'}]],
+    netrunner:[[{n:'INVASÃO RÁPIDA',d:'1× por cena: um hack sem precisar de teste, ou +1d6 no dano de um hack.'},
+                {n:'CURTO-CIRCUITO',d:'1× por cena: o alvo fica ELETROCUTADO por 2 turnos (−2 em todos os testes; +1d4 de sobrecarga por implante ativado).'}],
+               [{n:'SURTO DE REDE',d:'1× por cena: um hack atinge até 3 alvos ou dispositivos ao mesmo tempo.'},
+                {n:'BACKDOOR',d:'1× por cena: abre uma brecha no próprio sistema e reduz a sua Sobrecarga em 15%.'}]],
+    reforco:[[{n:'PRIMEIROS SOCORROS',d:'1× por cena: cura 1d6 de Vida numa parte do corpo de um aliado (ou sua).'},
+              {n:'ESTIMULANTE',d:'1× por cena: um aliado (ou você) ganha +2 em todos os testes por 2 turnos.'}],
+             [{n:'ADRENALINA',d:'1× por cena: remove um estado de um aliado e dá +2 no próximo teste dele.'},
+              {n:'ROLETA DE NANITES',d:'1× por cena: rola 1d6 e libera um efeito aleatório num aliado (ou em você): 1 pane · 2-3 cura · 4 limpa um estado · 5 +2 no teste · 6 combo de tudo.'}]]
+  };
+  CLASSES.forEach(function(c){ c.slots = HAB[c.k] || []; c.hab = c.slots.map(function(s){ return s[0]; }); });
+  var ATRS = [['vel','VELOCIDADE','⚡'],['forca','FORÇA','💪'],['sorte','SORTE','🎲'],['int','INTELIGÊNCIA','🧠']];
+  var NV_MAX = 15, PREMIOS = {2:'attr',4:'hab1',6:'attr',8:'cls',10:'hab2',12:'attr',14:'hab3',15:'attr'};
+  function xpCusto(n){ return 250 + 125*(n-1); }                       /* XP para ir do nível n ao n+1 */
+  function xpAcum(n){ var t=0; for(var i=1;i<n;i++) t += xpCusto(i); return t; }   /* XP total para ESTAR no nível n */
+  var XP_MAX = xpAcum(NV_MAX);
+  function nivelDe(xp){ xp = Math.max(0, +xp||0); var n=1; while(n<NV_MAX && xp>=xpAcum(n+1)) n++; return n; }
+  function nivel(f){ return nivelDe(f && f.xp); }
+  function classeObj(k){ return CLASSES.filter(function(c){ return c.k===k; })[0] || null; }
+  function opcoesClasse2(f){
+    var c = classeObj(f.classe); if(!c) return [];
+    return c.comp.map(function(nm){ return CLASSES.filter(function(x){ return x.n===nm; })[0]; }).filter(Boolean);
+  }
+  /* marcos de habilidade: nível, de qual classe e qual par de opções */
+  function marcos(f){ return [{lv:4, c:classeObj(f.classe), i:0}, {lv:10, c:classeObj(f.classe), i:1}, {lv:14, c:classeObj(f.classe2), i:0}]; }
+  function opcoesHab(f, lv){
+    var m = marcos(f).filter(function(x){ return x.lv===+lv; })[0];
+    return (m && m.c && m.c.slots[m.i]) ? {classe:m.c, opts:m.c.slots[m.i]} : null;
+  }
+  function habilidades(f){
+    var nv = nivel(f), out = [], he = (f && f.habEsc && typeof f.habEsc==='object') ? f.habEsc : {};
+    marcos(f).forEach(function(m){
+      if(nv < m.lv || !m.c) return;
+      var ops = m.c.slots[m.i] || [], h = ops.filter(function(x){ return x.n===he[m.lv]; })[0];
+      if(h) out.push({lv:m.lv, classe:m.c, n:h.n, d:h.d, outra:ops.filter(function(x){ return x!==h; })[0] || null});
+    });
+    return out;
+  }
+  function pendentes(f){
+    ensure(f); var nv = nivel(f), out = [];
+    for(var lv=2; lv<=nv; lv++){
+      if(PREMIOS[lv]==='attr' && !f.nivEsc[lv]) out.push({lv:lv, tipo:'attr'});
+      if(PREMIOS[lv]==='cls' && !f.classe2) out.push({lv:lv, tipo:'cls'});
+      if(/^hab/.test(PREMIOS[lv]||'')){ var oh = opcoesHab(f, lv); if(oh && !f.habEsc[lv]) out.push({lv:lv, tipo:'hab', classe:oh.classe, opts:oh.opts}); }
+    }
+    return out;
+  }
+  /* desfaz escolhas de níveis que a ficha não alcança mais (XP removido ou código importado torto) */
+  function desfaz(f){
+    var nv = nivel(f);
+    Object.keys(f.nivEsc).forEach(function(lv){
+      var k = f.nivEsc[lv], ok = PREMIOS[lv]==='attr' && ATRS.some(function(a){ return a[0]===k; });
+      if(!ok){ delete f.nivEsc[lv]; return; }
+      if(+lv > nv){
+        if(f.atributos && typeof f.atributos==='object') f.atributos[k] = (+f.atributos[k]||10) - 1;
+        delete f.nivEsc[lv];
+      }
+    });
+    if(nv < 8) f.classe2 = '';
+  }
+  function logNv(t){ try{ if(window.S7LOG) S7LOG.add('nota', t); }catch(e){} }
+  function darXp(f, delta){
+    ensure(f);
+    var a = nivel(f), x0 = f.xp;
+    f.xp = Math.max(0, Math.min(XP_MAX, x0 + Math.round(+delta||0)));
+    desfaz(f);
+    var b = nivel(f), d = f.xp - x0;
+    if(d) logNv((f.nome||'Operativo')+': '+(d>0?'+':'')+d+' XP'+(b!==a ? ' · nível '+a+' → '+b : ''));
+    return {de:a, para:b, xp:f.xp, delta:d};
+  }
+  function escolher(f, lv, val){
+    ensure(f); lv = +lv;
+    if(lv > nivel(f)) return false;
+    var t = PREMIOS[lv];
+    if(t==='attr'){
+      var a = ATRS.filter(function(x){ return x[0]===val; })[0];
+      if(!a || f.nivEsc[lv]) return false;
+      if(!f.atributos || typeof f.atributos!=='object') f.atributos = {};
+      f.atributos[val] = (+f.atributos[val]||10) + 1; f.nivEsc[lv] = val;
+      logNv((f.nome||'Operativo')+': nível '+lv+' · +1 '+a[1]); return true;
+    }
+    if(t==='cls'){
+      var c = opcoesClasse2(f).filter(function(x){ return x.k===val; })[0];
+      if(!c || f.classe2) return false;
+      f.classe2 = val; logNv((f.nome||'Operativo')+': nível '+lv+' · segunda classe '+c.n); return true;
+    }
+    return false;
+  }
+
+  /* escolhe (ou TROCA, sem custo) a habilidade de um marco: 4, 10 ou 14 */
+  function escolherHab(f, lv, nome){
+    ensure(f); lv = +lv;
+    if(lv > nivel(f)) return false;
+    var oh = opcoesHab(f, lv); if(!oh) return false;
+    var h = oh.opts.filter(function(x){ return x.n===nome; })[0]; if(!h) return false;
+    var antes = f.habEsc[lv]; if(antes===h.n) return false;
+    f.habEsc[lv] = h.n;
+    logNv((f.nome||'Operativo')+': nível '+lv+' · habilidade '+(antes ? 'trocada para ' : '')+h.n);
+    return true;
+  }
+
   function esc(s){
     return (s==null?'':String(s)).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
   }
@@ -69,6 +195,17 @@
     if(f.desc==null) f.desc = '';
     if(f.titulo==null) f.titulo = '';
     if(typeof f.classe!=='string' || !CLASSES.some(function(c){ return c.k===f.classe; })) f.classe = '';
+    /* nível & XP */
+    f.xp = Math.max(0, Math.min(XP_MAX, Math.round(+f.xp) || 0));
+    if(!f.nivEsc || typeof f.nivEsc!=='object' || Array.isArray(f.nivEsc)) f.nivEsc = {};
+    if(typeof f.classe2!=='string' || !CLASSES.some(function(c){ return c.k===f.classe2; })) f.classe2 = '';
+    if(f.classe2 && f.classe && !opcoesClasse2(f).some(function(c){ return c.k===f.classe2; })) f.classe2 = '';
+    if(!f.habEsc || typeof f.habEsc!=='object' || Array.isArray(f.habEsc)) f.habEsc = {};
+    Object.keys(f.habEsc).forEach(function(lv){
+      var oh = opcoesHab(f, lv);
+      if(!oh || !oh.opts.some(function(x){ return x.n===f.habEsc[lv]; })) delete f.habEsc[lv];
+    });
+    desfaz(f);
     return f;
   }
 
@@ -112,16 +249,44 @@
     if(!r || !r.img || String(r.img).indexOf('data:image/')!==0) return '<div class="pt-empty">SEM<br>IMAGEM</div>';
     return '<img class="pt-img" alt="" draggable="false" src="'+esc(r.img)+'" style="transform:translate('+(+r.x||0)+'%,'+(+r.y||0)+'%) scale('+((+r.zoom||100)/100)+')">';
   }
+  /* Qualidade real: lado maior até 1600px (não amplia imagens menores), redução em etapas
+     com suavização alta e WebP em qualidade 0.95. Se o resultado passar de ~700 KB, baixa a
+     qualidade aos poucos (e por último o tamanho) para não estourar o localStorage. */
+  var PT_MAX = 1600, PT_Q = [.95, .9, .85, .8, .72], PT_BYTES = 700*1024;
+  function resample(im, w, h){
+    var src = im, sw = im.naturalWidth || im.width, sh = im.naturalHeight || im.height;
+    while(sw/2 >= w && sh/2 >= h){            /* reduz pela metade enquanto der: evita serrilhado/borrão */
+      var c = document.createElement('canvas'); c.width = Math.round(sw/2); c.height = Math.round(sh/2);
+      var x = c.getContext('2d'); x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+      x.drawImage(src, 0, 0, c.width, c.height);
+      src = c; sw = c.width; sh = c.height;
+    }
+    var f = document.createElement('canvas'); f.width = w; f.height = h;
+    var g = f.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+    g.drawImage(src, 0, 0, w, h);
+    return f;
+  }
+  function encode(c){
+    var u = '', i;
+    for(i = 0; i < PT_Q.length; i++){
+      u = c.toDataURL('image/webp', PT_Q[i]);
+      if(u.indexOf('data:image/webp') !== 0){ u = c.toDataURL('image/png'); break; }   /* navegador sem WebP */
+      if(u.length * 0.75 <= PT_BYTES) break;
+    }
+    return u;
+  }
   function compress(file, cb){
     var fr = new FileReader();
     fr.onload = function(){
       var im = new Image();
       im.onload = function(){
-        var s = Math.min(1, 720/Math.max(im.width, im.height));
-        var c = document.createElement('canvas'); c.width = Math.round(im.width*s); c.height = Math.round(im.height*s);
-        c.getContext('2d').drawImage(im,0,0,c.width,c.height);
-        var u = c.toDataURL('image/webp', .88);
-        if(u.indexOf('data:image/webp')!==0) u = c.toDataURL('image/png');
+        var W = im.naturalWidth || im.width, H = im.naturalHeight || im.height;
+        var s = Math.min(1, PT_MAX/Math.max(W, H)), w = Math.round(W*s), h = Math.round(H*s);
+        var u = encode(resample(im, w, h));
+        /* ainda grande demais? encolhe 15% por vez até caber (mín. 900px) */
+        while(u.length*0.75 > PT_BYTES*1.4 && Math.max(w, h) > 900){
+          w = Math.round(w*.85); h = Math.round(h*.85); u = encode(resample(im, w, h));
+        }
         cb(u);
       };
       im.onerror = function(){ alert('Não consegui ler essa imagem.'); };
@@ -313,6 +478,8 @@
     if(it.cat==='comida'){var c=e.match(/\+\s*(\d+)/);return{tipo:'comida',pct:false,n:c?+c[1]:10,todos:false};}
     return null;
   }
+  /* selo "LEVEL-X" no canto superior esquerdo do retrato. Fica invisível e só aparece quando o pai tem .on (operativo em foco). */
+  function lvBadge(f){ var c = classeObj(f && f.classe); return '<span class="s7-lv"'+(c ? ' style="--cc:'+c.c+'"' : '')+'>LEVEL-'+nivel(f)+'</span>'; }
   function aplicar(f,ef){
     ensure(f);var s=stats(f);
     if(ef.tipo==='vida')heal(f,ef.pct?Math.round(s.vidaMax*ef.n/100):ef.n);
@@ -323,6 +490,9 @@
 
   /* ---------- CSS compartilhado ---------- */
   var css =
+  '.s7-lv{position:absolute;top:0;left:0;z-index:4;pointer-events:none;background:var(--cc,var(--cyan,#22e6d2));color:#060308;font:700 .6rem/1 var(--hud,monospace);letter-spacing:.14em;padding:4px 8px;white-space:nowrap;opacity:0;transform:translateY(-5px);transition:opacity .15s,transform .15s}'+
+  '.th.on .s7-lv,.pm.on .s7-lv{opacity:1;transform:none}'+
+  '.th .s7-lv{font-size:.48rem;letter-spacing:.06em;padding:3px 5px}'+
   '.pt-frame{position:relative;aspect-ratio:3/5;overflow:hidden;background:#000;width:100%}'+
   '.pt-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:50% 50%;user-select:none;-webkit-user-drag:none;pointer-events:none}'+
   '.pt-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.6rem;letter-spacing:.3em;color:#3d4a4d;border:1px dashed #22383c;line-height:1.8}'+
@@ -343,6 +513,7 @@
   window.S7P = {
     ESTADOS:ESTADOS, CLASSES:CLASSES, MIN_SLOTS:MIN_SLOTS, MAX_SLOTS:MAX_SLOTS, esc:esc,
     fichas:fichas, saveFichas:saveFichas, ensure:ensure,
+    NV_MAX:NV_MAX, PREMIOS:PREMIOS, ATRS:ATRS, XP_MAX:XP_MAX, xpCusto:xpCusto, xpAcum:xpAcum, nivelDe:nivelDe, nivel:nivel, classeObj:classeObj, opcoesClasse2:opcoesClasse2, lvBadge:lvBadge, habilidades:habilidades, opcoesHab:opcoesHab, escolherHab:escolherHab, pendentes:pendentes, darXp:darXp, escolher:escolher,
     getParty:getParty, saveParty:saveParty, inParty:inParty, addToParty:addToParty, removeFromParty:removeFromParty,
     fichaCode:fichaCode, fichaFromCode:fichaFromCode, copyFichaCode:copyFichaCode, pasteFichaCode:pasteFichaCode, efeitoDe:efeitoDe, aplicar:aplicar, stats:stats, estadoChips:estadoChips, portraitHTML:portraitHTML, mountEditor:mountEditor
   };

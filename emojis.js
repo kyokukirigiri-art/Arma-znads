@@ -2,12 +2,14 @@
    emojis.js — EMOJIS PERSONALIZADOS (SETOR 7)
    Carregado automaticamente pelo tema.js (todas as páginas).
    Escreva :nome: em qualquer texto e ele vira a imagem  emojis/nome.png
-   (tenta .png, .svg, .webp, .gif, .jpg). Nomes: letras minúsculas,
+   (tenta .png, .svg, .webp, .gif, .jpg). Pode ficar em subpasta (ex.: emojis/estilizados/pote.png):
+   rode gerar_emojis.py e use só :pote:. Nomes: letras minúsculas,
    números, - e _  (ex.: :caveira-neon:). Se a imagem não existir,
    o texto :nome: continua aparecendo normalmente.
    ============================================================ */
 (function(){
   var DIR = 'emojis/', EXT = ['png','svg','webp','gif','jpg','jpeg'];
+  var SUBS = ['estilizados'];   /* subpastas de emojis/ que são procuradas automaticamente (sem precisar do lista.js) */
   var RE = /:([a-z][a-z0-9_-]{0,31}):/gi, ONE = /^:([a-z][a-z0-9_-]{0,31}):$/i;
   var cache = {};   /* nome -> {url, im, fail, q} */
 
@@ -25,9 +27,14 @@
       q.forEach(function(f){ good ? f[0](c.url) : f[1](); });
       if(good) try{ document.dispatchEvent(new Event('s7emoji')); }catch(e){}
     }
+    /* pastas onde procurar: a do lista.js (se existir), a raiz e as subpastas fixas de SUBS */
+    var mapped = (window.S7EMOJIS_DIR && window.S7EMOJIS_DIR[k]) || '';
+    var pastas = [mapped, ''].concat(SUBS).filter(function(p, n, a){ return a.indexOf(p) === n; });
+    var tries = [];
+    pastas.forEach(function(p){ EXT.forEach(function(e){ tries.push((p ? encodeURI(p) + '/' : '') + k + '.' + e); }); });
     (function next(){
-      if(i >= EXT.length) return done(false);
-      var im = new Image(), u = DIR + k + '.' + EXT[i++];
+      if(i >= tries.length) return done(false);
+      var im = new Image(), u = DIR + tries[i++];
       im.onload = function(){ c.url = u; c.im = im; done(true); };
       im.onerror = next;
       im.src = u;
@@ -47,8 +54,21 @@
     }
     return false;
   }
+  /* ícone reserva: <span class="emo-fb" data-emo="nome"> (montado pelo inventario.js) vira a imagem emojis/nome.* se ela existir */
+  function upgrade(root){
+    if(!root || root.nodeType!==1) return;
+    var l = root.querySelectorAll ? Array.prototype.slice.call(root.querySelectorAll('.emo-fb:not([data-ok])')) : [];
+    if(root.matches && root.matches('.emo-fb:not([data-ok])')) l.unshift(root);
+    l.forEach(function(sp){
+      sp.setAttribute('data-ok','1');
+      var n = sp.getAttribute('data-emo'); if(!n) return;
+      look(n, function(u){ sp.innerHTML = tag(n, u); }, function(){});
+    });
+  }
+
   function scan(root){
     root = root || document.body; if(!root) return;
+    if(root.nodeType===1) upgrade(root);
     if(root.nodeType===3){ one(root); return; }
     if(root.nodeType!==1) return;
     var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false), list = [], n;
@@ -79,10 +99,10 @@
   }
 
   var st = document.createElement('style');
-  st.textContent = '.emo{height:1.25em;width:1.25em;object-fit:contain;vertical-align:-.28em;display:inline-block;}.emo-t{display:inline;}';
+  st.textContent = '.emo{height:1.25em;width:1.25em;object-fit:contain;vertical-align:-.28em;display:inline-block;}.emo-t{display:inline;}.emo-fb{display:contents;}';
   (document.head || document.documentElement).appendChild(st);
 
-  window.S7EMO = { DIR:DIR, EXT:EXT, is:function(s){ return ONE.test(String(s||'').trim()); }, scan:scan, html:html, canvasImg:canvasImg, look:look };
+  window.S7EMO = { DIR:DIR, EXT:EXT, url:function(n){ var c = cache[String(n).toLowerCase()]; return (c && c.url) || ''; }, upgrade:upgrade, is:function(s){ return ONE.test(String(s||'').trim()); }, scan:scan, html:html, canvasImg:canvasImg, look:look };
 
   function start(){
     scan(document.body);

@@ -64,10 +64,10 @@
     <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
   </div>
   <nav class="navbar shortcuts-nav" id="shortcutsNav">
-  <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+  <a href="loja.html">🛒 LOJA</a>
   <a href="venda.html">🎲 VENDA</a>
   <a href="missoes.html">🎯 MISSÕES</a>
-  <a href="ARMA-ZENADS.html#sobrecarga">⚠ SOBRECARGA</a>
+  <a href="loja.html#sobrecarga">⚠ SOBRECARGA</a>
   <a href="base_de_comando.html">🏚️ BASE</a>
   <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">⚔️ HACK_AREA</a>
 </nav>
@@ -75,7 +75,7 @@
     <a href="venda.html">VENDA</a>
     <a href="missoes.html">MISSÕES</a>
     <a href="regras_do_setor_7.html">REGRAS</a>
-    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="loja.html">LOJA</a>
     <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
   
     <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
@@ -246,9 +246,101 @@
 </div>
 <div class="cond" style="--cc:#46ff7a">
   <h3>💊 CHAPADO<span class="rasc">RASCUNHO</span></h3>
-  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Depois de usar <b>qualquer item da aba SOBRECARGA</b> para diminuir a Sobrecarga (Calmante Neuro-Z, Pulseira Biofeedback, Terapia Neural, DreamSafe Chip, Firewall Psíquico, Reset Ego).</span></div>
+  <div class="ln"><span class="lb">Como acontece</span><span class="tx">Depois de usar <b>qualquer item da aba SOBRECARGA</b> para diminuir a Sobrecarga (Calmante Neuro-Z, Pulseira Biofeedback, Spray Criogênico, Estabilizador de Tensão, Dissipador Térmico, Kill Switch).</span></div>
   <div class="ln"><span class="lb">O que faz</span><span class="tx">Efeito colateral do remédio: <b>−2 em Velocidade e Inteligência</b>, mas <b>imune a Medo</b> enquanto durar. A duração depende da raridade do item: comum <b>1 turno</b>, raro <b>2</b>, experimental <b>3</b>, proibido <b>4</b>. Tomar outro item renova a duração, não soma.</span></div>
   <div class="ln"><span class="lb">Como parar</span><span class="tx">Passa sozinho quando a duração acaba. Um Stimpack corta o efeito na hora.</span></div>
+</div>
+
+<h2 class="rule-title">09 <span>CLASSES</span></h2>
+<div class="rule-card">
+  Todo operativo escolhe <b>uma classe</b> na FICHA (clicar de novo desmarca). A classe <b>não dá atributo nem vida extra</b>: ela define <b>quais implantes rendem 100%</b> na sua mão. Cada classe tem foco próprio e uma lista de afinidades.<br><br>
+  <table>
+    <tr><th>Classe</th><th>Foco</th><th>Papel no grupo</th><th>Compatível com</th></tr>
+    <tr><td><span class="pk">💪 BRUTO</span></td><td>Força · corpo a corpo</td><td>Linha de frente ofensiva: dano pesado de perto, quebra o que estiver no caminho.</td><td>Tanque</td></tr>
+    <tr><td><span class="cy">⚡ VELOZ</span></td><td>Velocidade · esquiva</td><td>Age primeiro, flanqueia, foge e escapa dos golpes.</td><td>Tático</td></tr>
+    <tr><td><span class="pu">🛡 TANQUE</span></td><td>Resistência · defesa</td><td>Segura a atenção do inimigo e protege quem está atrás.</td><td>Bruto</td></tr>
+    <tr><td><span style="color:#ffb300">🎯 TÁTICO</span></td><td>Percepção · precisão</td><td>Marca alvos, acha pontos fracos e dita o ritmo da luta.</td><td>Netrunner, Veloz</td></tr>
+    <tr><td><span style="color:#46ff7a">🧠 NETRUNNER</span></td><td>Hacking · rede</td><td>Invade sistemas, controla dispositivos e transforma o ambiente em arma.</td><td>Tático</td></tr>
+    <tr><td><span style="color:#ff7ad9">🩺 REFORÇO</span></td><td>Suporte · equipe</td><td>Cura, fortalece aliados e cobre as falhas da equipe.</td><td>Tático, Tanque</td></tr>
+  </table>
+  <b>Afinidade do implante:</b> todo implante e prótese da loja traz uma afinidade (o nome de uma classe, ou <b>QUALQUER</b>). Comparando com a sua classe, o resultado é um destes:<br><br>
+  <table>
+    <tr><th>Sinergia</th><th>Quando</th><th>Bônus (dado)</th><th>Fixo e crítico</th><th>Sobrecarga</th></tr>
+    <tr><td style="color:#46ff7a">✦ NATIVO</td><td>afinidade = sua classe</td><td>normal</td><td>100%</td><td>normal</td></tr>
+    <tr><td style="color:#ffb300">◐ COMPATÍVEL</td><td>afinidade está na lista "compatível" da sua classe</td><td><b>1 degrau menor</b></td><td><b>−25%</b></td><td><b>+25%</b> na habilidade e <b>+1</b> no uso normal</td></tr>
+    <tr><td style="color:#ff3355">✖ SEM SINERGIA</td><td>qualquer outra classe</td><td><b>2 degraus menor</b></td><td><b>−50%</b></td><td><b>+50%</b> na habilidade e <b>+2</b> no uso normal</td></tr>
+    <tr><td class="cy">∞ UNIVERSAL</td><td>afinidade QUALQUER</td><td>normal</td><td>100%</td><td>normal</td></tr>
+  </table>
+  <b>Degraus de dado:</b> <span class="formula" style="display:inline-block;margin:4px 0;padding:4px 12px">d20 → d12 → d10 → d8 → d6 → d4</span> (o d4 é o piso; não desce mais). Valores quebrados arredondam para baixo no bônus fixo e no crítico, e para cima na sobrecarga.<br><br>
+  <b>Sem classe escolhida:</b> todo implante rende 100% (sem penalidade, sem bônus). Armas, armaduras, itens e comida <b>não têm afinidade</b>: qualquer classe usa tudo.
+  <div class="example">EXEMPLO — Cross é <b>BRUTO</b> e instala o Sandevistan (afinidade VELOZ, que não está na lista do Bruto) → <span class="pk">SEM SINERGIA</span>. Um bônus de 1d8+4 vira <b>1d4+2</b> (dois degraus para baixo e metade do fixo), e a habilidade que custava 20 de sobrecarga passa a custar <b>30</b>. Já se Cross usar o Titan Grip (afinidade BRUTO), tudo rende 100%.<br>
+  Verity é <b>TÁTICO</b> e usa o Inferno Script (NETRUNNER, que é compatível com Tático) → <span style="color:#ffb300">COMPATÍVEL</span>: um custo de 12 vira <b>15</b>, e o bônus perde um degrau de dado.</div>
+  <b>Dica de montagem:</b> um implante fora da sua classe ainda pode valer a pena, mas custa caro em sobrecarga. Prefira implantes <b>NATIVO</b> ou <b>UNIVERSAL</b> e deixe 1 ou 2 vagas para os <b>COMPATÍVEIS</b>.
+</div>
+
+<h2 class="rule-title">10 <span>EQUIPAMENTO (SLOTS)</span></h2>
+<div class="rule-card">
+  O operativo equipa itens da maleta em <b>6 slots</b>. Só o que está equipado conta em testes e combate:<br><br>
+  <table>
+    <tr><th>Slot</th><th>Quantos</th><th>Observação</th></tr>
+    <tr><td><b>ARMA</b> (fogo)</td><td>1</td><td>Equipar outra <b>troca</b> a atual.</td></tr>
+    <tr><td><b>CORPO A CORPO</b></td><td>1</td><td>Lâminas e armas de impacto. Definem sangramento e tontura (ver seção 08).</td></tr>
+    <tr><td><b>ARMADURA</b></td><td>1</td><td>Bônus de vida ou redução de perda de vida, conforme o tipo.</td></tr>
+    <tr><td><b>HACKER</b></td><td>1</td><td>Dispositivos de hacking.</td></tr>
+    <tr><td><b>IMPLANTE</b></td><td>vários</td><td>Cada um soma sua % de sobrecarga (seção 04) e ocupa uma parte do corpo (Porta Neural, Cérebro, Coração, Olhos...).</td></tr>
+    <tr><td><b>PRÓTESE</b></td><td>vários</td><td>Funciona como implante e também restaura membros perdidos (ver IMOBILIZADO).</td></tr>
+  </table>
+  Itens de <b>CURA, SANIDADE e COMIDA</b> não ocupam slot: ficam na maleta e são usados na hora. Usar gasta uma unidade do item (itens empilháveis mostram ×N); no último, o item some.
+</div>
+
+<h2 class="rule-title">11 <span>HABILIDADES DE IMPLANTE</span></h2>
+<div class="rule-card">
+  Muitos implantes têm uma <b>habilidade ativa</b>, além do bônus passivo. Cada habilidade mostra estes dados na descrição:<br><br>
+  <table>
+    <tr><th>Campo</th><th>O que significa</th></tr>
+    <tr><td><b>⚡ CUSTO</b></td><td>Quanto de <b>Sobrecarga</b> você ganha ao usar. É o preço da habilidade; o ajuste de sinergia da classe (seção 09) se aplica aqui.</td></tr>
+    <tr><td><b>RECARGA</b></td><td>Quantos turnos esperar para usar de novo (ou "1x por rodada"). Sem recarga = pode repetir, se aguentar a sobrecarga.</td></tr>
+    <tr><td><b>ALVO</b></td><td>Quem é afetado: você, 1 aliado, todos os aliados, 1 inimigo ou todos os inimigos. Em habilidades de Reforço, "(ou você)" significa que pode usar em si mesmo.</td></tr>
+    <tr><td><b>DESVANTAGEM</b></td><td>Efeito colateral que vem junto (ex.: −15% de velocidade por 1 turno). Também é reduzido ou aumentado pela sinergia, quando é uma porcentagem.</td></tr>
+  </table>
+  Se o custo levar a Sobrecarga a <b>100%</b>, vale a regra da <span class="pk">CIBERPSICOSE</span>. O implante <b>Reactor Heart</b> reduz o custo de todas as habilidades pela porcentagem indicada nele.
+  <div class="example">EXEMPLO — Um Medic Daemon (REFORÇO) custa 12 de sobrecarga, tem recarga de 2 turnos e cura 1 aliado (ou o próprio usuário). Usado por um Reforço, paga 12. Usado por um Bruto (sem sinergia), paga 18.</div>
+</div>
+
+<h2 class="rule-title">12 <span>NÍVEL &amp; XP</span></h2>
+<div class="rule-card">
+  Todo operativo começa no <b>nível 1</b> e pode chegar ao <b>nível 15</b>. O <b>Mestre</b> distribui o XP no fim das cenas e missões; o nível sobe sozinho na FICHA (seção ⭐ NÍVEL &amp; XP). Subir do nível <i>n</i> para o <i>n+1</i> custa <span class="formula" style="display:inline-block;margin:4px 0;padding:4px 12px">250 + 125 × (n − 1) XP</span><br><br>
+  <table>
+    <tr><th>Nível</th><th>XP total necessário</th><th>Ganho</th></tr>
+    <tr><td>1</td><td>0</td><td>Escolhe a <b>classe</b></td></tr>
+    <tr><td>2</td><td>250</td><td><b>+1 atributo</b></td></tr>
+    <tr><td>3</td><td>625</td><td>—</td></tr>
+    <tr><td>4</td><td>1.125</td><td><b>Habilidade</b> da classe (escolha 1 de 2)</td></tr>
+    <tr><td>5</td><td>1.750</td><td>—</td></tr>
+    <tr><td>6</td><td>2.500</td><td><b>+1 atributo</b></td></tr>
+    <tr><td>7</td><td>3.375</td><td>—</td></tr>
+    <tr><td>8</td><td>4.375</td><td><b>Segunda classe</b></td></tr>
+    <tr><td>9</td><td>5.500</td><td>—</td></tr>
+    <tr><td>10</td><td>6.750</td><td><b>2ª habilidade</b> da classe (escolha 1 de 2)</td></tr>
+    <tr><td>11</td><td>8.125</td><td>—</td></tr>
+    <tr><td>12</td><td>9.625</td><td><b>+1 atributo</b></td></tr>
+    <tr><td>13</td><td>11.250</td><td>—</td></tr>
+    <tr><td>14</td><td>13.000</td><td><b>Habilidade</b> da 2ª classe (escolha 1 de 2)</td></tr>
+    <tr><td>15</td><td>14.875</td><td><b>+1 atributo</b> (nível máximo)</td></tr>
+  </table>
+  <b>Atributo:</b> some +1 na <b>Base</b> de Velocidade, Força, Sorte ou Inteligência, à sua escolha. A escolha é permanente; só se desfaz se a ficha perder XP e cair abaixo daquele nível.<br><br>
+  <b>Segunda classe (nível 8):</b> só vale uma classe <b>compatível</b> com a sua, a mesma lista da seção 09 (ex.: Veloz pode pegar Tático). Ela dá apenas a habilidade do nível 14; a <b>afinidade dos implantes</b> continua sendo a da classe principal.<br><br>
+  <b>Habilidades de classe (escolha 1 de 2):</b> em cada marco — nível 4, nível 10 e, com a 2ª classe, nível 14 — você escolhe <b>uma entre duas</b> habilidades da classe. A escolha pode ser <b>trocada de graça</b> a qualquer momento na ficha (seção NÍVEL &amp; XP); nada se perde. No nível 14 as duas opções são as do <b>marco 1 da 2ª classe</b>. Salvo quando indicado, cada habilidade pode ser usada <b>1× por cena</b>. Na aba <b>CLASSE</b> do combate (página AMEAÇAS), o botão <b>USAR</b> gasta a habilidade até o botão <b>NOVA CENA</b>, e boa parte dos efeitos entra sozinha nas rolagens (bônus de dano, +2 no ataque, 2d20, cura, etc.). <b>Primeiro a Agir</b> é passiva e não gasta uso. O resto o Mestre aplica na mesa.<br><br>
+  <table>
+    <tr><th>Classe</th><th>Marco 1 (nível 4) — escolha 1</th><th>Marco 2 (nível 10) — escolha 1</th></tr>
+    <tr><td><span class="pk">💪 BRUTO</span></td><td><b>Golpe Brutal:</b> +1d6 de dano em um acerto corpo a corpo<br><b>ou Dobro ou Nada:</b> dano do ataque ×2, mas −3 para acertar</td><td><b>Esmagar:</b> corpo a corpo ignora a redução de armadura do alvo<br><b>ou Carga Total:</b> gasta o turno; no próximo ataque +5 para acertar e dano da arma rolado duas vezes</td></tr>
+    <tr><td><span class="cy">⚡ VELOZ</span></td><td><b>Primeiro a Agir:</b> +3 na iniciativa e ação extra na 1ª rodada (passiva)<br><b>ou Miragem:</b> um ataque contra você erra automaticamente</td><td><b>Passo Fantasma:</b> depois de esquivar, +2 no próximo ataque e movimento extra<br><b>ou Rajada:</b> dois ataques no turno, cada um com −2</td></tr>
+    <tr><td><span class="pu">🛡 TANQUE</span></td><td><b>Pele de Ferro:</b> reduz em 1d8 o dano de um ataque<br><b>ou Provocar:</b> por 2 turnos os inimigos te preferem e você reduz 1d4 de cada ataque</td><td><b>Muralha:</b> assume o ataque dirigido a um aliado, sofrendo o dano −1d6<br><b>ou Segundo Fôlego:</b> cura 1d8 numa parte do seu corpo e remove um estado seu</td></tr>
+    <tr><td><span style="color:#ffb300">🎯 TÁTICO</span></td><td><b>Ponto Fraco:</b> marca um inimigo; todos ganham +2 para acertá-lo por 2 turnos<br><b>ou Tiro Certeiro:</b> um ataque seu acerta automaticamente</td><td><b>Leitura de Campo:</b> 2d20 em um ataque ou teste de percepção, fica com o maior<br><b>ou Ordem Tática:</b> um aliado (ou você) age agora, com ação extra e +2 no teste</td></tr>
+    <tr><td><span style="color:#46ff7a">🧠 NETRUNNER</span></td><td><b>Invasão Rápida:</b> um hack sem teste, ou +1d6 no dano de um hack<br><b>ou Curto-Circuito:</b> alvo ELETROCUTADO por 2 turnos</td><td><b>Surto de Rede:</b> um hack atinge até 3 alvos ou dispositivos<br><b>ou Backdoor:</b> reduz a sua Sobrecarga em 15%</td></tr>
+    <tr><td><span style="color:#ff7ad9">🩺 REFORÇO</span></td><td><b>Primeiros Socorros:</b> cura 1d6 de Vida numa parte do corpo de um aliado (ou sua)<br><b>ou Estimulante:</b> aliado (ou você) ganha +2 em todos os testes por 2 turnos</td><td><b>Adrenalina:</b> remove um estado de um aliado e dá +2 no próximo teste dele<br><b>ou Roleta de Nanites:</b> rola 1d6 — 1 pane · 2-3 cura · 4 limpa um estado · 5 +2 no teste · 6 combo de tudo</td></tr>
+  </table>
+  <div class="example">EXEMPLO — Cross é <b>VELOZ</b> e chega ao nível 8 com 4.375 XP. Escolhe <span style="color:#ffb300">TÁTICO</span> como segunda classe. No nível 14 escolhe entre <b>Ponto Fraco</b> e <b>Tiro Certeiro</b> (o marco 1 do Tático), além de <b>Primeiro a Agir</b> (nv 4) e <b>Passo Fantasma</b> (nv 10) que já tinha.</div>
 </div>
 
 <footer>

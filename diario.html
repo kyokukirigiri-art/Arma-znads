@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIÁRIO-DA-SESSÃO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tema.js"></script>
+<style>
+  main{max-width:900px;margin:auto;padding:30px 5% 50px;}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0;}
+  .bar button,.bar select,.bar input{background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:8px 12px;font-family:var(--hud);font-size:.72rem;letter-spacing:.1em;}
+  .bar button{cursor:pointer;text-transform:uppercase;} .bar button:hover{border-color:var(--cyan);color:var(--cyan);}
+  .bar input{flex:1 1 220px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+  .chip{cursor:pointer;border:1px solid var(--c);color:var(--c);padding:3px 12px;font-size:.66rem;letter-spacing:.14em;border-radius:99px;opacity:.45;user-select:none;}
+  .chip.on{opacity:1;background:rgba(255,255,255,.06);}
+  .resumo{border-left:4px solid var(--red);background:var(--panel);padding:12px 16px;font-size:.8rem;line-height:1.7;margin:10px 0;}
+  .ev{display:flex;gap:12px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.8rem;line-height:1.5;border-left:3px solid var(--c);}
+  .ev time{flex:0 0 52px;color:var(--dim);font-size:.7rem;padding-top:2px;}
+  .ev .k{flex:0 0 78px;color:var(--c);font-size:.62rem;letter-spacing:.14em;font-weight:700;padding-top:3px;}
+  .ev .x{flex:1;min-width:0;word-break:break-word;}
+  .vazio{color:var(--dim);padding:30px;text-align:center;font-size:.8rem;}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hud-tag">SYS.BOOT // PROTOCOLO_SETOR_7_v1 // DOCUMENTO CLANDESTINO</div>
+  <h1><span class="mk">PROTOCOLO SETOR 7</span></h1>
+  <p>// SISTEMA SIMPLES DE RPG CYBERPUNK — D20 — <span class="mk-line">VERSÃO 1.0</span> //</p>
+</header>
+
+<div class="ad-marquee"><span>📢 REGRA Nº0: O MESTRE SEMPRE TEM RAZÃO // 🎲 D20 RESOLVE TUDO // ⚡ MANTENHA SEU ÍNDICE BAIXO // 📢 VOLTE PARA A LOJA E GASTE SEUS CRÉDITOS //</span></div>
+
+<div class="nav-shell" id="navShell">
+  <div class="nav-buttons">
+    <button class="shortcuts-toggle" id="shortcutsToggle" type="button" aria-label="Recolher atalhos" aria-expanded="true" onclick="toggleShortcuts()"><span class="dots"><i></i><i></i><i></i></span><span class="label">ATALHOS</span><span class="chev">▴</span></button>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleNav()"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="navbar shortcuts-nav" id="shortcutsNav">
+  <a href="loja.html">🛒 LOJA</a>
+  <a href="venda.html">🎲 VENDA</a>
+  <a href="missoes.html">🎯 MISSÕES</a>
+  <a href="loja.html#sobrecarga">⚠ SOBRECARGA</a>
+  <a href="base_de_comando.html">🏚️ BASE</a>
+  <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">⚔️ HACK_AREA</a>
+</nav>
+  <nav class="navbar nav-collapsible">
+    <a href="venda.html">VENDA</a>
+    <a href="missoes.html">MISSÕES</a>
+    <a href="regras_do_setor_7.html">REGRAS</a>
+    <a href="loja.html">LOJA</a>
+    <a href="base_de_comando.html" style="color:var(--cyan);border-color:rgba(34,230,210,.5);">BASE</a>
+  
+    <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
+
+    <a href="configuracoes.html">⚙ CONFIG</a>
+  </nav>
+</div>
+
+<main>
+<h2 style="font-family:var(--hud);letter-spacing:.25em;border-left:4px solid var(--red);padding-left:12px;margin:10px 0 0">📓 DIÁRIO DA SESSÃO</h2>
+<div class="bar">
+  <select id="sel"></select>
+  <button onclick="renome()">✎ NOME</button>
+  <button onclick="novaS()">+ NOVA SESSÃO</button>
+</div>
+<div class="resumo" id="resumo"></div>
+<div class="chips" id="chips"></div>
+<div class="bar"><input id="nota" placeholder="Anotar algo (missão cumprida, decisão, NPC...)" maxlength="300"><button onclick="addNota()">+ NOTA</button></div>
+<div id="lista"></div>
+<div class="bar" style="margin-top:20px"><button onclick="exporta()">⬇ EXPORTAR .TXT</button><button onclick="limpa()" style="margin-left:auto">🗑 APAGAR DIÁRIO</button></div>
+</main>
+<footer>PROTOCOLO SETOR 7 © 2088 — <span>O QUE ACONTECE NO SETOR FICA NO DIÁRIO.</span></footer>
+<script>
+var T=S7LOG.TIPOS, D, cur, off={};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function hh(t){var d=new Date(t);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+function dd(t){return new Date(t).toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});}
+function nm(s){return 'Sessão '+s.n+(s.nome?' — '+s.nome:'')+' · '+dd(s.ini);}
+function draw(){
+  D=S7LOG.load();
+  var ss=D.sessoes.slice().reverse(), sel=document.getElementById('sel');
+  if(!cur||!D.sessoes.some(function(s){return s.id===cur;})) cur=ss[0]&&ss[0].id;
+  sel.innerHTML=ss.map(function(s,i){return '<option value="'+s.id+'"'+(s.id===cur?' selected':'')+'>'+esc(nm(s))+(i===0?' (última)':'')+'</option>';}).join('')||'<option>sem sessões</option>';
+  var ev=D.ev.filter(function(e){return e.s===cur;}), cnt={};
+  ev.forEach(function(e){cnt[e.k]=(cnt[e.k]||0)+1;});
+  document.getElementById('resumo').innerHTML=ev.length?('<b>'+ev.length+' eventos</b> · '+(ev.length?hh(ev[0].t)+' até '+hh(ev[ev.length-1].t):'')+'<br>'+Object.keys(cnt).map(function(k){return T[k][0]+' '+cnt[k]+' '+T[k][1].toLowerCase();}).join(' · ')):'Nenhum evento ainda. Compre, venda, saqueie ou lute: tudo cai aqui sozinho.';
+  document.getElementById('chips').innerHTML=Object.keys(T).map(function(k){return '<span class="chip'+(off[k]?'':' on')+'" style="--c:'+T[k][2]+'" data-k="'+k+'">'+T[k][0]+' '+T[k][1]+'</span>';}).join('');
+  var vis=ev.filter(function(e){return !off[e.k];}).reverse();
+  document.getElementById('lista').innerHTML=vis.length?vis.map(function(e){var t=T[e.k]||T.nota;return '<div class="ev" style="--c:'+t[2]+'"><time>'+hh(e.t)+'</time><span class="k">'+t[0]+' '+t[1]+'</span><span class="x">'+esc(e.x)+'</span></div>';}).join(''):'<div class="vazio">// SEM EVENTOS //</div>';
+}
+document.getElementById('sel').onchange=function(){cur=this.value;draw();};
+document.getElementById('chips').onclick=function(e){var k=e.target.getAttribute&&e.target.getAttribute('data-k');if(k){off[k]=!off[k];draw();}};
+function novaS(){var n=prompt('Nome da nova sessão (opcional):','');if(n===null)return;S7LOG.novaSessao(n);cur=null;draw();}
+function renome(){var s=D.sessoes.filter(function(x){return x.id===cur;})[0];if(!s)return;var n=prompt('Nome da sessão:',s.nome||'');if(n===null)return;S7LOG.renomear(cur,n);draw();}
+function addNota(){var i=document.getElementById('nota');if(!i.value.trim())return;S7LOG.add('nota',i.value);i.value='';cur=null;draw();}
+document.getElementById('nota').onkeydown=function(e){if(e.key==='Enter')addNota();};
+function limpa(){if(confirm('Apagar TODO o diário? Isso não tem volta.')){S7LOG.limpar();cur=null;draw();}}
+function exporta(){
+  var txt=D.sessoes.map(function(s){return '=== '+nm(s)+' ===\n'+D.ev.filter(function(e){return e.s===s.id;}).map(function(e){return hh(e.t)+' ['+(T[e.k]||T.nota)[1]+'] '+e.x;}).join('\n');}).join('\n\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download='diario-setor7.txt';a.click();
+}
+draw();
+</script>
+<script>
+function toggleNav(){var n=document.getElementById('navShell'),b=document.getElementById('menuToggle');n.classList.toggle('menu-open');b.setAttribute('aria-expanded',n.classList.contains('menu-open'));}
+function toggleShortcuts(){var n=document.getElementById('navShell'),b=document.getElementById('shortcutsToggle');n.classList.toggle('shortcuts-collapsed');b.setAttribute('aria-expanded',!n.classList.contains('shortcuts-collapsed'));}
+</script>
+</body>
+</html>

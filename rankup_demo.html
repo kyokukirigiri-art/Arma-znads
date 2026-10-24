@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RANKUP DEMO</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<style>:root{--red:#ff1f45;--yellow:#e8f500;--hud:'Chakra Petch',sans-serif}body{background:#0b0610;color:#eee;font-family:var(--hud);display:flex;flex-wrap:wrap;gap:10px;padding:24px}
+button{background:#150f1d;border:1px solid #22e6d2;color:#22e6d2;padding:10px 16px;font:inherit;cursor:pointer;text-transform:uppercase}</style>
+<script src="rankup.js"></script></head><body>
+<button onclick="S7FX.nivel(5)">Level up</button>
+<button onclick="S7FX.escolha({lv:4,classe:{i:'🔫',n:'Atirador',c:'#ff3355'}})">Escolha desbloqueada</button>
+<button onclick="S7FX.habilidade('Tiro Fantasma','Ataque à distância que ignora cobertura.',{i:'🔫',n:'Atirador',c:'#ff3355'})">Habilidade adquirida</button>
+<button onclick="S7FX.nivel(10);S7FX.escolha({lv:10,classe:{i:'🧠',n:'Netrunner',c:'#8b5bff'}})">Level up + escolha (fila)</button>
+</body></html>

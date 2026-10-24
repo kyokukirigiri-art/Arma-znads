@@ -10,7 +10,11 @@
 <script src="tema.js"></script>
 <script src="party.js"></script>
 <script src="catalogo.js"></script>
+<script src="inventario.js"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 <script src="ameacas.js"></script>
+<script src="equipar.js"></script>
+<script src="combate.js"></script>
 <style>
   main{max-width:980px;margin:auto;padding:28px 5% 70px;}
   .back-base{display:inline-flex;align-items:center;gap:10px;padding:9px 16px;margin-bottom:6px;text-decoration:none;
@@ -425,7 +429,7 @@
   </div>
   <nav class="navbar shortcuts-nav" id="shortcutsNav">
   <a href="base_de_comando.html">🏚️ BASE</a>
-  <a href="ARMA-ZENADS.html">🛒 LOJA</a>
+  <a href="loja.html">🛒 LOJA</a>
   <a href="venda.html">🎲 VENDA</a>
   <a href="missoes.html">🎯 MISSÕES</a>
   <a href="regras_do_setor_7.html">📜 REGRAS</a>
@@ -435,7 +439,7 @@
     <a href="venda.html">VENDA</a>
     <a href="missoes.html">MISSÕES</a>
     <a href="regras_do_setor_7.html">REGRAS</a>
-    <a href="ARMA-ZENADS.html">LOJA</a>
+    <a href="loja.html">LOJA</a>
     <a href="batalha.html" style="color:#46ff7a;border-color:rgba(70,255,122,.45);">HACK_AREA</a>
 
     <a href="configuracoes.html">⚙ CONFIG</a>
@@ -477,6 +481,12 @@
         <div class="stat-box creditos"><div class="sb-label">💳 LOOT (CRÉDITOS)</div><input type="number" id="fCreditos" min="0"></div>
         <div class="stat-box sobrecarga"><div class="sb-label">⚠ SOBRECARGA <small>(IMPLANTES)</small></div><div class="vida-ed"><input type="number" id="fSobreTotal" min="0" max="999" title="Sobrecarga total (%)"><span>%</span></div><div class="sb-tier" id="sSobreDet"></div><div class="sb-tier" id="sTier">normal</div></div>
       </div>
+    </div>
+
+    <div class="section-title">🧬 CLASSE<small>define a afinidade com os implantes e próteses equipados — mesma lista das fichas dos operativos</small></div>
+    <div class="panel">
+      <div class="cls-grid" id="clsGrid"></div>
+      <div class="cls-desc vazio" id="clsDesc"></div>
     </div>
 
     <div class="section-title">🖼️ RETRATO, DESCRIÇÃO & ESTADOS<small>aparecem na PARTY da Base de Comando — envie a imagem, arraste e use a escala para enquadrar</small></div>
@@ -570,10 +580,16 @@
     <div class="panel">
       <div class="impl-list" id="implList"></div>
       <button class="btn-new" id="addImplBtn" style="margin-top:10px;">+ IMPLANTE</button>
-      <div class="section-title" style="margin:26px 0 12px">🎒 ITENS EQUIPADOS<small>armas, armaduras, curas... da loja (autocompletar) ou personalizados</small></div>
-      <div class="impl-list" id="itemList"></div>
-      <div style="display:flex;gap:8px;margin-top:10px"><input list="dlItens" id="itemNovo" placeholder="Nome do item (ex.: SMG Viper X2)" style="flex:1;background:#08040b;border:1px solid var(--line);color:var(--txt);padding:9px 12px;font-family:inherit;"><button class="btn-new" id="addItemBtn" type="button">+ EQUIPAR</button></div>
-      <datalist id="dlItens"></datalist>
+    </div>
+
+    <div class="section-title">🎒 EQUIPAMENTO<small>abas por categoria como na loja — catálogo inteiro liberado (arma, armadura, implante, prótese, cura...)</small></div>
+    <div class="panel">
+      <div id="eqRoot"></div>
+    </div>
+
+    <div class="section-title">⚔️ COMBATE<small>teste de acerto, dano, prótese, habilidades dos implantes e hack — mesmas regras da BATALHA do menu, usando o equipamento, a classe e os estados deste inimigo</small></div>
+    <div class="panel">
+      <div id="cbRoot"></div>
     </div>
 
   </div>
@@ -864,7 +880,7 @@ function rollExpr(str){
 function novaFichaObj(nome){
   return {
     id: uid(),
-    nome: nome || 'Novo Inimigo', cat: curCat, itens: [],
+    nome: nome || 'Novo Inimigo', cat: curCat, classe: '', itens: [],
     atributos: { vel:10, forca:10, sorte:11, int:10 },
     extra: { vel:'', forca:'1d6', sorte:'', int:'' },
     vidaTotal: 50,
@@ -924,7 +940,9 @@ function renderAll(){
   renderAtributos(f);
   renderBodyMap(f);
   renderImplantes(f);
+  renderClasse(f);
   renderItens(f);
+  CB.render();
   renderExtras(f);
 }
 
@@ -1418,23 +1436,22 @@ document.getElementById('healAllBtn').addEventListener('click', function(){
   fichas.forEach(function(f){ if(f.cat===curCat) for(var k in f.partes) f.partes[k].atual = f.partes[k].max; });
   saveFichas(); renderAll();
 });
-function renderItens(f){
-  document.getElementById('dlItens').innerHTML = (window.S7CATALOGO||[]).map(function(x){ return '<option value="'+esc(x.nome)+'">'+esc(x.efeito||'')+'</option>'; }).join('');
-  var w = document.getElementById('itemList');
-  w.innerHTML = f.itens.length ? f.itens.map(function(it,i){
-    return '<div class="impl-row" style="grid-template-columns:1fr auto"><div><b>'+esc(it.nome)+'</b> <small style="color:var(--dim)">'+esc([it.efeito,it.desc].filter(Boolean).join(' — '))+'</small></div><button class="rm" data-i="'+i+'">✕</button></div>';
-  }).join('') : '<div class="impl-empty">// NENHUM ITEM EQUIPADO //</div>';
-}
-function equipar(){
-  var f = getCurrent(), inp = document.getElementById('itemNovo'); if(!f || !inp.value.trim()) return;
-  f.itens.push(S7AM.item(inp.value)); inp.value = ''; saveFichas(); renderItens(f);
-}
-document.getElementById('addItemBtn').addEventListener('click', equipar);
-document.getElementById('itemNovo').addEventListener('keydown', function(e){ if(e.key==='Enter') equipar(); });
-document.getElementById('itemList').addEventListener('click', function(e){
-  if(!e.target.classList.contains('rm')) return; var f = getCurrent();
-  f.itens.splice(parseInt(e.target.getAttribute('data-i'),10),1); saveFichas(); renderItens(f);
+/* ============ CLASSE + EQUIPAMENTO (módulo global equipar.js) ============ */
+var EQ = S7EQ.mount(document.getElementById('eqRoot'), {
+  get: function(){ return getCurrent(); },
+  save: function(){ saveFichas(); },
+  onChange: function(){ if(window.CB) CB.render(); }
 });
+var CB = S7CB.mount(document.getElementById('cbRoot'), {
+  get: function(){ return getCurrent(); },
+  save: function(){ saveFichas(); },
+  onFicha: function(){ var f = getCurrent(); if(!f) return; renderVidaResumo(f); renderSobrecarga(f); renderBodyMap(f); },
+  allies: function(){ return fichas.filter(function(x){ return x.cat===curCat; }); }
+});
+function renderItens(f){ EQ.render(); }
+function renderClasse(f){
+  S7EQ.renderClasse(f, document.getElementById('clsGrid'), document.getElementById('clsDesc'), function(){ saveFichas(); EQ.render(); CB.render(); });
+}
 
 /* ============ ROLADOR DE DADOS GERAL (estilo Google) ============ */
 function renderDiceTypes(){

@@ -1,8 +1,8 @@
-# Lê ARMA-ZENADS.html e gera catalogo.js (catálogo da loja para o inventário).
+# Lê loja.html e gera catalogo.js (catálogo da loja para o inventário).
 # Rode de novo sempre que mudar itens/preços na loja:  python3 gerar_catalogo.py
 import json, re, sys
 from bs4 import BeautifulSoup
-src = sys.argv[1] if len(sys.argv) > 1 else 'ARMA-ZENADS.html'
+src = sys.argv[1] if len(sys.argv) > 1 else 'loja.html'
 soup = BeautifulSoup(open(src, encoding='utf-8').read(), 'html.parser')
 out = []
 pulados = []
@@ -42,4 +42,7 @@ open('catalogo.js', 'w', encoding='utf-8').write(
     '/* catalogo.js — gerado por gerar_catalogo.py a partir da loja */\nwindow.S7CATALOGO = ' +
     json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ';\n')
 print(len(out), 'itens')
+nomes = [x['nome'].lower() for x in out]
+dup = sorted({n for n in nomes if nomes.count(n) > 1})
+if dup: print('NOMES REPETIDOS (o inventário acha só o primeiro):', ', '.join(dup))
 if pulados: print('PULADOS (sem addToCart reconhecido):', ', '.join(pulados))

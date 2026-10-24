@@ -10,8 +10,12 @@
   /* ---------- abas do site ---------- */
   var TABS = [
     { k:'index',             n:'MAPA / HUB',    href:'index.html',             ico:'🗺️' },
-    { k:'arma-zenads',       n:'LOJA',          href:'ARMA-ZENADS.html',       ico:'🛒' },
+    { k:'arma-zenads',       n:'LOJA',          href:'loja.html',       ico:'🛒' },
     { k:'venda',             n:'VENDA',         href:'venda.html',             ico:'🎲' },
+    { k:'saque',             n:'SAQUE',         href:'saque.html',             ico:'☠️' },
+    { k:'diario',           n:'DIÁRIO',        href:'diario.html',            ico:'📓' },
+    { k:'reputacao',        n:'REPUTAÇÃO',     href:'reputacao.html',         ico:'⭐' },
+    { k:'pregao',           n:'PREGÃO',        href:'pregao.html',            ico:'📢' },
     { k:'missoes',           n:'MISSÕES',       href:'missoes.html',           ico:'🎯' },
     { k:'mapa',             n:'MAPA (sub de MISSÕES)', href:'mapa.html',           ico:'🧭' },
     { k:'regras_do_setor_7', n:'REGRAS',        href:'regras_do_setor_7.html', ico:'📜' },
@@ -21,29 +25,37 @@
     { k:'configuracoes',     n:'CONFIG',        href:'configuracoes.html',     ico:'⚙️' }
   ];
 
-  /* ---------- paletas globais ---------- */
+  /* ---------- paletas globais ----------
+     p = cor primária · c1 = interativos · c2 = roxo/decorativo · c3 = verde/ok · c4 = destaque (--amber) · bg = fundos e texto */
   var PRESETS = {
-    padrao:{ nome:'NEON ROXO (PADRÃO)', p:'#e8f500', c1:'#22e6d2', c2:'#8b5bff', c3:'#46ff7a', bg:null },
-    ciano: { nome:'CIBER CIANO', p:'#22e6d2', c1:'#4dd8ff', c2:'#5b8bff', c3:'#46ff7a',
+    padrao:{ nome:'NEON ROXO (PADRÃO)', p:'#e8f500', c1:'#22e6d2', c2:'#8b5bff', c3:'#46ff7a', c4:'#ffb300', bg:null },
+    ciano: { nome:'CIBER CIANO', p:'#22e6d2', c1:'#4dd8ff', c2:'#5b8bff', c3:'#46ff7a', c4:'#ffd166',
              bg:{bg:'#04090c',bg2:'#071218',panel:'#071218',panel2:'#0a1a24',line:'#12303d',txt:'#dbe9ee',dim:'#6b8a96'} },
-    matrix:{ nome:'MATRIX', p:'#46ff7a', c1:'#9dff6b', c2:'#22e6a0', c3:'#c8ff3d',
+    matrix:{ nome:'MATRIX', p:'#46ff7a', c1:'#9dff6b', c2:'#22e6a0', c3:'#c8ff3d', c4:'#fff08a',
              bg:{bg:'#030a05',bg2:'#06120a',panel:'#071510',panel2:'#0b1f14',line:'#12402a',txt:'#d9eadc',dim:'#6f8a78'} },
-    sangue:{ nome:'SANGUE', p:'#ff3355', c1:'#ff7a3d', c2:'#ff2ea6', c3:'#ffb300',
+    sangue:{ nome:'SANGUE', p:'#ff3355', c1:'#ff7a3d', c2:'#ff2ea6', c3:'#ffb300', c4:'#ffe0b0',
              bg:{bg:'#0a0405',bg2:'#12070a',panel:'#180708',panel2:'#240b0d',line:'#40131a',txt:'#eadcdc',dim:'#8a6f73'} },
-    solar: { nome:'SOLAR', p:'#ff9d1c', c1:'#ffd23d', c2:'#ff5a2e', c3:'#ffe62a',
+    solar: { nome:'SOLAR', p:'#ff9d1c', c1:'#ffd23d', c2:'#ff5a2e', c3:'#ffe62a', c4:'#fff1a8',
              bg:{bg:'#0a0704',bg2:'#120c06',panel:'#170e06',panel2:'#22140a',line:'#402a12',txt:'#ece2d8',dim:'#8a7a6f'} },
-    rosa:  { nome:'ROSA NEON', p:'#ff2ea6', c1:'#ff7ad9', c2:'#b05bff', c3:'#22e6d2',
+    rosa:  { nome:'ROSA NEON', p:'#ff2ea6', c1:'#ff7ad9', c2:'#b05bff', c3:'#22e6d2', c4:'#ffc58a',
              bg:{bg:'#0a040a',bg2:'#120712',panel:'#180718',panel2:'#240b24',line:'#40133d',txt:'#eadcea',dim:'#8a6f88'} },
-    gelo:  { nome:'GELO', p:'#cfe9ff', c1:'#7fd4ff', c2:'#9db4ff', c3:'#b8fff0',
+    gelo:  { nome:'GELO', p:'#cfe9ff', c1:'#7fd4ff', c2:'#9db4ff', c3:'#b8fff0', c4:'#ffe3a3',
              bg:{bg:'#05080c',bg2:'#0a1018',panel:'#0a1018',panel2:'#101a26',line:'#1e2f44',txt:'#e6eef7',dim:'#7a8899'} },
-    vinho: { nome:'VINHO & CINABRE', p:'#f24333', c1:'#f7f4f3', c2:'#d8373a', c3:'#ff8a78',
+    vinho: { nome:'VINHO & CINABRE', p:'#f24333', c1:'#f7f4f3', c2:'#d8373a', c3:'#ff8a78', c4:'#ffd7a8',
              bg:{bg:'#12060a',bg2:'#1c0a10',panel:'#230c14',panel2:'#33121d',line:'#5b2333',txt:'#f7f4f3',dim:'#a08a88'} },
-    ambar: { nome:'ÂMBAR & VIOLETA', p:'#d4954d', c1:'#e3dea4', c2:'#b07a45', c3:'#f2f5e2',
+    ambar: { nome:'ÂMBAR & VIOLETA', p:'#d4954d', c1:'#e3dea4', c2:'#b07a45', c3:'#f2f5e2', c4:'#ffd98a',
              bg:{bg:'#0d040d',bg2:'#170818',panel:'#1d0a1d',panel2:'#290024',line:'#4d3522',txt:'#f2f5e2',dim:'#a39572'} },
-    acido: { nome:'ÁCIDO TÓXICO', p:'#a7ff04', c1:'#09fa48', c2:'#a93fb4', c3:'#37cc4e',
+    acido: { nome:'ÁCIDO TÓXICO', p:'#a7ff04', c1:'#09fa48', c2:'#a93fb4', c3:'#37cc4e', c4:'#ffe14d',
              bg:{bg:'#030301',bg2:'#070707',panel:'#0b0a0f',panel2:'#150f1d',line:'#2d1040',txt:'#e6f5df',dim:'#6f8a70'} },
-    ultravioleta:{ nome:'ULTRAVIOLETA', p:'#bf40fa', c1:'#e3d9fc', c2:'#6a4be0', c3:'#a98bff',
-             bg:{bg:'#040607',bg2:'#0b0714',panel:'#110a1d',panel2:'#1b1030',line:'#3b1d55',txt:'#e3d9fc',dim:'#8d7fae'} }
+    ultravioleta:{ nome:'ULTRAVIOLETA', p:'#bf40fa', c1:'#e3d9fc', c2:'#6a4be0', c3:'#a98bff', c4:'#ff9ee0',
+             bg:{bg:'#040607',bg2:'#0b0714',panel:'#110a1d',panel2:'#1b1030',line:'#3b1d55',txt:'#e3d9fc',dim:'#8d7fae'} },
+    /* ---- paletas novas (referências em imagem; c4 = 5ª cor de destaque) ---- */
+    aquamarina:{ nome:'AQUAMARINA & MAUVE', p:'#8be8cb', c1:'#7ea2aa', c2:'#9c7a97', c3:'#888da7', c4:'#c4afc1',
+             bg:{bg:'#141715',bg2:'#1a1e1c',panel:'#222624',panel2:'#303633',line:'#414e4d',txt:'#e8faf5',dim:'#8398a8'} },
+    verdeluz:{ nome:'VERDE-LUZ & ÔNIX', p:'#59ee99', c1:'#d8e4ff', c2:'#aa77a9', c3:'#98e9cc', c4:'#d0b4d0',
+             bg:{bg:'#00120b',bg2:'#061b14',panel:'#0f2821',panel2:'#1a3932',line:'#2d544e',txt:'#d8e4ff',dim:'#7e9ba4'} },
+    ultrassonico:{ nome:'ULTRASSÔNICO & CARMIM', p:'#c5f9fc', c1:'#edede8', c2:'#7561d2', c3:'#97a2e4', c4:'#e08ab4',
+             bg:{bg:'#12070c',bg2:'#1d0c13',panel:'#270a18',panel2:'#34081f',line:'#4f032e',txt:'#edede8',dim:'#a68494'} }
   };
 
   /* ---------- touch da batalha (padrões = visual original) ---------- */
@@ -61,7 +73,7 @@
     simConfirmar:'◆', simCancelar:'✕'
   };
 
-  var DEFAULT_CFG = { v:1, preset:'padrao', tabs:{}, efeitos:true, touch:null };
+  var DEFAULT_CFG = { v:1, preset:'padrao', tabs:{}, efeitos:true, iconeEstilo:'simples', touch:null };
 
   /* ---------- utilidades ---------- */
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -81,6 +93,7 @@
     if(!PRESETS[cfg.preset]) cfg.preset='padrao';
     if(!cfg.tabs || typeof cfg.tabs!=='object') cfg.tabs={};
     if(cfg.efeitos===undefined) cfg.efeitos=true;
+    if(cfg.iconeEstilo!=='estilizado') cfg.iconeEstilo='simples';
     cfg.touch = mergeTouch(cfg.touch);
     return cfg;
   }
@@ -143,6 +156,7 @@
       V('--cyan',pre.c1); V('--cyan-glow',rgba(pre.c1,.45)); V('--cyan-dim',rgba(pre.c1,.3));
       V('--purple',pre.c2); V('--purple-glow',rgba(pre.c2,.45)); V('--purple-dim',rgba(pre.c2,.3));
       V('--green',pre.c3);
+      V('--amber',pre.c4||mix(P,pre.c1,.5));   /* 5ª cor: antes ficava sempre #ffb300 */
       V('--p-rgb',rgbs(P)); V('--wire-rgb',rgbs(P)); V('--glow-rgb',rgbs(pre.c2));
       /* cores das categorias da loja acompanham a paleta */
       V('--k-armas',P); V('--k-cura',pre.c1); V('--k-sanidade',pre.c2); V('--k-armadura',mix(pre.c1,pre.c2,.5));
@@ -150,7 +164,7 @@
       if(pre.bg){ Object.keys(pre.bg).forEach(function(k){ V('--'+k, pre.bg[k]); }); }
     }
     /* cor própria da aba atual */
-    var mine = cfg.tabs[pk];
+    var mine = cfg.tabs[pk] || (pk==='loja' ? cfg.tabs['arma-zenads'] : undefined);   /* a aba LOJA antiga era salva como 'arma-zenads' */
     if(isHex(mine)){
       V('--red',mine); V('--yellow',mine); V('--wire',mine);
       V('--red-soft',shade(mine,.7)); V('--red-dim',shade(mine,.3));
@@ -169,6 +183,10 @@
       css += sel+'{color:'+c+' !important;border-color:'+rgba(c,.55)+' !important;}';
       css += sel+':hover{background:'+c+' !important;color:'+darkText(c)+' !important;}';
     });
+    /* MISSÕES, DIÁRIO e REPUTAÇÃO só abrem pelos monitores da BASE: somem de todas as navbars */
+    css += '.navbar a[href^="missoes.html" i],.navbar a[href^="diario.html" i],.navbar a[href^="reputacao.html" i]{display:none !important;}';
+    /* ATALHOS (botão + barra de botões) some de todas as páginas */
+    css += '.shortcuts-toggle,.navbar.shortcuts-nav{display:none !important;}';
     if(cfg.efeitos===false) css += 'body::before,body::after{display:none !important;}';
     css += touchCSS(cfg.touch);
     var st = document.getElementById('s7-dyn');
@@ -183,6 +201,38 @@
   };
 
   apply(load());
+
+  /* ---------- link SAQUE ao lado de VENDA em todas as navbars (não precisa editar cada página) ---------- */
+  function injectNav(){
+    var as = document.querySelectorAll('.navbar a[href^="venda.html"]');
+    for(var i=0;i<as.length;i++){
+      var a = as[i], p = a.parentNode;
+      if(p.querySelector('a[href^="saque.html"]')) continue;
+      var n = document.createElement('a'); n.href = 'saque.html';
+      n.textContent = a.textContent.indexOf('🎲')>=0 ? '☠️ SAQUE' : 'SAQUE';
+      a.parentNode.insertBefore(n, a.nextSibling);
+    }
+    /* PREGÃO fica logo depois de REGRAS */
+    var rs = document.querySelectorAll('.navbar a[href^="regras_do_setor_7.html"]');
+    for(var j=0;j<rs.length;j++){
+      var r = rs[j], q = r.parentNode;
+      if(q.querySelector('a[href^="pregao.html"]')) continue;
+      var pg = document.createElement('a'); pg.href = 'pregao.html';
+      pg.textContent = r.textContent.indexOf('📜')>=0 ? '📢 PREGÃO' : 'PREGÃO';
+      q.insertBefore(pg, r.nextSibling);
+    }
+    var sh = document.getElementById('navShell'); if(sh) sh.classList.add('shortcuts-collapsed');
+    /* MISSÕES, DIÁRIO e REPUTAÇÃO: acesso só pela BASE (monitores das câmeras) */
+    var hid = document.querySelectorAll('.navbar a[href^="missoes.html"],.navbar a[href^="diario.html"],.navbar a[href^="reputacao.html"]');
+    for(var h=0;h<hid.length;h++) hid[h].parentNode.removeChild(hid[h]);
+    apply(load());
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', injectNav); else injectNav();
 })();
 /* ---------- emojis personalizados (emojis.js + pasta emojis/) ---------- */
+document.write('<script src="emojis/lista.js"><\/script>');   /* mapa nome -> subpasta (gerado por gerar_emojis.py; se não existir, é ignorado) */
 document.write('<script src="emojis.js"><\/script>');
+document.write('<script src="diario.js"><\/script>');
+document.write('<script src="reputacao.js"><\/script>');
+document.write('<script src="pregao.js"><\/script>');
+document.write('<script src="rankup.js"><\/script>');   /* animação RANK UP (S7FX) */

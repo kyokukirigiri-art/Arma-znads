@@ -99,7 +99,7 @@
     var ic = d.icone;
     if(window.S7EMO && S7EMO.is(ic)){
       var name = ic.trim().slice(1,-1);
-      box.innerHTML = I.catIcon(d.cat);                 /* provisório até a imagem carregar */
+      box.innerHTML = I.fb ? I.iconHTML(I.fb(ic, d.cat), d.cat) : I.catIcon(d.cat);   /* provisório até a imagem carregar */
       S7EMO.look(name, function(u){ box.innerHTML = '<img class="emo" style="height:1.5rem;width:1.5rem" alt="" src="'+esc(u)+'">'; }, function(){});
     } else { box.innerHTML = I.iconHTML(ic, d.cat); }
     if(window.lucide) lucide.createIcons();
