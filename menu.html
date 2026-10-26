@@ -333,12 +333,13 @@ main{max-width:1100px;margin:auto;padding:18px 3% 50px}
 </main>
 <div class="toast" id="toast"></div>
 <script>
-var I=S7INV, P=S7P, CAT=window.S7CATALOGO||[], tab='itens', cat='cura', selIt=null, who=null, slotK='arma', eqSel=null;
+var I=S7INV, P=S7P, CAT=window.S7CATALOGO||[], tab='itens', cat='cura', selIt=null, who=null, HANDS=['dir','esq'], HAND_CATS=['arma','corpo'], slotK='dir', eqSel=null;
 var TABS=[['itens','🧪','ITENS','','backpack'],['equip','⛑️','EQUIPAR','','shield'],['party','☯️','PARTY','','users'],['batalha','⚔️','BATALHA','','swords']];
 var LINKS=[['ficha.html','👁️','FICHA','','file-user'],['inventario.html','💼','BAG','','briefcase'],['base_de_comando.html','🚪','BASE','','door-open']];
 var ICATS=[['cura','CURA','syringe','💉'],['sanidade','SOBRECARGA','zap','🔋'],['comida','FOME','utensils','🍜'],['outro','OUTROS','package','📦']];
 function ic(n,e){return window.lucide?'<i data-lucide="'+n+'"></i>':e}
-var SLOTS=[['arma','ARMA','arma'],['corpo','CORPO A CORPO','corpo'],['armadura','ARMADURA','armadura'],['hacker','HACKER','hacker'],['implante','IMPLANTE','implante'],['protese','PRÓTESE','protese']];
+var SLOTS=[['dir','MÃO DIREITA','mao'],['esq','MÃO ESQUERDA','mao'],['armadura','ARMADURA','armadura'],['hacker','HACKER','hacker'],['implante','IMPLANTE','implante'],['protese','PRÓTESE','protese']];
+function isHand(k){return HANDS.indexOf(k)>=0;}
 function $(i){return document.getElementById(i)}
 function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('on')},2200)}
 function party(){var F=P.fichas(),pt=P.getParty();return pt.slots.map(function(id){return F.filter(function(f){return f.id===id})[0]}).filter(Boolean)}
@@ -490,35 +491,74 @@ function specPanel(e,it,f){
   var rr=I.RAR[e.raridade]||I.RAR.comum,sp=specs(e,f),on=it.owner===f.id,nv=sinNivel(f,e),cl=clsOf(f);
   var rows=[['Raridade','<span style="color:'+rr.c+'">'+rr.n+'</span>'],['Categoria',P.esc((I.CATS[e.cat]||{}).n||'')+(e.tag?' · '+P.esc(e.tag):'')]]
     .concat(nv?[['Afinidade',P.esc(e.afin)],['Sinergia',sinBadge(nv)]]:[]).concat(sp);
+  if(HAND_CATS.indexOf(e.cat)>=0 && on) rows.push(['Mão', it.mao==='dir'?'DIREITA':it.mao==='esq'?'ESQUERDA':'—']);
   if(!sp.length&&e.efeito)rows.push(['Efeito',P.esc(e.efeito)]);
   var nota=nv?'<div class="sin-note" style="--sc:'+SIN[nv].c+'">'+P.esc(SIN[nv].t)+(nv==='incompativel'&&cl?' Classe '+P.esc(cl.n)+': nativo '+P.esc(cl.nat)+', compatível '+P.esc(cl.comp.join(', '))+'.':'')+'</div>':'';
   if(e.preco)rows.push(['Valor',money(e.preco)]);
   return '<div class="tit" style="color:'+rr.c+';margin-bottom:4px">'+P.esc(e.nome)+'</div>'+
    '<div style="font-size:.78rem;line-height:1.5;margin:0 0 6px;color:var(--txt)">'+P.esc(e.desc||'Sem descrição.')+'</div>'+
    rows.map(function(x){return '<div class="stat"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'}).join('')+nota+
-   '<button class="btn" id="bEq" data-id="'+it.id+'" style="margin:8px 0 10px;width:100%">'+(on?'✕ DESEQUIPAR':'✔ EQUIPAR')+'</button>'}
+   (HAND_CATS.indexOf(e.cat)>=0 ? handBtns(it,f) :
+    '<button class="btn" id="bEq" data-id="'+it.id+'" style="margin:8px 0 10px;width:100%">'+(on?'✕ DESEQUIPAR':'✔ EQUIPAR')+'</button>')}
+
+/* ---- DUAS MÃOS: cada arma/corpo a corpo vai para a mão direita ou esquerda ---- */
+function handBtns(it,f){
+  var on=it.owner===f.id;
+  return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 6px">'+HANDS.map(function(h){
+    var lb=h==='dir'?'MÃO DIREITA':'MÃO ESQUERDA', here=on&&it.mao===h;
+    return '<button class="btn" style="margin:0" data-hand="'+h+'" data-id="'+it.id+'">'+(here?'✕ TIRAR DA MÃO':'✋ '+lb)+'</button>';
+  }).join('')+'</div>'+
+  (on?'<div class="meta" style="margin:0 0 8px">'+(it.mao==='dir'?'Na mão direita.':it.mao==='esq'?'Na mão esquerda.':'Equipado sem mão definida.')+' Escolha outra mão para trocar.</div>':'');
+}
+function moveHand(f,id,h){
+  var D=I.load(), it=D.items.filter(function(x){return x.id===id;})[0]; if(!it) return;
+  var was = it.owner===f.id && it.mao===h;
+  /* quem estava nessa mão sai dela */
+  D.items.forEach(function(o){ if(o.owner===f.id && o.mao===h){ o.owner=''; o.mao=''; } });
+  if(was){ it.owner=''; it.mao=''; toast(it.nome+' tirado da mão'); }
+  else   { it.owner=f.id; it.mao=h; toast(it.nome+' na '+(h==='dir'?'mão direita':'mão esquerda')); }
+  I.save(D); draw();
+}
+function toggleEq(f,id){
+  var D=I.load(), it=D.items.filter(function(x){return x.id===id;})[0]; if(!it) return;
+  if(it.owner===f.id){ it.owner=''; it.mao=''; toast(it.nome+' desequipado'); }
+  else{
+    /* armadura e hacker continuam com 1 por vez */
+    if(['armadura','hacker'].indexOf(it.cat)>=0) D.items.forEach(function(o){ if(o.cat===it.cat && o.owner===f.id){ o.owner=''; o.mao=''; } });
+    it.owner=f.id; it.mao=''; toast(it.nome+' equipado em '+f.nome);
+  }
+  I.save(D); draw();
+}
+
 /* ---- EQUIPAR (visual: ficha do operativo em HUD teal) ---- */
 function segs(n,tot,cls){var s='',i;for(i=0;i<tot;i++)s+='<i'+(i<n?' class="f"':'')+'></i>';return '<span class="sg '+(cls||'')+'">'+s+'</span>'}
 function vEquip(L){
-  var D=I.load(),f=cur(),S=P.stats(f),sl=SLOTS.filter(function(s){return s[0]===slotK})[0];P.ensure(f);
-  var mine=function(c){return D.items.filter(function(i){return i.cat===c&&i.owner===f.id})};
-  var pool=D.items.filter(function(i){return i.cat===sl[2]&&(!i.owner||i.owner===f.id)});
-  var selE=pool.filter(function(i){return i.id===eqSel})[0]||mine(sl[2])[0]||pool[0],ee=selE&&enrich(selE);
-  var def=D.items.filter(function(i){return i.owner===f.id&&i.cat==='armadura'}).reduce(function(a,i){var m=String(enrich(i).efeito).match(/(\d+)/);return a+(m?+m[1]:0)},0);
-  var pos=0;L.forEach(function(x,n){if(x.id===f.id)pos=n});
-  function lab(k){return SLOTS.filter(function(s){return s[0]===k})[0][1].toLowerCase()}
+  var D=I.load(),f=cur(),S=P.stats(f);P.ensure(f);
+  var sl=SLOTS.filter(function(s){return s[0]===slotK})[0];
+  var inSlot=function(k){return isHand(k)
+    ? D.items.filter(function(i){return i.owner===f.id&&i.mao===k;})[0]
+    : D.items.filter(function(i){return i.cat===k&&i.owner===f.id;})[0];};
+  var okCat=function(i){return isHand(sl[0]) ? HAND_CATS.indexOf(i.cat)>=0 : i.cat===sl[2];};
+  var pool=D.items.filter(function(i){return okCat(i)&&(!i.owner||i.owner===f.id);});
+  var selE=pool.filter(function(i){return i.id===eqSel;})[0]||inSlot(sl[0])||pool[0], ee=selE&&enrich(selE);
+  var def=D.items.filter(function(i){return i.owner===f.id&&i.cat==='armadura';}).reduce(function(a,i){var m=String(enrich(i).efeito).match(/(\d+)/);return a+(m?+m[1]:0);},0);
+  var pos=0;L.forEach(function(x,n){if(x.id===f.id)pos=n;});
+  function lab(k){return SLOTS.filter(function(s){return s[0]===k;})[0][1].toLowerCase();}
+  function tagEq(i){if(i.owner!==f.id)return'';return i.mao==='dir'?'MÃO DIR ✓':i.mao==='esq'?'MÃO ESQ ✓':'EQUIPADO ✓';}
   function slot(k,big){
-    var m=mine(k)[0],e=m&&enrich(m),rc=e?(I.RAR[e.raridade]||I.RAR.comum).c:'',sn=e&&sinNivel(f,e);
-    var on=slotK===k?' on':'',has=m?' has':'';
-    if(big)return '<button class="sl big'+on+has+'" data-s="'+k+'" style="--rc:'+rc+'"><span class="sl-k">'+lab(k)+'</span>'+
-      (m?'<span class="sl-n">'+P.esc(m.nome)+'</span><span class="sl-t">'+P.esc(e.tag||(I.CATS[k]||{}).n.toLowerCase())+'</span>'+(sn?sinBadge(sn,1):''):'<span class="sl-n dim">vazio</span>')+
-      '<span class="sl-i">'+(m?I.iconHTML(m.icone,m.cat):I.catIcon(k))+'</span></button>';
-    return '<div><div class="sl-lab">'+lab(k)+'</div><button class="sl sm'+on+has+'" data-s="'+k+'" style="--rc:'+rc+'" title="'+P.esc(m?m.nome+(sn?' — '+SIN[sn].n:''):'vazio')+'"'+(sn?' data-sin="'+sn+'"':'')+'><span class="sl-i'+(m?'':' off')+'">'+(m?I.iconHTML(m.icone,m.cat):I.catIcon(k))+'</span></button></div>';
+    var m=inSlot(k), e=m&&enrich(m), ck=isHand(k)?(m?m.cat:''):k, rc=e?(I.RAR[e.raridade]||I.RAR.comum).c:'', sn=e&&sinNivel(f,e);
+    var on=slotK===k?' on':'', has=m?' has':'';
+    var ico=m?I.iconHTML(m.icone,m.cat):(isHand(k)?I.iconHTML('lucide:hand','outro'):I.catIcon(k));
+    var cn=(I.CATS[ck]||{n:''}).n.toLowerCase();
+    if(big) return '<button class="sl big'+on+has+'" data-s="'+k+'" style="--rc:'+rc+'"><span class="sl-k">'+lab(k)+'</span>'+
+      (m?'<span class="sl-n">'+P.esc(m.nome)+'</span><span class="sl-t">'+P.esc(e.tag||cn)+'</span>'+(sn?sinBadge(sn,1):''):'<span class="sl-n dim">vazia</span>')+
+      '<span class="sl-i">'+ico+'</span></button>';
+    return '<div><div class="sl-lab">'+lab(k)+'</div><button class="sl sm'+on+has+'" data-s="'+k+'" style="--rc:'+rc+'" title="'+P.esc(m?m.nome+(sn?' — '+SIN[sn].n:''):'vazio')+'"'+(sn?' data-sin="'+sn+'"':'')+'><span class="sl-i'+(m?'':' off')+'">'+ico+'</span></button></div>';
   }
   var hp=pc(S.vida,S.vidaMax),hearts=Math.round(hp/100*6),sob=Math.min(100,S.sobre),fo=pc(S.comida,50);
   var at=f.atributos||{};
   var attrs=[['vel','Velocidade'],['forca','Força'],['int','Inteligência'],['sorte','Sorte']].map(function(a){
-    var v=Number(at[a[0]])||10;return '<div class="e-row"><em>'+a[1]+'</em>'+segs(Math.round(Math.min(20,v)/2),10)+'<b>'+v+'</b></div>'}).join('');
+    var v=Number(at[a[0]])||10;return '<div class="e-row"><em>'+a[1]+'</em>'+segs(Math.round(Math.min(20,v)/2),10)+'<b>'+v+'</b></div>';}).join('');
   var h='<div class="e-grid">'+
    '<div class="e-info"><div class="e-name">'+P.esc(f.nome)+'</div>'+
      '<div class="e-role"><small>título</small>'+P.esc(f.titulo||'—')+'</div>'+
@@ -530,21 +570,19 @@ function vEquip(L){
        '<div class="e-row"><em>sobrecarga</em>'+segs(Math.round(sob/10),10,'o')+'<b>'+S.sobre+'%</b></div>'+
        '<div class="e-row"><em>comida</em>'+segs(Math.round(fo/10),10,'p')+'<b>'+Math.round(fo)+'%</b></div>'+
        '<div class="e-def"><span>defesa (armadura)</span><b>+'+def+'</b></div></div></div>'+
-   '<div class="e-arms">'+slot('arma',1)+slot('corpo',1)+'<div class="e-side">'+slot('implante')+slot('armadura')+slot('hacker')+slot('protese')+'</div></div>'+
+   '<div class="e-arms">'+slot('dir',1)+slot('esq',1)+'<div class="e-side">'+slot('implante')+slot('armadura')+slot('hacker')+slot('protese')+'</div></div>'+
    '<div class="e-fig"><div class="pt-frame">'+P.portraitHTML(f.retrato)+'</div><div class="e-est">'+P.estadoChips(f)+'</div>'+
      '<div class="e-on'+(S.sobre>=100?' bad':'')+'">'+(S.sobre>=100?'ciberpsicose':'implantes online')+'</div></div>'+
    '</div>'+
    '<div class="e-pick"><div><div class="e-cap">'+lab(slotK)+' · disponíveis na bolsa</div><div class="list">'+
-     (pool.length?pool.map(function(i){var e=enrich(i);return '<div class="it'+(selE&&i.id===selE.id?' on':'')+'" data-e="'+i.id+'" style="--rc:'+(I.RAR[e.raridade]||I.RAR.comum).c+'"><span class="ico">'+I.iconHTML(i.icone,i.cat)+'</span><span class="n">'+P.esc(i.nome)+'</span>'+sinBadge(sinNivel(f,e),1)+'<b>'+(i.owner===f.id?'EQUIPADO ✓':'')+'</b></div>'}).join(''):'<div class="it">— nenhum item desta categoria —</div>')+'</div></div>'+
+     (pool.length?pool.map(function(i){var e=enrich(i);return '<div class="it'+(selE&&i.id===selE.id?' on':'')+'" data-e="'+i.id+'" style="--rc:'+(I.RAR[e.raridade]||I.RAR.comum).c+'"><span class="ico">'+I.iconHTML(i.icone,i.cat)+'</span><span class="n">'+P.esc(i.nome)+'</span>'+sinBadge(sinNivel(f,e),1)+'<b>'+tagEq(i)+'</b></div>';}).join(''):'<div class="it">— nenhum item desta categoria —</div>')+'</div></div>'+
    '<div class="e-ps">'+specPanel(ee,selE,f)+'</div></div>';
   $('win').innerHTML=h;
-  $('win').querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){slotK=b.dataset.s;eqSel=null;draw()}});
-  $('win').querySelectorAll('[data-nav]').forEach(function(b){b.onclick=function(){who=L[(pos+(+b.dataset.nav)+L.length)%L.length].id;eqSel=null;draw()}});
-  $('win').querySelectorAll('[data-e]').forEach(function(x){x.onclick=function(){eqSel=x.dataset.e;draw()}});
-  var bq=$('bEq');if(bq)bq.onclick=function(){var d=I.load(),it=d.items.filter(function(i){return i.id===bq.dataset.id})[0];if(!it)return;
-      if(it.owner===f.id){it.owner='';toast(it.nome+' desequipado')}
-      else{if(['arma','corpo','armadura','hacker'].indexOf(it.cat)>=0)d.items.forEach(function(o){if(o.cat===it.cat&&o.owner===f.id)o.owner=''});it.owner=f.id;toast(it.nome+' equipado em '+f.nome)}
-      I.save(d);draw()};
+  $('win').querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){slotK=b.dataset.s;eqSel=null;draw();};});
+  $('win').querySelectorAll('[data-nav]').forEach(function(b){b.onclick=function(){who=L[(pos+(+b.dataset.nav)+L.length)%L.length].id;eqSel=null;draw();};});
+  $('win').querySelectorAll('[data-e]').forEach(function(x){x.onclick=function(){eqSel=x.dataset.e;draw();};});
+  $('win').querySelectorAll('[data-hand]').forEach(function(b){b.onclick=function(){moveHand(f,b.dataset.id,b.dataset.hand);};});
+  var bq=$('bEq'); if(bq) bq.onclick=function(){toggleEq(f,bq.dataset.id);};
 }
 
 /* ---- PARTY ---- */
@@ -744,7 +782,7 @@ function btHit(){
   bt.res={hit:'<div class="tt '+cls+'">'+lab+' — '+tot+' vs '+bt.nd+'</div>'+pt.join(' · '),ok:ok,sob:sob,dmg:null,nat20:d20===20};
   bt.log.unshift(f.nome+': acerto '+tot+' vs '+bt.nd+' → '+lab);bt.res.dot=btDot(f);btDraw()}
 function btDmg(){
-  var c=btCtx(),f=c.f,m=btMode(c),im=btImp(c),pt=[],t=0,w=m==='arma'?c.arma:m==='corpo'?c.corpo:null,wd=w?efi(w).dano:pd('1d4');
+  var c=btCtx(),f=c.f,m=btMode(c),im=btImp(c),pt=[],t=0,w=m==='arma'?c.arma:m==='corpo'?c.corpo:null,wd=w?efi(w,f).dano:pd('1d4');
   var x=rd(wd);t+=x.t;pt.push((w?w.nome:'Soco')+' '+x.tx);
   if(m!=='arma'&&mod(f,'forca')>0){t+=mod(f,'forca');pt.push('FOR'+sg(mod(f,'forca')))}
   if(im){var e=efi(im,f),y=bt.ext&&e.crit?{t:e.crit,tx:'CRÍTICO '+e.crit}:rd(e.bonus);t+=y.t;pt.push(im.nome+' '+y.tx)}

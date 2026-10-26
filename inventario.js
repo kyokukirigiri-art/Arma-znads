@@ -71,8 +71,8 @@
      Lista de todos os nomes de arquivo: nomes_dos_icones.txt */
   var SPECS = [
     /* armas de fogo */
-    [/^pistola pulso/,2,1,':colt-m1911:',':pistola:'],      [/^viper-9/,2,1,':c96:',':viperr:'],
-    [/^smg viper/,2,2,':cz-skorpion:',':smg:'],          [/^raptor/,2,2,':m3-grease-gun:',':x:'],
+    [/^pistola pulso/,2,1,':colt-m1911:',':pistola:',':pistola:'],      [/^viper-9/,2,1,':c96:',':viperr:',':viperr:'],
+    [/^smg viper/,2,2,':cz-skorpion:',':smg:',':smg:'],          [/^raptor/,2,2,':m3-grease-gun:',':x:',':x:'],
     [/^neon-ar/,4,2,':fn-fal:',':neo:'],            [/^volt-77/,3,2,':mp5k:',':volt:'],
     [/^specter$/,3,2,':famas:',':sili:'],           [/^lanca-granadas/,3,2,':missile-pod:',':laca:'],
     [/^titan-12/,4,2,':winchester-rifle:',':titan:'], [/^ghostline/,5,2,':steyr-aug:',':fuzil:'],
@@ -154,7 +154,7 @@
      emojis/nome.png (ou .svg/.webp/.gif/.jpg) — sem editar código. Enquanto a imagem não existir,
      aparece o ícone Lucide "reserva" (5ª coluna do SPECS; sem ela, o ícone da categoria). */
   /* estilo dos ícones (configuracoes.html): 'simples' (1º :nome:) ou 'estilizado' (2º :nome:, quando a linha tiver) */
-  var ESTILO = (function(){ try{ return (JSON.parse(localStorage.getItem('s7_config')||'null')||{}).iconeEstilo==='estilizado' ? 'estilizado' : 'simples'; }catch(e){ return 'simples'; } })();
+  var ESTILO = (function(){ try{ var e=(JSON.parse(localStorage.getItem('s7_config')||'null')||{}).iconeEstilo; return (e==='estilizado'||e==='pixel') ? e : 'simples'; }catch(x){ return 'simples'; } })();
   SPECS.forEach(function(r){ r.alt = ''; if(typeof r[4]==='string' && /^:[a-z][a-z0-9_-]{0,31}:$/i.test(r[4].trim())){ r.alt = r[4].trim(); r[4] = r[5] || ''; } });
   var FB = {};
   var LU_CAT = {arma:'crosshair',corpo:'sword',cura:'syringe',sanidade:'pill',armadura:'shield',hacker:'terminal',implante:'brain',protese:'bot',comida:'utensils',outro:'package',lixo:'bone'};
@@ -191,7 +191,7 @@
     for(var i=0;i<SPECS.length;i++){
       if(SPECS[i][0].test(n)){
         var r = SPECS[i];
-        return {w:r[1], h:r[2], icone:(ESTILO==='estilizado' && r.alt) ? r.alt : r[3], prim:r[3], alt:r.alt, fb:r[4]||''};
+        return {w:r[1], h:r[2], icone:(ESTILO!=='simples' && r.alt) ? r.alt : r[3], prim:r[3], alt:r.alt, fb:r[4]||''};
       }
     }
     return null;
@@ -213,9 +213,16 @@
        dentro de <span class="emo-fb">; o emojis.js troca pela imagem assim que ela existir. */
     if(window.S7EMO && S7EMO.is(icone)){
       if((depth||0) > 3) return (CATS[cat]||CATS.outro).ico;   /* segurança: cadeia de ícones reserva em ciclo */
-      var nm = emoName(icone);
-      if(S7EMO.url && S7EMO.url(nm)) return S7EMO.html(out);
-      return '<span class="emo-fb" data-emo="'+nm+'">'+iconHTML(fb(icone,cat), cat, (depth||0)+1)+'</span>';
+      /* achata a cadeia de reservas (nome -> reserva -> reserva...) num único elemento: o emojis.js tenta os nomes em ordem e troca uma vez só */
+      var chain = [], cur = icone, g = 0;
+      while(S7EMO.is(cur) && g++ < 4){
+        var nm = emoName(cur);
+        if(chain.indexOf(nm) >= 0) break;
+        if(S7EMO.url && S7EMO.url(nm)) return S7EMO.html(cur);
+        chain.push(nm); cur = fb(cur, cat);
+      }
+      var reserva = S7EMO.is(cur) ? (CATS[cat]||CATS.outro).ico : iconHTML(cur, cat, (depth||0)+1);
+      return '<span class="emo-fb" data-emo="'+chain.join(' ')+'">'+reserva+'</span>';
     }
     return out;
   }
@@ -240,7 +247,9 @@
       x: (it.x===null||it.x===undefined) ? null : num(it.x,0,0,MAX_COLS),
       y: (it.y===null||it.y===undefined) ? null : num(it.y,0,0,MAX_ROWS),
       cor: /^#[0-9a-f]{6}$/i.test(it.cor||'') ? String(it.cor).toLowerCase() : '',
-      owner: it.owner ? String(it.owner) : '', origem: it.origem || 'manual', preco: num(it.preco,0,0,99999999)
+      owner: it.owner ? String(it.owner) : '',
+      mao: (it.mao==='dir' || it.mao==='esq') ? it.mao : '',
+      origem: it.origem || 'manual', preco: num(it.preco,0,0,99999999)
     };
   }
 
@@ -393,7 +402,7 @@
       var arr = JSON.parse(new TextDecoder().decode(a));
       if(!Array.isArray(arr)) arr = [arr];
       arr = arr.slice(0,50).filter(function(o){ return o && typeof o==='object'; }).map(function(o){
-        var c = clean(o), r = {}; SHARE.forEach(function(k){ r[k] = c[k]; }); r.owner = ''; return r;
+        var c = clean(o), r = {}; SHARE.forEach(function(k){ r[k] = c[k]; }); r.owner = ''; r.mao = ''; return r;
       });
       return arr.length ? arr : null;
     }catch(e){ return null; }
@@ -455,7 +464,7 @@
   var BKEY = 's7_base_itens';
   function baseLoad(){
     var l; try{ l = JSON.parse(localStorage.getItem(BKEY)||'[]'); }catch(e){ l = []; }
-    return (Array.isArray(l) ? l : []).map(function(it){ var c = clean(it); c.x = null; c.y = null; c.owner = ''; return c; });
+    return (Array.isArray(l) ? l : []).map(function(it){ var c = clean(it); c.x = null; c.y = null; c.owner = ''; c.mao = ''; return c; });
   }
   function baseSave(l){ try{ localStorage.setItem(BKEY, JSON.stringify(l)); return true; }catch(e){ return false; } }
   /* maleta -> base. Devolve quantos itens foram enviados (0 se não deu para salvar). */
@@ -464,7 +473,7 @@
     if(!mover.length) return 0;
     var base = baseLoad();
     mover.forEach(function(it){
-      var c = clean(it); c.x = null; c.y = null; c.owner = '';
+      var c = clean(it); c.x = null; c.y = null; c.owner = ''; c.mao = '';
       if(CATS[c.cat].stack){
         var o = base.filter(function(b){ return b.cat===c.cat && b.nome===c.nome; })[0];
         if(o){ o.qtd = Math.min(999, o.qtd + c.qtd); return; }

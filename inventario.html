@@ -624,7 +624,7 @@
       '<div class="keys"><button class="kb" id="dRot" type="button"><kbd>R</kbd>GIRAR</button><button class="kb" id="dEdit" type="button"><kbd>E</kbd>EDITAR</button>'+
       '<button class="kb" id="dCopy" type="button"><kbd>C</kbd>COPIAR</button><button class="kb dn" id="dDel" type="button"><kbd>DEL</kbd>REMOVER</button>'+
       '<button class="kb" id="dBase" type="button" style="grid-column:1/-1"><kbd>B</kbd>ENVIAR PARA A BASE</button></div>';
-    $('dOwner').onchange = function(){ it.owner = this.value; save(); render(); toast(it.owner ? it.nome+' equipado em '+ownerName(it.owner) : it.nome+' desequipado'); };
+    $('dOwner').onchange = function(){ it.owner = this.value; it.mao = ''; save(); render(); toast(it.owner ? it.nome+' equipado em '+ownerName(it.owner) : it.nome+' desequipado'); };
     $('qMinus').onclick = function(){ if(it.qtd>1){ it.qtd--; save(); render(); } else removeItem(it); };
     $('qPlus').onclick = function(){ it.qtd++; save(); render(); };
     $('dRot').onclick = function(){ rotate(it); };
@@ -714,7 +714,7 @@
     $('mOwner').onchange = function(){
       if(!this.value) return;
       var o = this.value === '__none' ? '' : this.value;
-      l.forEach(function(it){ it.owner = o; });
+      l.forEach(function(it){ it.owner = o; it.mao = ''; });
       save(); render(); toast(o ? l.length+' itens equipados em '+ownerName(o) : l.length+' itens desequipados');
     };
     $('mCopy').onclick = function(){ copyMany(ids); };

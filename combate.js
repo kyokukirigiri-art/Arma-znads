@@ -4,6 +4,11 @@
    (ficha.itens, ficha.atributos, ficha.classe, ficha.estados...).
    Depende de: party.js (S7P), inventario.js (S7INV), catalogo.js, equipar.js (S7EQ).
 
+   ARMA ESCOLHIDA (mãos): o ataque usa UMA arma escolhida no seletor,
+   listando todas as armas/corpo a corpo equipadas (com a mão de cada uma).
+   Se as duas mãos tiverem armas do mesmo tipo, você escolhe qual usar.
+   O campo do item é `mao` ('dir' | 'esq' | ''). Sem mão = listado mesmo assim.
+
    HABILIDADE DE CLASSE (aba CLASSE): lê S7P.habilidades(ficha) (party.js). 1× por cena; NOVA CENA recarrega.
    Efeitos automáticos: Golpe Brutal, Esmagar, Passo Fantasma, Ponto Fraco, Leitura de Campo, Invasão Rápida,
    Surto de Rede, Primeiros Socorros, Adrenalina, Pele de Ferro, Muralha. Textos/níveis: HAB em party.js.
@@ -74,10 +79,11 @@
   function mod(f,k){ return (Number(f.atributos && f.atributos[k])||10)-10; }
   function estNome(k){ var e = P.ESTADOS.filter(function(x){ return x.k===k; })[0]; return e ? e.n : k; }
   function chip(k){ var e = P.ESTADOS.filter(function(x){ return x.k===k; })[0]; return e ? '<span class="cb-chp" style="--ec:'+e.c+'">'+e.i+' '+e.n+'</span>' : ''; }
+  function handName(it){ return it.mao==='dir' ? 'MÃO DIREITA' : it.mao==='esq' ? 'MÃO ESQUERDA' : 'sem mão'; }
 
   /* ---------- itens da ficha ---------- */
   var SRC = null;   /* fonte de itens opcional: o.items(f) — o menu.html usa o inventário (owner) em vez de ficha.itens */
-  function mine(f){ return (SRC ? SRC(f) : (f.itens||[])).map(Q.norm).map(function(it){ var e = Q.enrich(it); e.id = it.nome; return e; }); }
+  function mine(f){ return (SRC ? SRC(f) : (f.itens||[])).map(Q.norm).map(function(it){ var e = Q.enrich(it); e.id = e.id || it.nome; return e; }); }
   function reatorRed(f){
     var r = 0;
     mine(f).forEach(function(x){ if(/^reactor heart/i.test(x.nome)){ var m = String(x.efeito).match(/-(\d+)%/); if(m) r = Math.max(r,+m[1]); } });
@@ -98,10 +104,10 @@
     o.red = reatorRed(f); if(o.red) o.gasta = Math.round(o.gasta*(1-o.red/100));
     return o;
   }
-  function ctx(f){
-    var all = mine(f), one = function(c){ return all.filter(function(i){ return i.cat===c; })[0]; };
-    return {f:f, all:all, arma:one('arma'), corpo:one('corpo'), hack:one('hacker'),
-            imps:all.filter(function(i){ return (i.cat==='implante'||i.cat==='protese') && efi(i,f).bonus; })};
+  /* arma com bônus de duas mãos (texto do catálogo: "2 MÃOS: +1d4 no acerto" ou "2 MÃOS: +1d6 no dano") */
+  function duasInfo(w){
+    var m = w ? String(w.efeito||'').match(/2\s*M[ÃAãa]OS:\s*\+(\d*d\d+)\s*no\s*(acerto|dano)/i) : null;
+    return m ? {dado:m[1], tipo:m[2].toLowerCase()} : null;
   }
   function limArma(w){
     if(!w) return null;
@@ -146,24 +152,46 @@
   '.cb-er{border-left:3px solid var(--ec);padding-left:8px;font-size:.7rem;}.cb-er span{color:var(--dim,#9a8aaa);}'+
   '.cb-chp{display:inline-block;padding:0 6px;border:1px solid var(--ec);color:var(--ec);font-size:.62rem;}'+
   '.cb-sg{padding:8px 10px;border:1px solid var(--red,#ff3355);display:flex;flex-direction:column;gap:5px;}.cb-sg .h{font-weight:700;letter-spacing:.1em;color:var(--red,#ff3355);}'+
+  '.cb-arm{display:flex;flex-direction:column;gap:6px;padding:8px 10px;border:1px solid var(--cyan,#22e6d2);background:rgba(34,230,210,.04);}'+
+  '.cb-arm .h{font-weight:700;letter-spacing:.12em;color:var(--cyan,#22e6d2);font-size:.66rem;text-transform:uppercase;}'+
+  '.cb-arm .mao{font-size:.62rem;color:var(--dim,#9a8aaa);letter-spacing:.08em;}'+
+  '.cb-arm .aviso{font-size:.66rem;color:#ffb300;}'+
   '.cb-at-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}'+
   '.cb-at{--sc:var(--cyan);display:flex;flex-direction:column;gap:5px;padding:11px 12px;border:1px solid var(--line,#2d1040);border-top:2px solid var(--sc);background:var(--panel2,#150f1d);}'+
   '.cb-at .h{display:flex;justify-content:space-between;gap:8px;align-items:center;}.cb-at .n{font-weight:700;color:var(--sc);letter-spacing:.06em;}'+
   '.cb-at .t{font-size:.72rem;line-height:1.45;}.cb-at .m{font-size:.64rem;color:var(--dim,#9a8aaa);}.cb-at .d{font-size:.66rem;color:#ffb300;}'+
   '.cb-log{font-size:.62rem;color:var(--dim,#9a8aaa);line-height:1.6;min-height:20px;}'+
-  '.cb-none{color:var(--dim);font-size:.72rem;letter-spacing:.08em;}';
+  '.cb-none{color:var(--dim,#9a8aaa);font-size:.72rem;letter-spacing:.08em;}';
   (document.head || document.documentElement).appendChild(css);
 
   /* ============================================================ */
   function mount(root, o){
     SRC = o.items || null;
-    var bt = {cmd:'atk', mode:'soco', imp:'', ext:false, ficha:true, nd:13, mult:4, res:{}, log:[], cd:{}, tg:{}, sgN:0, adv:0, arm:0, nano:false, pernas2:false, fid:null, cena:{}, fx:{}, marca:0, todas:false};
+    var bt = {cmd:'atk', wid:null, imp:'', ext:false, ficha:true, nd:13, mult:4, res:{}, log:[], cd:{}, tg:{}, sgN:0, adv:0, arm:0, nano:false, pernas2:false, fid:null, cena:{}, fx:{}, marca:0, todas:false, maos:false, maosTurno:[]};
     if(window.S7LOG) S7LOG.hook(bt.log,'combate');
     root.classList.add('cb');
-    function F(){ var f = o.get(); if(f){ P.ensure(f); if(bt.fid!==f.id){ bt.fid = f.id; bt.res = {}; bt.imp = ''; bt.sgN = 0; bt.fx = {}; bt.marca = 0; } } return f; }
+    function F(){ var f = o.get(); if(f){ P.ensure(f); if(bt.fid!==f.id){ bt.fid = f.id; bt.res = {}; bt.imp = ''; bt.wid = null; bt.sgN = 0; bt.fx = {}; bt.marca = 0; bt.maos = false; bt.maosTurno = []; } } return f; }
     function allies(){ return (o.allies ? o.allies() : []).map(P.ensure); }
     function saved(){ if(o.save) o.save(); if(o.onFicha) o.onFicha(); }
     function cdk(f,id){ return f.id+'|'+id; }
+
+    /* ---- contexto: todos os itens + armas que podem atacar (1 por mão) + a escolhida ----
+       lista = armas/corpo a corpo equipadas (com a mão). sel = a escolhida no seletor (ou null = sem arma).
+       arma/corpo = o `sel` separado por tipo, para o resto do código continuar igual. */
+    function ctx(f){
+      var all = mine(f);
+      var lista = all.filter(function(i){ return (i.cat==='arma' || i.cat==='corpo') && i.owner===f.id; })
+                     .sort(function(a,b){ return (a.mao==='dir'?0:a.mao==='esq'?1:2) - (b.mao==='dir'?0:b.mao==='esq'?1:2); });
+      var sel = null;
+      if(bt.wid==='__soco') sel = null;
+      else { sel = lista.filter(function(i){ return i.id===bt.wid; })[0] || lista[0] || null; }
+      bt.wid = sel ? sel.id : (bt.wid==='__soco' ? '__soco' : null);
+      return {f:f, all:all, lista:lista, sel:sel,
+              arma: sel && sel.cat==='arma' ? sel : null,
+              corpo: sel && sel.cat==='corpo' ? sel : null,
+              hack: all.filter(function(i){ return i.cat==='hacker' && i.owner===f.id; })[0] || null,
+              imps: all.filter(function(i){ return (i.cat==='implante'||i.cat==='protese') && i.owner===f.id && efi(i,f).bonus; })};
+    }
 
     /* ---- modificadores de estado ---- */
     function modInfo(f,kind,k){
@@ -184,7 +212,8 @@
       var b = rl(20), v = adv>0 ? Math.max(a,b) : Math.min(a,b);
       return {v:v, tx:'d20['+a+','+b+']→'+v+(adv>0?' (vantagem)':' (desvantagem)')};
     }
-    function mode(c){ var m = bt.mode; if(bt.cmd==='skill') m = 'soco'; if(m==='arma' && !c.arma) m = 'soco'; if(m==='corpo' && !c.corpo) m = 'soco'; return m; }
+    /* 'arma' | 'corpo' | 'soco', conforme a arma escolhida */
+    function mode(c){ return c.sel ? (c.sel.cat==='arma' ? 'arma' : 'corpo') : 'soco'; }
     function pickImp(c){ var it = c.imps.filter(function(i){ return i.id===bt.imp; })[0]; return it || (bt.cmd==='skill' ? c.imps[0] : null); }
     function log(t){ bt.log.unshift(t); }
 
@@ -209,11 +238,18 @@
     function hit(){
       var f = F(), c = ctx(f), m = mode(c), k = m==='arma' ? 'vel' : 'forca', im = pickImp(c), pt = [], tot = 0, mi = modInfo(f,'atk',k);
       if(mi.block){ bt.res = {msg:'<span class="no">✖ '+esc(mi.block)+'</span>'}; return draw(); }
+      var duas = bt.maos && c.sel ? duasInfo(c.sel) : null, usos = bt.maosTurno || [];
+      if(c.sel && !bt.fx.rajada){
+        var conflito = duas ? usos.length>0 : (!!c.sel.mao && (usos.indexOf(c.sel.mao)>=0 || usos.indexOf('ambas')>=0));
+        if(conflito){ bt.res = {msg:'<span class="no">✖ '+(duas ? 'Duas mãos precisa das duas mãos livres neste turno. ' : 'Essa mão já atacou neste turno. ')+'Use PASSAR TURNO.</span>'}; return draw(); }
+      }
       if(bt.fx.esmagarSg && !bt.fx.esmagar) delete bt.fx.esmagarSg;
       var an = advNet(mi.desv); if(bt.fx.leitura && an<=0) an = 1;
       var R = r20(an), d20 = R.v;
       if(bt.cmd==='skill' && !im){ bt.res = {msg:'<span class="no">Equipe uma prótese/implante com BÔNUS na seção EQUIPAMENTO.</span>'}; return draw(); }
       var md = mod(f,k); tot = d20+md+mi.tot; pt.push(R.tx, (k==='vel'?'VEL':'FOR')+sg(md)); if(mi.pt.length) pt.push('ESTADOS '+mi.pt.join(' · '));
+      if(c.sel) pt.push('ARMA: '+c.sel.nome+' ('+handName(c.sel)+')');
+      if(duas && duas.tipo==='acerto'){ var bdA = rd(pd(duas.dado)); tot += bdA.t; pt.push('2 MÃOS '+bdA.tx); }
       if(bt.fx.leitura){ pt.push('LEITURA DE CAMPO (2d20, o maior)'); delete bt.fx.leitura; }
       if(bt.fx.passo){ tot += 2; pt.push('PASSO FANTASMA +2'); delete bt.fx.passo; }
       if(bt.fx.adren){ tot += 2; pt.push('ADRENALINA +2'); delete bt.fx.adren; }
@@ -239,6 +275,7 @@
       if(d20===20) ok = true; if(d20===1) ok = false;
       if(bt.fx.certeiro){ ok = true; cls = 'ok'; lab = '🎯 TIRO CERTEIRO — ACERTO AUTOMÁTICO'; delete bt.fx.certeiro; }
       bt.res = {hit:'<div class="cb-tt '+cls+'">'+lab+' — '+tot+' vs '+bt.nd+'</div>'+pt.join(' · '), ok:ok, sob:sob, nat20:d20===20};
+      if(c.sel){ if(duas) bt.maosTurno = usos.concat(['ambas']); else if(c.sel.mao) bt.maosTurno = usos.concat([c.sel.mao]); }
       log(f.nome+': acerto '+tot+' vs '+bt.nd+' → '+lab); bt.res.dot = dot(f); draw();
     }
     /* ---- DANO ---- */
@@ -247,6 +284,8 @@
         wd = w ? efi(w,f).dano : pd('1d4'), x = rd(wd); t += x.t; pt.push((w ? w.nome : 'Soco')+' '+x.tx);
       if(m!=='arma' && mod(f,'forca')>0){ t += mod(f,'forca'); pt.push('FOR'+sg(mod(f,'forca'))); }
       if(im){ var e = efi(im,f), y = bt.ext && e.crit ? {t:e.crit, tx:'CRÍTICO '+e.crit} : rd(e.bonus); t += y.t; pt.push(im.nome+' '+y.tx); }
+      var ddm = bt.maos && c.sel ? duasInfo(c.sel) : null;
+      if(ddm && ddm.tipo==='dano'){ var bdD = rd(pd(ddm.dado)); t += bdD.t; pt.push('2 MÃOS '+bdD.tx); }
       var esm = '';
       if(bt.fx.carga){ var ca = rd(wd); t += ca.t; pt.push('CARGA TOTAL: 2º dano '+ca.tx); delete bt.fx.carga; }
       if(bt.fx.brutal){
@@ -357,27 +396,30 @@
     }
     var curCard = null;
     function nextOpt(sel){ var e = (curCard||root).querySelector(sel); return e ? e.value : ''; }
-    function pioresParte(tg){
-      var ks = Object.keys(tg.partes||{}).filter(function(q){ return (+tg.partes[q].atual||0) < (+tg.partes[q].max||0); });
-      ks.sort(function(a,b){ return ((+tg.partes[a].atual||0)/(+tg.partes[a].max||1)) - ((+tg.partes[b].atual||0)/(+tg.partes[b].max||1)); });
+    function tg(f){
+      var al = allies(); if(!al.some(function(x){ return x.id===f.id; })) al.unshift(f);
+      return al;
+    }
+    function pioresParte(tgt){
+      var ks = Object.keys(tgt.partes||{}).filter(function(q){ return (+tgt.partes[q].atual||0) < (+tgt.partes[q].max||0); });
+      ks.sort(function(a,b){ return ((+tgt.partes[a].atual||0)/(+tgt.partes[a].max||1)) - ((+tgt.partes[b].atual||0)/(+tgt.partes[b].max||1)); });
       return ks[0] || '';
     }
-    function curaParte(tg, parte, dado){
-      var pp = tg.partes && tg.partes[parte]; if(!pp) parte = pioresParte(tg), pp = tg.partes && tg.partes[parte];
+    function curaParte(tgt, parte, dado){
+      var pp = tgt.partes && tgt.partes[parte]; if(!pp) parte = pioresParte(tgt), pp = tgt.partes && tgt.partes[parte];
       if(!pp) return null;
       var cu = rd(pd(dado)), antes = +pp.atual||0; pp.atual = Math.min(+pp.max||0, antes+cu.t);
-      if(P.stats(tg).vida>0){ var ix = (tg.estados||[]).indexOf('inconsciente'); if(ix>=0) tg.estados.splice(ix,1); }
+      if(P.stats(tgt).vida>0){ var ix = (tgt.estados||[]).indexOf('inconsciente'); if(ix>=0) tgt.estados.splice(ix,1); }
       return {parte:parte, ganho:pp.atual-antes, tx:cu.tx};
     }
-    function limpaEstado(tg, est){
-      var l = (tg.estados||[]).filter(function(x){ return x!=='morto'; });
+    function limpaEstado(tgt, est){
+      var l = (tgt.estados||[]).filter(function(x){ return x!=='morto'; });
       if(!est || l.indexOf(est)<0) est = l.filter(function(x){ return x!=='inconsciente'; })[0] || '';
       if(!est) return '';
-      tg.estados = tg.estados.filter(function(x){ return x!==est; }); return est;
+      tgt.estados = tgt.estados.filter(function(x){ return x!==est; }); return est;
     }
     function alvoCls(f){
-      var al = allies(); if(!al.some(function(x){ return x.id===f.id; })) al.unshift(f);
-      var id = nextOpt('[data-hsel="alvo"]') || f.id; return al.filter(function(x){ return x.id===id; })[0] || f;
+      var id = nextOpt('[data-hsel="alvo"]') || f.id; return tg(f).filter(function(x){ return x.id===id; })[0] || f;
     }
     function usarClasse(nome){
       var bb = root.querySelector('[data-cl="'+String(nome).replace(/"/g,'')+'"]'); curCard = bb ? bb.parentNode : null;
@@ -398,15 +440,15 @@
           out = modo==='auto' ? '⚡ Próximo <b>hack sem precisar de teste</b> (sucesso automático ao clicar em ROLAR HACK).' : '⚡ Próximo hack bem-sucedido causa <b>+1d6 de dano</b> (rolado sozinho).'; break;
         case 'SURTO DE REDE': bt.fx.surto = 1; out = '🌐 Próximo hack atinge <b>até 3 alvos ou dispositivos</b> ao mesmo tempo.'; break;
         case 'PRIMEIROS SOCORROS':
-          var al = allies(), id = nextOpt('[data-hsel="alvo"]') || f.id, tg = al.filter(function(x){ return x.id===id; })[0] || f, parte = nextOpt('[data-hsel="parte"]');
-          var cu = rd(pd('1d6')), pp = tg.partes && tg.partes[parte];
-          if(!pp){ var ks = Object.keys(tg.partes||{}).filter(function(q){ return (+tg.partes[q].atual||0) < (+tg.partes[q].max||0); }); parte = ks[0]; pp = tg.partes && tg.partes[parte]; }
-          if(!pp){ bt.res = {msg:'<span class="no">Nenhuma parte do corpo ferida em '+esc(tg.nome)+'.</span>'}; return draw(); }
+          var tgt = alvoCls(f), parte = nextOpt('[data-hsel="parte"]');
+          var cu = rd(pd('1d6')), pp = tgt.partes && tgt.partes[parte];
+          if(!pp){ parte = pioresParte(tgt); pp = tgt.partes && tgt.partes[parte]; }
+          if(!pp){ bt.res = {msg:'<span class="no">Nenhuma parte do corpo ferida em '+esc(tgt.nome)+'.</span>'}; return draw(); }
           var antes = +pp.atual||0; pp.atual = Math.min(+pp.max||0, antes+cu.t);
-          if(P.stats(tg).vida>0){ var ix = (tg.estados||[]).indexOf('inconsciente'); if(ix>=0) tg.estados.splice(ix,1); }
-          out = '🩺 <b>'+esc(tg.nome)+'</b> — '+esc(parte)+': +'+(pp.atual-antes)+' de Vida ('+cu.tx+') ✔ aplicado na ficha.'; break;
+          if(P.stats(tgt).vida>0){ var ix = (tgt.estados||[]).indexOf('inconsciente'); if(ix>=0) tgt.estados.splice(ix,1); }
+          out = '🩺 <b>'+esc(tgt.nome)+'</b> — '+esc(parte)+': +'+(pp.atual-antes)+' de Vida ('+cu.tx+') ✔ aplicado na ficha.'; break;
         case 'ADRENALINA':
-          var al2 = allies(), id2 = nextOpt('[data-hsel="alvo"]') || f.id, tg2 = al2.filter(function(x){ return x.id===id2; })[0] || f, est = nextOpt('[data-hsel="estado"]');
+          var tg2 = alvoCls(f), est = nextOpt('[data-hsel="estado"]');
           if(!est || (tg2.estados||[]).indexOf(est)<0){ bt.res = {msg:'<span class="no">Escolha um estado que o alvo realmente tenha.</span>'}; return draw(); }
           tg2.estados = tg2.estados.filter(function(x){ return x!==est; });
           if(tg2.id===f.id){ bt.fx.adren = 1; out = '💉 Estado <b>'+esc(estNome(est))+'</b> removido de você. <b>+2 no próximo teste</b> (aplicado sozinho no próximo acerto ou hack).'; }
@@ -468,13 +510,12 @@
         var usada = !!bt.cena[cKey(f,h)], pass = !!PASSIVAS[h.n], ex = '', btn;
         if(h.n==='INVASÃO RÁPIDA') ex = '<label class="d">Modo: <select data-inv><option value="auto">hack sem teste</option><option value="dano"'+(bt.fx.invasao==='dano'?' selected':'')+'>+1d6 no dano do hack</option></select></label>';
         if(h.n==='PRIMEIROS SOCORROS' || h.n==='ADRENALINA' || h.n==='ORDEM TÁTICA' || h.n==='ESTIMULANTE' || h.n==='ROLETA DE NANITES' || h.n==='SEGUNDO FÔLEGO'){
-          var al = allies(); if(!al.some(function(x){ return x.id===f.id; })) al.unshift(f);
-          var sel = bt.tg['cls|'+h.n] && al.some(function(x){ return x.id===bt.tg['cls|'+h.n]; }) ? bt.tg['cls|'+h.n] : f.id, tgf = al.filter(function(x){ return x.id===sel; })[0] || f;
+          var al = tg(f), sel = bt.tg['cls|'+h.n] && al.some(function(x){ return x.id===bt.tg['cls|'+h.n]; }) ? bt.tg['cls|'+h.n] : f.id, tgf = al.filter(function(x){ return x.id===sel; })[0] || f;
           if(h.n==='SEGUNDO FÔLEGO') al = [f];
           ex = '<label class="d">🎯 Em quem: <select data-hsel="alvo" data-nome="'+esc(h.n)+'">'+al.map(function(x){ return '<option value="'+x.id+'"'+(x.id===sel?' selected':'')+'>'+esc(x.nome)+(x.id===f.id?' (você)':'')+'</option>'; }).join('')+'</select></label>';
           if(h.n==='SEGUNDO FÔLEGO') ex += '<label class="d">Estado a remover: <select data-hsel="estado"><option value="">(qualquer)</option>'+(tgf.estados||[]).filter(function(e){ return e!=='morto'; }).map(function(e){ return '<option value="'+e+'">'+esc(estNome(e))+'</option>'; }).join('')+'</select></label>';
           if(h.n==='PRIMEIROS SOCORROS' || h.n==='SEGUNDO FÔLEGO') ex += '<label class="d">Parte: <select data-hsel="parte">'+Object.keys(tgf.partes||{}).map(function(k){ var p = tgf.partes[k]; return '<option value="'+esc(k)+'">'+esc(k)+' ('+(+p.atual||0)+'/'+(+p.max||0)+')</option>'; }).join('')+'</select></label>';
-          else if(h.n==='ADRENALINA' || h.n==='SEGUNDO FÔLEGO') ex += '<label class="d">Estado a remover: <select data-hsel="estado">'+(tgf.estados||[]).filter(function(e){ return e!=='morto'; }).map(function(e){ return '<option value="'+e+'">'+esc(estNome(e))+'</option>'; }).join('')+'</select></label>' + ((tgf.estados||[]).length ? '' : '<div class="d">alvo sem estados</div>');
+          else if(h.n==='ADRENALINA') ex += '<label class="d">Estado a remover: <select data-hsel="estado">'+(tgf.estados||[]).filter(function(e){ return e!=='morto'; }).map(function(e){ return '<option value="'+e+'">'+esc(estNome(e))+'</option>'; }).join('')+'</select></label>' + ((tgf.estados||[]).length ? '' : '<div class="d">alvo sem estados</div>');
         }
         btn = pass ? '<div class="m" style="color:#46ff7a">⚑ PASSIVA — vale em todo combate</div>' :
           '<button class="cb-b" data-cl="'+esc(h.n)+'"'+(usada?' disabled':'')+'>'+(usada ? 'USADA NESTA CENA' : 'USAR')+'</button>';
@@ -491,6 +532,25 @@
       });
       if(falta.length) top += '<div class="d">⚠ Escolha a habilidade do nível '+falta.join(', ')+' na ficha (seção NÍVEL &amp; XP) ou use "liberar todas".</div>';
       return top+'<div class="cb-at-list">'+cards+'</div><div class="cb-row" style="margin-top:10px"><button class="cb-b" id="cbCena">🎬 NOVA CENA (recarrega tudo)</button><button class="cb-b" id="cbTurn">⏭ PASSAR TURNO</button></div>';
+    }
+
+    /* ---- seletor de arma: lista TODAS as armas/corpo a corpo equipadas, com a mão de cada uma ---- */
+    function armaUI(c){
+      var sel = c.sel ? c.sel.id : '__soco', opts = '<option value="__soco"'+(sel==='__soco'?' selected':'')+'>👊 Sem arma (Força)</option>';
+      c.lista.forEach(function(it){
+        opts += '<option value="'+esc(it.id)+'"'+(it.id===sel?' selected':'')+'>'+(it.cat==='arma'?'🔫':'🗡️')+' '+esc(it.nome)+' — '+handName(it)+(it.cat==='arma'?' (VEL)':' (FOR)')+'</option>';
+      });
+      var mesmoTipo = c.lista.filter(function(x){ return x.mao; }).length >= 2 &&
+        c.lista.filter(function(x){ return x.mao; }).some(function(x,i,a){ return a.some(function(y){ return y!==x && y.cat===x.cat; }); });
+      var semMao = c.lista.some(function(x){ return !x.mao; });
+      return '<div class="cb-arm"><div class="h">Arma do ataque</div>'+
+        '<label>Usar <select id="cbWid">'+opts+'</select></label>'+
+        (c.sel && duasInfo(c.sel) ? '<label class="cb-maos"><input type="checkbox" id="cbMaos"'+(bt.maos?' checked':'')+'> ✋ Usar com as DUAS MÃOS (+'+duasInfo(c.sel).dado+' no '+(duasInfo(c.sel).tipo==='acerto'?'acerto':'dano')+'; gasta o ataque da outra mão)</label>' : '')+
+        ((bt.maosTurno||[]).length ? '<div class="mao">Neste turno já atacou com: '+bt.maosTurno.map(function(h){ return {dir:'mão direita',esq:'mão esquerda',ambas:'as duas mãos'}[h]||h; }).join(' + ')+'</div>' : '')+
+        (c.lista.length ? '' : '<div class="cb-none">Nenhuma arma nas mãos. O ataque é sem arma (Força).</div>')+
+        (mesmoTipo ? '<div class="mao">Você tem duas armas do mesmo tipo: escolha qual vai usar neste ataque.</div>' : '')+
+        (semMao && c.lista.length ? '<div class="aviso">Algum item equipado não tem mão definida (equipe pela aba EQUIPAR).</div>' : '')+
+        '</div>';
     }
 
     /* ---- UI ---- */
@@ -522,10 +582,9 @@
       var f = F(); if(!f) return;
       var c = ctx(f), S = P.stats(f), m = mode(c), r = bt.res||{}, sb = r.sob;
       var top = r.msg || ((r.hit || '<span style="opacity:.7">Escolha um comando e role o teste.</span>')+(r.dmg ? '<hr>'+r.dmg : '')+(r.sang ? '<hr>'+r.sang : '')+
-        (sb ? '<hr>🔋 Sobrecarga: <b>+'+sb.n+'</b>'+(sb.custom ? ' (custo da habilidade'+(sb.emp?' +'+sb.emp+' EMP':'')+')' : sb.ext ? ' (uso extremo)' : ' (1d4: '+sb.roll+(sb.extra?' +'+sb.extra+' sinergia':'')+(sb.red?' −'+sb.red+'% reator':'')+(sb.emp?' +'+sb.emp+' EMP':'')+')')+
-          (sb.fail ? ' <span class="no">⚠ FALHA DO IMPLANTE</span>' : '')+(sb.done ? ' ✔ aplicada na ficha' : ' <button class="cb-b" id="cbSob">APLICAR NA FICHA</button>') : ''));
+        (sb ? '<hr>🔋 Sobrecarga: <b>+'+sb.n+'</b>'+(sb.custom ? ' (custo da habilidade'+(sb.emp?' +'+sb.emp+' EMP':'')+')' : sb.ext ? ' (uso extremo)' : ' (1d4: '+sb.roll+(sb.extra?' +'+sb.extra+' sinergia':'')+(sb.red?' −'+sb.red+'% reator':'')+(sb.emp?' +'+sb.emp+' EMP':'')+')')+(sb.fail ? ' <span class="no">⚠ FALHA DO IMPLANTE</span>' : '')+
+          (sb.done ? ' ✔ aplicada na ficha' : ' <button class="cb-b" id="cbSob">APLICAR NA FICHA</button>') : ''));
       if(r.dot && !r.msg) top += '<hr>🩸 Dano de estados (começo do turno): '+r.dot.parts.map(function(p){ return esc(p.n)+' '+p.tx; }).join(' · ')+' → <b>−'+r.dot.total+' de Vida</b>'+(r.dot.done ? ' ✔ aplicado' : ' <button class="cb-b" id="cbDot">APLICAR NA FICHA</button>');
-      var modes = [['soco','👊 Sem arma (Força)',1], ['arma','🔫 '+(c.arma?c.arma.nome:'Arma de fogo')+' (Velocidade)',!!c.arma], ['corpo','🗡️ '+(c.corpo?c.corpo.nome:'Corpo a corpo')+' (Força)',!!c.corpo]];
       var opt;
       if(bt.cmd==='ativo') opt = atUI(c,f);
       else if(bt.cmd==='classe') opt = clsUI(f);
@@ -533,7 +592,7 @@
         opt = estPanel(f,c);
         if(bt.cmd==='hack') opt += '<div>Deck: <b>'+(c.hack ? esc(c.hack.nome) : '— não equipado —')+'</b> · teste de INT</div>';
         else {
-          if(bt.cmd==='atk') opt += modes.map(function(x){ return '<label class="'+(x[2]?'':'off')+'"><input type="radio" name="cbmd" value="'+x[0]+'"'+(m===x[0]?' checked':'')+(x[2]?'':' disabled')+'> '+esc(x[1])+'</label>'; }).join('');
+          if(bt.cmd==='atk') opt += armaUI(c);
           opt += '<label>Implante/prótese: <select id="cbImp"><option value="">— nenhum —</option>'+c.imps.map(function(i){ return '<option value="'+esc(i.id)+'"'+(pickImp(c) && pickImp(c).id===i.id?' selected':'')+'>'+esc(i.nome)+'</option>'; }).join('')+'</select></label>'+
             '<label><input type="checkbox" id="cbExt"'+(bt.ext?' checked':'')+'> ⚡ Uso extremo (bônus crítico fixo, gasta sobrecarga alta)</label>';
           if(bt.cmd==='atk') opt += sangUI(c,m);
@@ -549,13 +608,14 @@
       root.innerHTML = h;
       var q = function(s){ return root.querySelector(s); };
       root.querySelectorAll('.cb-cmd button').forEach(function(b){ b.onclick = function(){ bt.cmd = b.dataset.k; bt.res = {}; draw(); }; });
-      root.querySelectorAll('input[name=cbmd]').forEach(function(e){ e.onchange = function(){ bt.mode = e.value; bt.res = {}; draw(); }; });
       root.querySelectorAll('[data-tg]').forEach(function(x){ x.onchange = function(){ bt.tg[x.dataset.tg] = x.value; }; });
       root.querySelectorAll('[data-cl]').forEach(function(b){ b.onclick = function(){ usarClasse(b.dataset.cl); }; });
       root.querySelectorAll('[data-hsel="alvo"]').forEach(function(x){ x.onchange = function(){ bt.tg['cls|'+x.dataset.nome] = x.value; draw(); }; });
       if(q('#cbTodas')) q('#cbTodas').onchange = function(){ bt.todas = this.checked; draw(); };
       if(q('#cbCena')) q('#cbCena').onclick = novaCena;
       root.querySelectorAll('[data-at]').forEach(function(b){ b.onclick = function(){ ativar(b.dataset.at); }; });
+      if(q('#cbWid')) q('#cbWid').onchange = function(){ bt.wid = this.value; bt.maos = false; bt.res = {}; draw(); };
+      if(q('#cbMaos')) q('#cbMaos').onchange = function(){ bt.maos = this.checked; bt.res = {}; draw(); };
       if(q('#cbImp')) q('#cbImp').onchange = function(){ bt.imp = this.value; bt.res = {}; draw(); };
       if(q('#cbExt')) q('#cbExt').onchange = function(){ bt.ext = this.checked; bt.res = {}; draw(); };
       if(q('#cbArm')) q('#cbArm').onchange = function(){ bt.arm = +this.value; draw(); };
@@ -565,7 +625,7 @@
       if(q('#cbPer')) q('#cbPer').onchange = function(){ bt.pernas2 = this.checked; draw(); };
       if(q('#cbSg')) q('#cbSg').onclick = sang;
       if(q('#cbTurn')) q('#cbTurn').onclick = function(){ Object.keys(bt.cd).forEach(function(k){ if(bt.cd[k]>0) bt.cd[k]--; }); if(bt.marca>0){ bt.marca--; if(!bt.marca) log('Ponto Fraco expirou'); }
-        ['estim','provocar'].forEach(function(k){ if(bt.fx[k]>0){ bt.fx[k]--; if(!bt.fx[k]){ delete bt.fx[k]; log(k==='estim' ? 'Estimulante acabou' : 'Provocar acabou'); } } }); bt.res = {}; log('— turno passou: recargas −1 —'); draw(); };
+        ['estim','provocar'].forEach(function(k){ if(bt.fx[k]>0){ bt.fx[k]--; if(!bt.fx[k]){ delete bt.fx[k]; log(k==='estim' ? 'Estimulante acabou' : 'Provocar acabou'); } } }); bt.res = {}; bt.maosTurno = []; log('— turno passou: recargas −1 —'); draw(); };
       q('#cbFi') && (q('#cbFi').onchange = function(){ bt.ficha = this.checked; });
       q('#cbNd') && (q('#cbNd').onchange = function(){ bt.nd = parseInt(this.value,10)||0; });
       if(q('#cbMu')) q('#cbMu').onchange = function(){ bt.mult = Math.max(1,parseInt(this.value,10)||1); };

@@ -93,7 +93,7 @@
     if(!PRESETS[cfg.preset]) cfg.preset='padrao';
     if(!cfg.tabs || typeof cfg.tabs!=='object') cfg.tabs={};
     if(cfg.efeitos===undefined) cfg.efeitos=true;
-    if(cfg.iconeEstilo!=='estilizado') cfg.iconeEstilo='simples';
+    if(['simples','estilizado','pixel'].indexOf(cfg.iconeEstilo)<0) cfg.iconeEstilo='simples';
     cfg.touch = mergeTouch(cfg.touch);
     return cfg;
   }

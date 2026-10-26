@@ -9,12 +9,18 @@
    ============================================================ */
 (function(){
   var DIR = 'emojis/', EXT = ['png','svg','webp','gif','jpg','jpeg'];
-  var SUBS = ['estilizados'];   /* subpastas de emojis/ que são procuradas automaticamente (sem precisar do lista.js) */
+  /* estilo escolhido em configuracoes.html -> pasta onde a arte é procurada primeiro */
+  var PASTA = {simples:'', estilizado:'estilizados', pixel:'pixels'};
+  var ESTILO = (function(){ try{ var e = (JSON.parse(localStorage.getItem('s7_config')||'null')||{}).iconeEstilo; return PASTA.hasOwnProperty(e) ? e : 'simples'; }catch(x){ return 'simples'; } })();
+  var PREF = PASTA[ESTILO];
+  if(ESTILO === 'pixel') document.documentElement.classList.add('s7-pixel');   /* subpastas de emojis/ que são procuradas automaticamente (sem precisar do lista.js) */
   var RE = /:([a-z][a-z0-9_-]{0,31}):/gi, ONE = /^:([a-z][a-z0-9_-]{0,31}):$/i;
   var cache = {};   /* nome -> {url, im, fail, q} */
 
   function look(name, ok, bad){
     var k = name.toLowerCase(), c = cache[k];
+    /* falha não fica para sempre: depois de 4 s tenta de novo (arquivo colocado com a página já aberta) */
+    if(c && c.fail && Date.now() - c.fail > 4000) c = null;
     if(c){
       if(c.url) return ok(c.url);
       if(c.fail) return bad();
@@ -23,15 +29,18 @@
     c = cache[k] = {url:null, im:null, fail:false, q:[[ok,bad]]};
     var i = 0;
     function done(good){
-      var q = c.q; c.q = []; if(!good) c.fail = true;
+      var q = c.q; c.q = []; if(!good) c.fail = Date.now();
       q.forEach(function(f){ good ? f[0](c.url) : f[1](); });
       if(good) try{ document.dispatchEvent(new Event('s7emoji')); }catch(e){}
     }
     /* pastas onde procurar: a do lista.js (se existir), a raiz e as subpastas fixas de SUBS */
-    var mapped = (window.S7EMOJIS_DIR && window.S7EMOJIS_DIR[k]) || '';
-    var pastas = [mapped, ''].concat(SUBS).filter(function(p, n, a){ return a.indexOf(p) === n; });
+    /* pasta do estilo escolhido primeiro; a raiz (SIMPLES, svg) é a reserva. Nunca usa outro estilo. */
+    var pastas = PREF === '' ? [''] : [PREF, ''];
     var tries = [];
-    pastas.forEach(function(p){ EXT.forEach(function(e){ tries.push((p ? encodeURI(p) + '/' : '') + k + '.' + e); }); });
+    pastas.forEach(function(p){
+      var exts = p === '' ? ['svg'].concat(EXT.filter(function(e){ return e !== 'svg'; })) : EXT;
+      exts.forEach(function(e){ tries.push((p ? encodeURI(p) + '/' : '') + k + '.' + e); });
+    });
     (function next(){
       if(i >= tries.length) return done(false);
       var im = new Image(), u = DIR + tries[i++];
@@ -61,8 +70,11 @@
     if(root.matches && root.matches('.emo-fb:not([data-ok])')) l.unshift(root);
     l.forEach(function(sp){
       sp.setAttribute('data-ok','1');
-      var n = sp.getAttribute('data-emo'); if(!n) return;
-      look(n, function(u){ sp.innerHTML = tag(n, u); }, function(){});
+      var names = (sp.getAttribute('data-emo') || '').split(' ').filter(Boolean);
+      (function tenta(i){
+        if(i >= names.length) return;   /* nenhuma arte: fica o ícone reserva */
+        look(names[i], function(u){ sp.innerHTML = tag(names[i], u); }, function(){ tenta(i + 1); });
+      })(0);
     });
   }
 
@@ -99,7 +111,7 @@
   }
 
   var st = document.createElement('style');
-  st.textContent = '.emo{height:1.25em;width:1.25em;object-fit:contain;vertical-align:-.28em;display:inline-block;}.emo-t{display:inline;}.emo-fb{display:contents;}';
+  st.textContent = '.emo{height:1.25em;width:1.25em;object-fit:contain;vertical-align:-.28em;display:inline-block;}.emo-t{display:inline;}.emo-fb{display:contents;}.s7-pixel img.emo,.s7-pixel img[src*="pixels/"]{image-rendering:pixelated;image-rendering:crisp-edges;}';
   (document.head || document.documentElement).appendChild(st);
 
   window.S7EMO = { DIR:DIR, EXT:EXT, url:function(n){ var c = cache[String(n).toLowerCase()]; return (c && c.url) || ''; }, upgrade:upgrade, is:function(s){ return ONE.test(String(s||'').trim()); }, scan:scan, html:html, canvasImg:canvasImg, look:look };
